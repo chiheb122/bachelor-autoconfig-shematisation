@@ -4,6 +4,7 @@ from topologie.draw.PktBuilder import PktBuilder
 from topologie.draw.pkt_generator import generate_pkt
 import json
 
+
 # Étape 1 : Lire et parser la configuration texte d’un routeur (type show run)
 parsed = parse_config_to_json("config/router1.txt")
 
@@ -18,7 +19,10 @@ builder = PktBuilder(base_template_path="resources/xml/2.xml", devices=[r1])
 tree = builder.inject_devices()
 
 # Étape 4 : Générer le fichier final
-builder.generatePkt(tree)
+builder.generateXML(tree)
+
+# Étape 5 : Générer le fichier final en pkt
+builder.generatePKT("generated1.xml")
 
 
 

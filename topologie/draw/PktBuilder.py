@@ -1,6 +1,10 @@
 from models.Device import Device
 from models.Router import Router 
-import xml.etree.ElementTree as ET  # Librairie standard pour manipuler du XML en Python
+import xml.etree.ElementTree as ET
+import sys
+sys.path.append("lib/pka2xml_py")
+import pka2core
+from topologie.converter.pkt2xml import encrypt_xml_to_pkt  # Librairie standard pour manipuler du XML en Python
 
 
 class PktBuilder:
@@ -34,11 +38,21 @@ class PktBuilder:
         return tree  # Pour éventuellement sauvegarder ensuite via tree.write(...)
     
 
-    def generatePkt(self,tree, output_path="generated1.xml"):
+    def generateXML(self,tree, output_path="generated1.xml"):
         """
         Écrit l'arbre XML complet dans un fichier.
         """
         tree.write(output_path, encoding="utf-8", xml_declaration=True)
         print(f"✅ Fichier généré avec succès : {output_path}")
+
+    def generatePKT(self, xml_path: str, output_path="generated.pkt"):
+        try:
+            pkt_bytes = encrypt_xml_to_pkt(xml_path)
+            with open(output_path, "wb") as f:
+                f.write(pkt_bytes)
+            print(f"✅ Fichier .pkt généré avec succès : {output_path}")
+        except Exception as e:
+            print(f"❌ Erreur lors du chiffrement du fichier XML : {e}")
+
 
         

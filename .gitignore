@@ -1,4 +1,42 @@
+# Fichiers et dossiers spécifiques au système
+.DS_Store
+Thumbs.db
+
+# Environnement de développement
 .vscode/
-DS_Store
+.idea/
+*.swp
+
+# Fichiers Python compilés / caches
+__pycache__/
+*.py[cod]
+*.so
+
+# Archives et backups
 *.zip
-./topologie/*.xml
+*.tar.gz
+*.bak
+
+# Fichiers temporaires
+*.tmp
+*.log
+
+# Environnement virtuel
+venv/
+env/
+.venv/
+
+# Fichiers générés automatiquement (XML)
+topologie/*.xml
+resources/xml/generated*.xml
+
+# Fichiers Packet Tracer générés
+*.pkt
+*.pka
+
+# Jetons d’authentification ou données sensibles
+.env
+*.key
+*.pem
+# Ignorer les fichiers générés
+generated1.xml
