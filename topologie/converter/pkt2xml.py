@@ -1,6 +1,6 @@
 from pathlib import Path
 import re
-import pka2core
+import pka2core #type: ignore
 
 def decrypt_pkt_to_xml(input_path: str) -> str:
     """
