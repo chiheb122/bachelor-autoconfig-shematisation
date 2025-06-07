@@ -47,6 +47,9 @@ class PktBuilder:
         """
         Écrit l'arbre XML complet dans un fichier.
         """
+        for elem in tree.getroot().iter():
+            if isinstance(elem.text, dict):
+                print(f"❌ ERREUR: dict trouvé dans .text pour <{elem.tag}> : {elem.text}")
         tree.write(output_path, encoding="utf-8", xml_declaration=True)
         print(f"✅ Fichier généré avec succès : {output_path}")
 

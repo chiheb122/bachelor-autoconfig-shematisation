@@ -5,12 +5,12 @@ import copy  # Permet de dupliquer un objet (deepcopy pour dupliquer entièremen
 
 class Switch(Device):
 
-    def __init__(self, macAdresse: str, hostname: str):
+    def __init__(self, macAdresse: str, hostname: str, config=None):
         super().__init__(macAdresse, hostname)
         self.switch_template = None  # Initialisation
+        self.config = config
 
-
-    def connect(self,a,b):
+    def connect(self, a, b):
         pass
 
     # But : Charger le modèle de switcher (fichier XML contenant un seul <DEVICE>)
@@ -18,7 +18,7 @@ class Switch(Device):
         root = ET.parse("resources/xml/switch.xml").getroot()
         self.switch_template = root
         return root
-    
+
     def parseXml(self):
         if self.switch_template is None:
             raise ValueError("Le modèle de switch n'est pas chargé. Appelle load_switch() echoue.")

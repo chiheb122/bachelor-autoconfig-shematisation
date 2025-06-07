@@ -5,12 +5,12 @@ import copy  # Permet de dupliquer un objet (deepcopy pour dupliquer entièremen
 
 class Router(Device):
 
-    def __init__(self, macAdresse: str, hostname: str):
+    def __init__(self, macAdresse: str, hostname: str, config=None):
         super().__init__(macAdresse, hostname)
         self.router_template = None  # Initialisation
+        self.config = config
 
-
-    def connect(self,a,b):
+    def connect(self, a, b):
         pass
 
     # But : Charger le modèle de routeur (fichier XML contenant un seul <DEVICE>)
@@ -18,19 +18,29 @@ class Router(Device):
         root = ET.parse("resources/xml/router.xml").getroot()
         self.router_template = root
         return root
-    
+
     # ─────────────────────────────────────────────────────────────────────
     # Fonction : parseXml
     # But : Injecter un nouveau routeur dans le modèle
     # Arguments :
     #   - router_template : le modèle de routeur chargé depuis router.xml
-    #   - hostname : nom à donner au routeur  
+    #   - hostname : nom à donner au routeur
     def parseXml(self):
         if self.router_template is None:
             raise ValueError("Le modèle de routeur n'est pas chargé. Appelle load_router() echoue.")
         router = copy.deepcopy(self.router_template)  # On duplique le modèle pour pouvoir le modifier
+
         # Modifier le nom du routeur
         router.find(".//NAME").text = self.hostname
+
+        # Injecter les identifiants uniques
+        ref_id_node = router.find(".//REF_ID")
+        if ref_id_node is not None:
+            ref_id_node.text = str(self.ref_id)
+        mem_addr_node = router.find(".//MEM_ADDR")
+        if mem_addr_node is not None:
+            mem_addr_node.text = str(self.mem_addr)
+
         # Modifier la position (décalage de +10 sur X, par exemple)
         logical = router.find(".//LOGICAL")
         if logical is not None:
@@ -40,4 +50,13 @@ class Router(Device):
                 x_node.text = str(int(x_node.text) + 10)
             if y_node is not None and y_node.text.isdigit():
                 y_node.text = str(int(y_node.text) + 10)
+
+        # (Optionnel) Injecter les identifiants sur les interfaces
+        # for intf in self.interfaces:
+        #     intf_node = router.find(f".//INTERFACE[NAME='{intf.name}']")
+        #     if intf_node is not None:
+        #         mem_addr_node = intf_node.find("MEM_ADDR")
+        #         if mem_addr_node is not None:
+        #             mem_addr_node.text = str(intf.mem_addr)
+        print(router)
         return router

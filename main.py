@@ -1,59 +1,53 @@
-from models.Switch import Switch
-from models.Router import Router
-from topologie.converter.parser_config import parse_config_to_json
+from models.factory.DeviceFactory import DeviceFactory
+from topologie.converter.parser_config import parse_cdp_neighbors, parse_config_to_json
 from topologie.draw.PktBuilder import PktBuilder
-from topologie.draw.pkt_generator import generate_pkt
 import json
 
+# Étape 1 : Lire et parser les configurations
+parsed_router = parse_config_to_json("config/router1.txt")
+parsed_switch = parse_config_to_json("config/switch.txt")
 
-# Étape 1 : Lire et parser la configuration texte d’un routeur (type show run)
-parsed = parse_config_to_json("config/router1.txt")
-parsedsw = parse_config_to_json("config/switch.txt")
+print(parsed_router)
+print(parsed_router["name"])
+# Étape 2 : Créer les objets via la factory
+r1 = DeviceFactory.create_device(parsed_router["type"], parsed_router["mac"], parsed_router["name"], parsed_router["config"])
+s1 = DeviceFactory.create_device(parsed_switch["type"], parsed_switch["mac"], parsed_switch["name"], parsed_switch["config"])
+# 1. Ajout des interfaces
+for intf in parsed_router["config"]["interfaces"]:
+    r1.add_interface(intf)
+for intf in parsed_switch["config"]["interfaces"]:
+    s1.add_interface(intf)
 
+# Charger les templates XML
+r1.load_router()
+s1.load_switch()
 
-print(parsed)
-# Étape 2 : Créer l'objet Router
-r1 = Router(macAdresse="00:11:22:33:44:55", hostname=parsed["hostname"])
-r1.load_router()  # charge le template XML
+parsedcdp = parse_cdp_neighbors("config/cdpsw.txt")
 
-# Créer un switch 
-s1 = Switch(macAdresse="00:11:22:33:44:55", hostname=parsedsw["hostname"])
-s1.load_switch() # charge le template XML
+# 2. Création des liens après que tous les mem_addr soient attribués
+from models.Link import Link
+links = []
+for entry in parsedcdp:
+    dev_a = r1 if entry["local_hostname"] == r1.hostname else s1
+    dev_b = r1 if entry["device_id"] == r1.hostname else s1
+    links.append(Link(dev_a, entry["local_interface"], dev_b, entry["port_id"]))
+
+# 3. Utilisation des liens
+for link in links:
+    print(link.to_xml())  # Ou ajoute au XML global
 
 # Étape 3 : Injecter dans le fichier .pkt de base
-builder = PktBuilder(base_template_path="resources/xml/empty.xml", devices=[r1,s1])
+builder = PktBuilder(base_template_path="resources/xml/empty.xml", devices=[r1, s1])
 tree = builder.inject_devices()
 
-# Étape 4 : Générer le fichier final
+# Étape 4 : Générer le fichier XML final
 builder.generateXML(tree)
 
-# Étape 5 : Générer le fichier final en pkt
+# Étape 5 : Générer le fichier .pkt
 builder.generatePKT("generated1.xml")
 
-
-
-
-
-
-
-
-
-# Étape 2 : Vérification visuelle du JSON généré
-print(json.dumps(parsed, indent=2))
-
-# # Étape 3 : Préparation du format attendu par generate_pkt()
-# config = {
-#     "devices": [
-#         {
-#             "type": "router",
-#             "hostname": parsed["hostname"],
-#             "interfaces": parsed["interfaces"],
-#             "position": (100, 200)  # position initiale (modifiable dynamiquement plus tard)
-#         }
-#     ]
-# }
-
-# # Étape 4 : Génération du fichier XML final (prêt à encoder en .pkt)
-# generate_pkt(config, output_path="resources/xml/generated.xml")
+# # Vérification visuelle du JSON généré
+# print(json.dumps(parsed_router, indent=2))
+# print(json.dumps(parsed_switch, indent=2))
 
 print("✅ Fichier XML généré avec succès.")
