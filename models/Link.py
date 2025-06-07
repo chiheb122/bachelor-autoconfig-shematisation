@@ -25,6 +25,12 @@ class Link:
             "length": self.length
         }
     
+    def _get_port_mem_addr(self, device, iface_name):
+        for intf in device.interfaces:
+            if intf.name == iface_name:
+                return getattr(intf, "mem_addr", "")
+        return ""
+
     def to_xml(self):
         """
         Génère le XML <LINK> correspondant à ce lien.
@@ -39,11 +45,11 @@ class Link:
         <PORT>{self.iface_a}</PORT>
         <TO>{self.device_b.ref_id}</TO>
         <PORT>{self.iface_b}</PORT>
-        <FROM_DEVICE_MEM_ADDR>{self.from_device_mem_addr}</FROM_DEVICE_MEM_ADDR>
-        <TO_DEVICE_MEM_ADDR>{self.to_device_mem_addr}</TO_DEVICE_MEM_ADDR>
-        <FROM_PORT_MEM_ADDR>{self.from_port_mem_addr}</FROM_PORT_MEM_ADDR>
-        <TO_PORT_MEM_ADDR>{self.to_port_mem_addr}</TO_PORT_MEM_ADDR>
-        <GEO_VIEW_COLOR>{self.color}</GEO_VIEW_COLOR>
+        <FROM_DEVICE_MEM_ADDR>{self.device_a.mem_addr}</FROM_DEVICE_MEM_ADDR>
+        <TO_DEVICE_MEM_ADDR>{self.device_b.mem_addr}</TO_DEVICE_MEM_ADDR>
+        <FROM_PORT_MEM_ADDR>{self._get_port_mem_addr(self.device_a, self.iface_a)}</FROM_PORT_MEM_ADDR>
+        <TO_PORT_MEM_ADDR>{self._get_port_mem_addr(self.device_b, self.iface_b)}</TO_PORT_MEM_ADDR>
+        <GEO_VIEW_COLOR>{getattr(self, "color", "#6ba72e")}</GEO_VIEW_COLOR>
         <IS_MANAGED_IN_RACK_VIEW>false</IS_MANAGED_IN_RACK_VIEW>
         <TYPE>{self.cable_type}</TYPE>
     </CABLE>

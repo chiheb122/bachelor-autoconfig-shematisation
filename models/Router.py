@@ -34,7 +34,7 @@ class Router(Device):
         router.find(".//NAME").text = self.hostname
 
         # Injecter les identifiants uniques
-        ref_id_node = router.find(".//REF_ID")
+        ref_id_node = router.find(".//SAVE_REF_ID")
         if ref_id_node is not None:
             ref_id_node.text = str(self.ref_id)
         mem_addr_node = router.find(".//MEM_ADDR")

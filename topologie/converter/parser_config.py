@@ -78,8 +78,10 @@ def parse_config_to_json(config_path):
     }
 
 def parse_cdp_neighbors(output):
+    with open(output, "r") as f:
+        lines = f.readlines()
+        
     neighbors = []
-    lines = output.strip().splitlines()
     # Ignore header lines
     for line in lines[1:]:
         match = re.match(r"(\S+)\s+(\S+\s+\S+)\s+\d+\s+\S+\s+\S+\s+(\S+\s+\S+)", line)

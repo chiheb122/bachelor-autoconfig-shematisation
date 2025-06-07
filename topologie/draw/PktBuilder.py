@@ -1,3 +1,4 @@
+from models.Link import Link
 from models.Switch import Switch
 from models.Device import Device
 from models.Router import Router 
@@ -10,9 +11,10 @@ from topologie.converter.pkt2xml import encrypt_xml_to_pkt  # Librairie standard
 
 class PktBuilder:
 
-    def __init__(self,base_template_path:str,devices:list[Device]): # type: ignore
+    def __init__(self,base_template_path:str,devices:list[Device], links:list[Link] = None): # type: ignore
         self.base_template:str = base_template_path
         self.devices:devices[Device] = devices # type: ignore
+        self.links = links if links is not None else []
 
     # Fonction : load_base
     # But : Charger le fichier de base (2.xml), qui ne contient que la structure du fichier .pkt sans DEVICE
@@ -39,6 +41,18 @@ class PktBuilder:
                 devices_node.append(switch_xml)
             else:
                 print(f"⚠️ Type d'appareil non pris en charge : {type(device)}")
+        # Ajouter les liens
+        for link in self.links:
+            if isinstance(link, Link):
+                # Ajouter le lien au bloc <LINKS>
+                links_node = root.find(".//LINKS")
+                if links_node is None:
+                    raise ValueError("❌ Aucun bloc <LINKS> trouvé dans la base XML")
+                link_xml = link.to_xml()
+                link_element = ET.fromstring(link_xml)
+                links_node.append(link_element)
+            else:
+                print(f"⚠️ Type de lien non pris en charge : {type(link)}")
      
         return tree  # Pour éventuellement sauvegarder ensuite via tree.write(...)
     
@@ -47,9 +61,9 @@ class PktBuilder:
         """
         Écrit l'arbre XML complet dans un fichier.
         """
-        for elem in tree.getroot().iter():
-            if isinstance(elem.text, dict):
-                print(f"❌ ERREUR: dict trouvé dans .text pour <{elem.tag}> : {elem.text}")
+        # for elem in tree.getroot().iter():
+        #     if isinstance(elem.text, dict):
+        #         print(f"❌ ERREUR: dict trouvé dans .text pour <{elem.tag}> : {elem.text}")
         tree.write(output_path, encoding="utf-8", xml_declaration=True)
         print(f"✅ Fichier généré avec succès : {output_path}")
 
@@ -63,4 +77,3 @@ class PktBuilder:
             print(f"❌ Erreur lors du chiffrement du fichier XML : {e}")
 
 
-        
