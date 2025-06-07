@@ -31,9 +31,9 @@ def encrypt_xml_to_pkt(xml_path: str, fix_version: bool = True) -> bytes:
 
 
 if __name__ == "__main__":
-    xml_text = decrypt_pkt_to_xml("/Users/chiba/Desktop/TB/configExtract/resources/pkt/2.pkt")
+    xml_text = decrypt_pkt_to_xml("/Users/chiba/Desktop/TB/configExtract/resources/pkt/empty.pkt")
     # Décryptage
-    input_file = Path("/Users/chiba/Desktop/TB/configExtract/resources/pkt/2.pkt")
+    input_file = Path("/Users/chiba/Desktop/TB/configExtract/resources/pkt/empty.pkt")
     # Création du chemin de sortie avec extension .xml
     output_file = input_file.with_suffix(".xml")
 

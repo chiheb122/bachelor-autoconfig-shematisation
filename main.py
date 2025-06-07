@@ -15,7 +15,7 @@ r1.load_router()  # charge le template XML
 
 
 # Étape 3 : Injecter dans le fichier .pkt de base
-builder = PktBuilder(base_template_path="resources/xml/2.xml", devices=[r1])
+builder = PktBuilder(base_template_path="resources/xml/empty.xml", devices=[r1])
 tree = builder.inject_devices()
 
 # Étape 4 : Générer le fichier final

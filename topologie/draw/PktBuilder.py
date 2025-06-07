@@ -16,7 +16,7 @@ class PktBuilder:
     # Fonction : load_base
     # But : Charger le fichier de base (2.xml), qui ne contient que la structure du fichier .pkt sans DEVICE
     def load_base(self):
-        tree = ET.parse("resources/xml/2.xml")
+        tree = ET.parse("resources/xml/empty.xml")
         root = tree.getroot()
         return tree, root  # On retourne à la fois l'arbre complet (pour l'enregistrement) et la racine (pour injection)
 
