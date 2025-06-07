@@ -1,3 +1,4 @@
+from models.Switch import Switch
 from models.Router import Router
 from topologie.converter.parser_config import parse_config_to_json
 from topologie.draw.PktBuilder import PktBuilder
@@ -7,15 +8,20 @@ import json
 
 # Étape 1 : Lire et parser la configuration texte d’un routeur (type show run)
 parsed = parse_config_to_json("config/router1.txt")
+parsedsw = parse_config_to_json("config/switch.txt")
+
 
 print(parsed)
 # Étape 2 : Créer l'objet Router
 r1 = Router(macAdresse="00:11:22:33:44:55", hostname=parsed["hostname"])
 r1.load_router()  # charge le template XML
 
+# Créer un switch 
+s1 = Switch(macAdresse="00:11:22:33:44:55", hostname=parsedsw["hostname"])
+s1.load_switch() # charge le template XML
 
 # Étape 3 : Injecter dans le fichier .pkt de base
-builder = PktBuilder(base_template_path="resources/xml/empty.xml", devices=[r1])
+builder = PktBuilder(base_template_path="resources/xml/empty.xml", devices=[r1,s1])
 tree = builder.inject_devices()
 
 # Étape 4 : Générer le fichier final

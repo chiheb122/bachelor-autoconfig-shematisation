@@ -19,6 +19,12 @@ class Router(Device):
         self.router_template = root
         return root
     
+    # ─────────────────────────────────────────────────────────────────────
+    # Fonction : parseXml
+    # But : Injecter un nouveau routeur dans le modèle
+    # Arguments :
+    #   - router_template : le modèle de routeur chargé depuis router.xml
+    #   - hostname : nom à donner au routeur  
     def parseXml(self):
         if self.router_template is None:
             raise ValueError("Le modèle de routeur n'est pas chargé. Appelle load_router() echoue.")

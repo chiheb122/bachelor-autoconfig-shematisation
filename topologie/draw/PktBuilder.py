@@ -1,3 +1,4 @@
+from models.Switch import Switch
 from models.Device import Device
 from models.Router import Router 
 import xml.etree.ElementTree as ET
@@ -24,14 +25,18 @@ class PktBuilder:
     def inject_devices(self):
         # Charger la structure de base du fichier pkt (sans appareils)
         tree, root = self.load_base()
+        devices_node = root.find(".//DEVICES")
+        if devices_node is None:
+            raise ValueError("❌ Aucun bloc <DEVICES> trouvé dans la base XML")
         for device in self.devices:
             if isinstance(device, Router):
-                devices_node = root.find(".//DEVICES")
-                if devices_node is None:
-                    raise ValueError("❌ Aucun bloc <DEVICES> trouvé dans la base XML")
                 # Ajouter le routeur modifié à la racine du document
                 router_xml = device.parseXml()
                 devices_node.append(router_xml)
+            elif isinstance(device, Switch):
+                # Ajouter le routeur modifié à la racine du document
+                switch_xml = device.parseXml()
+                devices_node.append(switch_xml)
             else:
                 print(f"⚠️ Type d'appareil non pris en charge : {type(device)}")
      
