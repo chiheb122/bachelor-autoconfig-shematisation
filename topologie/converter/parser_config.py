@@ -77,18 +77,45 @@ def parse_config_to_json(config_path):
         "config": config
     }
 
+def normalize_interface_name(name: str) -> str:
+    """
+    Convertit les abréviations d'interface vers le format complet requis pour l'XML.
+    Ex: g0/1, fas0/3, Gig0/2 → GigabitEthernet0/1, FastEthernet0/3, GigabitEthernet0/2
+    """
+    # Mapping des débuts possibles
+    mapping = {
+        "g": "GigabitEthernet",
+        "gi": "GigabitEthernet",
+        "gig": "GigabitEthernet",
+        "f": "FastEthernet",
+        "fa": "FastEthernet",
+        "fas": "FastEthernet",
+        "e": "Ethernet",
+        "s": "Serial",
+    }
+
+    name = name.lower()
+
+    # Trouver le préfixe et les chiffres
+    match = re.match(r"([a-z]+)(\d+/\d+)", name)
+    if match:
+        prefix, numbers = match.groups()
+        full_prefix = mapping.get(prefix, prefix.capitalize())
+        return f"{full_prefix}{numbers}"
+    else:
+        return name  # si rien ne match, on retourne le nom d'origine
+
 def parse_cdp_neighbors(output):
     with open(output, "r") as f:
         lines = f.readlines()
         
     neighbors = []
-    # Ignore header lines
     for line in lines[1:]:
         match = re.match(r"(\S+)\s+(\S+\s+\S+)\s+\d+\s+\S+\s+\S+\s+(\S+\s+\S+)", line)
         if match:
             device_id = match.group(1)
-            local_intf = match.group(2).replace(" ", "")
-            port_id = match.group(3).replace(" ", "")
+            local_intf = normalize_interface_name(match.group(2).replace(" ", ""))
+            port_id    = normalize_interface_name(match.group(3).replace(" ", ""))
             neighbors.append({
                 "device_id": device_id,
                 "local_interface": local_intf,

@@ -49,8 +49,7 @@ class PktBuilder:
                 if links_node is None:
                     raise ValueError("❌ Aucun bloc <LINKS> trouvé dans la base XML")
                 link_xml = link.to_xml()
-                link_element = ET.fromstring(link_xml)
-                links_node.append(link_element)
+                links_node.append(link_xml)
             else:
                 print(f"⚠️ Type de lien non pris en charge : {type(link)}")
      

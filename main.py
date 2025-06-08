@@ -1,7 +1,7 @@
 from models.factory.DeviceFactory import DeviceFactory
 from topologie.converter.parser_config import parse_cdp_neighbors, parse_config_to_json
 from topologie.draw.PktBuilder import PktBuilder
-import json
+import re
 from models.Link import Link
 # Étape 1 : Lire et parser les configurations
 parsed_router = parse_config_to_json("config/router1.txt")
@@ -26,24 +26,49 @@ parsedcdp = parse_cdp_neighbors("config/cdpsw.txt")
 print(parsedcdp)
 # 2. Création des liens après que tous les mem_addr soient attribués
 
-# links = []
-# for entry in parsedcdp:
-#     # On suppose que device_id est le voisin, donc dev_b
-#     dev_b = r1 if entry["device_id"] == r1.hostname else s1
-#     dev_a = s1 if dev_b is r1 else r1  # l'autre device
-#     links.append(Link(dev_a, entry["local_interface"], dev_b, entry["port_id"]))
 
+def is_vlan_subinterface(interface: str) -> bool:
+    """
+    Retourne True si l'interface est une sous-interface de type VLAN.
+    Ex : GigabitEthernet0/1.10 → True ; FastEthernet0/0 → False
+    """
+    return bool(re.search(r'/\d+\.\d+$', interface))
+seen = set()
+links = []
+
+for entry in parsedcdp:
+    port = entry["port_id"]
+
+    if is_vlan_subinterface(port):
+        continue
+
+    dev_b = r1 if entry["device_id"] == r1.hostname else s1
+    dev_a = s1 if dev_b is r1 else r1
+
+    # Clé unique représentant le lien
+    key = tuple(sorted([
+        (dev_a.hostname, entry["local_interface"]),
+        (dev_b.hostname, entry["port_id"])
+    ]))
+
+    if key in seen:
+        continue
+    seen.add(key)
+
+    links.append(Link(dev_a, entry["local_interface"], dev_b, entry["port_id"]))
+
+print(links)
 # # 3. Utilisation des liens
 # for link in links:
 #     print(link.to_xml())  # Ou ajoute au XML global
 
 
 # # Étape 3 : Injecter dans le fichier .pkt de base
-# builder = PktBuilder(base_template_path="resources/xml/empty.xml", devices=[r1, s1], links=links)
-# tree = builder.inject_devices()
+builder = PktBuilder(base_template_path="resources/xml/empty.xml", devices=[r1, s1], links=links)
+tree = builder.inject_devices()
 
-# # Étape 4 : Générer le fichier XML final
-# builder.generateXML(tree)
+# Étape 4 : Générer le fichier XML final
+builder.generateXML(tree)
 
 # Étape 5 : Générer le fichier .pkt
 builder.generatePKT("generated1.xml")

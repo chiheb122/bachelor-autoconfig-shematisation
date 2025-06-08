@@ -25,6 +25,10 @@ class Switch(Device):
         switch = copy.deepcopy(self.switch_template)  # On duplique le modèle pour pouvoir le modifier
         # Modifier le nom du switcher
         switch.find(".//NAME").text = self.hostname
+         # Injecter les identifiants uniques
+        ref_id_node = switch.find(".//SAVE_REF_ID")
+        if ref_id_node is not None:
+            ref_id_node.text = str(self.ref_id)
         # Modifier la position (décalage de +10 sur X, par exemple)
         logical = switch.find(".//LOGICAL")
         if logical is not None:
