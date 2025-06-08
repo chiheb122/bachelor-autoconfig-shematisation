@@ -5,26 +5,42 @@ Ce projet a été réalisé dans le cadre de mon travail de Bachelor. Il vise à
 ## 🎯 Objectif
 
 - Générer automatiquement une topologie réseau (routeurs, switches, connexions) dans Packet Tracer
-- Automatiser les actions via PyAutoGUI en simulant les clics et mouvements de souris
-- Étudier les limites de l’API REST et du format `.pkt` pour une automatisation directe
 - Proposer une solution portable fonctionnant sur toute machine avec Packet Tracer installé
 
 ## 🛠️ Technologies
 
 - Python 3
-- [PyAutoGUI](https://pyautogui.readthedocs.io/)
-- Cisco Packet Tracer 8.x
+- Cisco Packet Tracer 8.2.2
 - JSON (définition de topologie)
 
 ## 📁 Structure du projet
 
+```
+configExtract/
+├── config/                   # Fichiers de configuration des équipements (txt)
+├── models/                   # Modèles Python : Device, Router, Switch, Interface, Link, etc.
+│   ├── Device.py
+│   ├── Router.py
+│   ├── Switch.py
+│   ├── Interface.py
+│   ├── Link.py
+│   └── factory/
+│       └── DeviceFactory.py
+├── resources/
+│   └── xml/                  # Templates XML pour Packet Tracer
+│       ├── empty.xml
+│       ├── router.xml
+│       ├── switch.xml
+│       └── link.xml
+├── topologie/
+│   ├── converter/
+│   │   └── parser_config.py  # Parsing des configs et CDP
+│   └── draw/
+│       └── PktBuilder.py     # Génération du fichier XML final
+├── main.py                   # Script principal
+└── README.md                 # Documentation
+```
 
 
 
-MIT License
 
-Copyright (c) 2025 Chiheb
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...

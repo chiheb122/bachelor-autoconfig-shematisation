@@ -25,6 +25,19 @@ class PktBuilder:
 
 
     def inject_devices(self):
+        """
+        Injecte les appareils (routeurs, switches) et les liens dans la structure XML de base du fichier pkt.
+        Cette méthode charge la structure de base du fichier pkt, puis ajoute les objets appareils (instances de Router ou Switch)
+        dans le bloc <DEVICES> du document XML. Elle ajoute également les liens (instances de Link) dans le bloc <LINKS>.
+        Si les blocs <DEVICES> ou <LINKS> sont absents dans la base XML, une exception est levée.
+        Retourne :
+            tree (ElementTree) : L'arbre XML modifié, prêt à être sauvegardé.
+        Exceptions :
+            ValueError : Si le bloc <DEVICES> ou <LINKS> est introuvable dans la base XML.
+        Remarques :
+            - Les types d'appareils non pris en charge sont signalés par un message d'avertissement.
+            - Les types de liens non pris en charge sont également signalés par un message d'avertissement.
+        """
         # Charger la structure de base du fichier pkt (sans appareils)
         tree, root = self.load_base()
         devices_node = root.find(".//DEVICES")
@@ -67,6 +80,24 @@ class PktBuilder:
         print(f"✅ Fichier généré avec succès : {output_path}")
 
     def generatePKT(self, xml_path: str, output_path="generated.pkt"):
+        """
+        Génère un fichier .pkt à partir d'un fichier XML spécifié.
+
+        Cette méthode chiffre le fichier XML donné via le chemin `xml_path` en utilisant la fonction
+        `encrypt_xml_to_pkt`, puis écrit le résultat chiffré dans un fichier de sortie au format binaire.
+        Le chemin du fichier de sortie peut être spécifié via `output_path`, sinon il sera nommé
+        "generated.pkt" par défaut.
+
+        Args:
+            xml_path (str): Chemin vers le fichier XML à chiffrer.
+            output_path (str, optional): Chemin du fichier .pkt généré. Par défaut "generated.pkt".
+
+        Raises:
+            Exception: Affiche un message d'erreur si le chiffrement ou l'écriture échoue.
+
+        Affiche:
+            Un message de succès si le fichier est généré avec succès, sinon un message d'erreur.
+        """
         try:
             pkt_bytes = encrypt_xml_to_pkt(xml_path)
             with open(output_path, "wb") as f:

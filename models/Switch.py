@@ -6,6 +6,18 @@ import copy  # Permet de dupliquer un objet (deepcopy pour dupliquer entièremen
 class Switch(Device):
 
     def __init__(self, macAdresse: str, hostname: str, config=None):
+        """
+        Initialise une nouvelle instance de la classe Switch.
+
+        Args:
+            macAdresse (str): L'adresse MAC du switch.
+            hostname (str): Le nom d'hôte du switch.
+            config (optionnel): La configuration initiale du switch. Par défaut à None.
+
+        Attributs:
+            switch_template: Modèle de configuration du switch, initialisé à None.
+            config: Configuration du switch, peut être None ou un objet de configuration.
+        """
         super().__init__(macAdresse, hostname)
         self.switch_template = None  # Initialisation
         self.config = config
@@ -20,6 +32,20 @@ class Switch(Device):
         return root
 
     def parseXml(self):
+        """
+        Analyse et modifie un modèle XML de switch en injectant des valeurs spécifiques à l'instance.
+
+        Cette méthode duplique le modèle de switch XML, puis :
+        - Modifie le nom du switch avec la valeur de `self.hostname`.
+        - Injecte l'identifiant unique `self.ref_id` dans le noeud SAVE_REF_ID si présent.
+        - Décale la position logique du switch de +10 sur les axes X et Y si ces valeurs existent et sont numériques.
+
+        Retourne :
+            ElementTree.Element: L'élément XML du switch modifié.
+
+        Lève :
+            ValueError: Si le modèle de switch (`self.switch_template`) n'est pas chargé.
+        """
         if self.switch_template is None:
             raise ValueError("Le modèle de switch n'est pas chargé. Appelle load_switch() echoue.")
         switch = copy.deepcopy(self.switch_template)  # On duplique le modèle pour pouvoir le modifier

@@ -71,6 +71,9 @@ class Link:
 
 
     def to_xml(self):
+        """
+        Génère le XML <LINK> correspondant à ce lien en utilisant le modèle chargé.
+        """
         self.load_link()
         if self.link_template is None:
             raise ValueError("Le modèle de link n'est pas chargé. Appelle load_link() échoue.")
