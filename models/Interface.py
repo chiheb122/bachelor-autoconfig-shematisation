@@ -12,7 +12,9 @@ Attributs :
 @dataclass
 class Interface:
     name: str
-    ip_address: str
-    subnet_mask: str
-    status: str
-    vlan: int
+    ip: str = ""
+    subnet_mask: str = ""
+    status: str = "down"
+    vlan: int = None
+    mac: str = ""
+    description: str = ""

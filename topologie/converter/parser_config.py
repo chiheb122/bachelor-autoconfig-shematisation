@@ -2,80 +2,59 @@ import re
 from models.Interface import Interface
 
 def detect_device_type(config_lines):
+    is_router = False
+    is_switch = False
+
     for line in config_lines:
-        if "hostname" in line:
-            continue
-        if line.startswith("interface Vlan") or "vlan" in line.lower():
-            return "switch"
+        line = line.lower().strip()
+
+        if line.startswith("interface vlan") or "switchport" in line:
+            is_switch = True
         if "router ospf" in line or "ip route" in line:
-            return "router"
+            is_router = True
+
+    if is_router:
+        return "router"
+    if is_switch:
+        return "switch"
     return "unknown"
 
+
 def parse_config_to_json(config_path):
-    with open(config_path, "r") as f:
-        lines = f.readlines()
-    device_type = detect_device_type(lines)
-    hostname = None
-    interfaces = []
-    current_intf = None
-    ip_address = ""
-    subnet_mask = ""
-    status = "down"
-    vlan = 1
+    config_lines = read_config_file(config_path)
+    if not config_lines:
+        raise ValueError("Le fichier de configuration est vide ou introuvable.")
 
-    for line in lines:
-        line = line.strip()
-        if line.startswith("hostname"):
-            hostname = line.split()[1].strip()
-        elif line.startswith("interface"):
-            if current_intf:
-                interfaces.append(
-                    Interface(
-                        name=current_intf,
-                        ip_address=ip_address,
-                        subnet_mask=subnet_mask,
-                        status=status,
-                        vlan=vlan
-                    )
-                )
-            current_intf = line.split()[1]
-            ip_address = ""
-            subnet_mask = ""
-            status = "down"
-            vlan = 1
-        elif line.startswith("ip address") and current_intf:
-            parts = line.split()
-            if len(parts) >= 3:
-                ip_address = parts[2]
-                subnet_mask = parts[3] if len(parts) > 3 else ""
-        elif "shutdown" in line and current_intf:
-            status = "down"
-        elif "no shutdown" in line and current_intf:
-            status = "up"
-        elif "switchport access vlan" in line and current_intf:
-            vlan = int(line.split()[-1])
-    # Ajouter la dernière interface si présente
-    if current_intf:
-        interfaces.append(
-            Interface(
-                name=current_intf,
-                ip_address=ip_address,
-                subnet_mask=subnet_mask,
-                status=status,
-                vlan=vlan
-            )
+    device_type = detect_device_type(config_lines)
+    if device_type == "unknown":
+        raise ValueError("Type de périphérique non reconnu dans le fichier.")
+
+    parser = CiscoConfigParser(config_lines)
+
+    interfaces = {}
+    for iface_name, iface_data in parser.interfaces.items():
+        iface = Interface(
+            name=normalize_interface_name(iface_name),
+            ip=iface_data.get("ip", ""),
+            subnet_mask=iface_data.get("subnet_mask", ""),
+            status=iface_data.get("status", "down"),
+            vlan=iface_data.get("vlan", None),
+            mac=iface_data.get("mac", ""),
+            description=iface_data.get("description", "")
         )
+        interfaces[iface.name] = iface
 
-    config = {
-        "raw": lines,
-        "interfaces": interfaces
-    }
     return {
         "type": device_type,
-        "name": hostname or "Unknown",
-        "mac": "00:11:22:33:44:55",
-        "config": config
+        "name": parser.hostname or "Unknown",
+        "mac": "00:11:22:33:44:55",  # Placeholder
+        "config": {
+            "interfaces": interfaces,
+            "neighbors": parser.neighbors
+        },
+        "raw": "".join(config_lines)
     }
+
 
 def normalize_interface_name(name: str) -> str:
     """
@@ -122,3 +101,47 @@ def parse_cdp_neighbors(output):
                 "port_id": port_id
             })
     return neighbors
+
+
+def read_config_file(file_path):
+    """
+    Lit un fichier de configuration  et retourne les lignes.
+    """
+    with open(file_path, "r") as file:
+        return file.readlines() 
+
+class CiscoConfigParser:
+    def __init__(self, lines):
+        self.lines = lines
+        self.hostname = None
+        self.interfaces = {}
+        self.neighbors = {}
+        self.parse()
+
+    def parse(self):
+        current_iface = None
+        for line in self.lines:
+            line = line.strip()
+            if line.startswith("hostname"):
+                self.hostname = line.split()[1]
+            elif line.startswith("interface"):
+                current_iface = line.split()[1]
+                self.interfaces[current_iface] = {}
+            elif line.startswith("ip address") and current_iface:
+                self.interfaces[current_iface]["ip"] = line.split()[2]
+                self.interfaces[current_iface]["subnet_mask"] = line.split()[3] if len(line.split()) > 3 else ""
+            elif line.startswith("shutdown") and current_iface:
+                self.interfaces[current_iface]["status"] = "down"
+            elif line.startswith("no shutdown") and current_iface:
+                self.interfaces[current_iface]["status"] = "up"
+            elif line.startswith("switchport access vlan") and current_iface:
+                self.interfaces[current_iface]["vlan"] = int(line.split()[-1])
+            elif line.startswith("mac address") and current_iface:
+                self.interfaces[current_iface]["mac"] = line.split()[2]
+            elif line.startswith("description") and current_iface:
+                self.interfaces[current_iface]["description"] = " ".join(line.split()[1:])
+            elif line.lower().startswith("cdp entry") or "show cdp neighbors" in line:
+                pass  # Ajoute plus tard pour les liaisons
+
+    def __str__(self):
+        return f"Hostname: {self.hostname}, Interfaces: {self.interfaces} \nNeighbors: {self.neighbors}"
