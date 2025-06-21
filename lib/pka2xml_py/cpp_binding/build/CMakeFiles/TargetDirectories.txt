@@ -1,3 +1,0 @@
-/Users/chiba/Desktop/TB/configExtract/lib/pka2xml_py/cpp_binding/build/CMakeFiles/pka2core.dir
-/Users/chiba/Desktop/TB/configExtract/lib/pka2xml_py/cpp_binding/build/CMakeFiles/edit_cache.dir
-/Users/chiba/Desktop/TB/configExtract/lib/pka2xml_py/cpp_binding/build/CMakeFiles/rebuild_cache.dir
