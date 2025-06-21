@@ -1,26 +1,37 @@
-# Dockerfile
-FROM python:3.11-slim
+# Dockerfile pour bachelor-autoconfig-shematisation
+FROM python:3.9-slim
 
-# Installation des outils nécessaires à la compilation
+# Installer dépendances système pour pybind11, port série, etc.
 RUN apt-get update && apt-get install -y \
     build-essential \
     python3-dev \
-    libstdc++-dev \
-    cmake \
+    libudev-dev \
+    usbutils \
+    libcrypto++-dev \
+    zlib1g-dev \
     git \
+    minicom \
     && rm -rf /var/lib/apt/lists/*
 
-# Création du dossier de travail
+# Créer le dossier de travail
 WORKDIR /app
 
-# Copie des fichiers dans le conteneur
-COPY lib/pka2xml_py .
+# Copier tous les fichiers du projet
+COPY . .
 
-# Installation des dépendances Python
-RUN pip install --upgrade pip && pip install pybind11 setuptools wheel
+# Installer dépendances Python
+RUN pip install --upgrade pip
+RUN pip install pyserial setuptools wheel pybind11
 
-# Compilation automatique lors du build (optionnel)
-RUN ./build.sh
+# Compilation du module natif
+WORKDIR /app/lib/pka2xml_py
+RUN bash build.sh
+
+# Renommer la bibliothèque compilée pour que l'import Python fonctionne
+RUN cp build/lib.linux-x86_64-3.9/pka2core.cpython-39-x86_64-linux-gnu.so ../pka2core.cpython-39-x86_64-linux-gnu.so
+
+# Revenir au dossier de base
+WORKDIR /app
 
 # Point d'entrée interactif par défaut
-CMD [ "bash" ]
+CMD ["bash"]

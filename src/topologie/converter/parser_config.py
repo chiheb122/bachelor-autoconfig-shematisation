@@ -1,5 +1,5 @@
 import re
-from models.Interface import Interface
+from src.models.Interface import Interface
 
 def detect_device_type(config_lines):
     is_router = False

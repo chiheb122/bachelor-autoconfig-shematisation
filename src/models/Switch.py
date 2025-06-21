@@ -1,4 +1,4 @@
-from models.Device import Device
+from ..models.Device import Device
 import xml.etree.ElementTree as ET  # Librairie standard pour manipuler du XML en Python
 import copy  # Permet de dupliquer un objet (deepcopy pour dupliquer entièrement un arbre XML)
 
@@ -27,7 +27,7 @@ class Switch(Device):
 
     # But : Charger le modèle de switcher (fichier XML contenant un seul <DEVICE>)
     def load_switch(self):
-        root = ET.parse("resources/xml/switch.xml").getroot()
+        root = ET.parse("src/resources/xml/switch.xml").getroot()
         self.switch_template = root
         return root
 

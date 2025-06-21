@@ -9,7 +9,7 @@ ext_modules = [
             pybind11.get_include(),
             "cpp_binding/include",
         ],
-        libraries=["cryptopp"],  # Assumes installed or static linked
+        libraries=["cryptopp","z"],  # Assumes installed or static linked
         language="c++"
     )
 ]

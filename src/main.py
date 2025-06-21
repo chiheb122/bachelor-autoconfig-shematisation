@@ -1,17 +1,16 @@
-from models.factory.DeviceFactory import DeviceFactory
-from topologie.converter.parser_config import parse_cdp_neighbors, parse_config_to_json,read_config_file
-from topologie.draw.PktBuilder import PktBuilder
+from src.models.factory.DeviceFactory import DeviceFactory
+from src.topologie.converter.parser_config import parse_cdp_neighbors, parse_config_to_json,read_config_file
+from src.topologie.draw.PktBuilder import PktBuilder
 import re
-from models.Link import Link
-from topologie.converter.parser_config import CiscoConfigParser
+from src.models.Link import Link
 
 # Étape 1 : Lire et parser les configurations
-parsed_router = parse_config_to_json("config/R0.txt")
-parsed_switch = parse_config_to_json("config/switch.txt")
+parsed_router = parse_config_to_json("src/config/R0.txt")
+parsed_switch = parse_config_to_json("src/config/switch.txt")
 
 # Charge le fichier brut
-lines = read_config_file("config/R1.txt")
-lines2 = read_config_file("config/R0.txt")
+lines = read_config_file("src/config/R1.txt")
+lines2 = read_config_file("src/config/R0.txt")
 
 
 # # Crée une instance du parseur
@@ -36,7 +35,7 @@ for intf in parsed_switch["config"]["interfaces"].values():
 r1.load_router()
 s1.load_switch()
 
-parsedcdp = parse_cdp_neighbors("config/cdpsw.txt")
+parsedcdp = parse_cdp_neighbors("src/config/cdpsw.txt")
 print(parsedcdp)
 # 2. Création des liens après que tous les mem_addr soient attribués
 
@@ -78,7 +77,7 @@ print(links)
 
 
 # # Étape 3 : Injecter dans le fichier .pkt de base
-builder = PktBuilder(base_template_path="resources/xml/empty.xml", devices=[r1, s1], links=links)
+builder = PktBuilder(base_template_path="src/resources/xml/empty.xml", devices=[r1, s1], links=links)
 tree = builder.inject_devices()
 
 # Étape 4 : Générer le fichier XML final

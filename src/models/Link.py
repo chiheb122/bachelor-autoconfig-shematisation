@@ -19,7 +19,7 @@ class Link:
 
     # But : Charger le modèle de link (fichier XML contenant un seul <Link>)
     def load_link(self):
-        root = ET.parse("resources/xml/link.xml").getroot()
+        root = ET.parse("src/resources/xml/link.xml").getroot()
         self.link_template = root
         return root
 

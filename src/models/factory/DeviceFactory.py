@@ -1,5 +1,5 @@
-from models.Router import Router
-from models.Switch import Switch
+from ..Router import Router
+from ..Switch import Switch
 
 
 

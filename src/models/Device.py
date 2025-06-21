@@ -1,6 +1,6 @@
 import uuid
 from abc import abstractmethod,ABC
-from models import Interface
+from ..models import Interface
 
 
 class Device(ABC):

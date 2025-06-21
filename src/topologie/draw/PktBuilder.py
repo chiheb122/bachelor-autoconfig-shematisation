@@ -1,12 +1,12 @@
-from models.Link import Link
-from models.Switch import Switch
-from models.Device import Device
-from models.Router import Router 
+from src.models.Link import Link
+from src.models.Switch import Switch
+from src.models.Device import Device
+from src.models.Router import Router
 import xml.etree.ElementTree as ET
 import sys
 sys.path.append("lib/pka2xml_py")
 import pka2core #type: ignore
-from topologie.converter.pkt2xml import encrypt_xml_to_pkt  # Librairie standard pour manipuler du XML en Python
+from src.topologie.converter.pkt2xml import encrypt_xml_to_pkt  # Librairie standard pour manipuler du XML en Python
 
 
 class PktBuilder:
@@ -19,7 +19,7 @@ class PktBuilder:
     # Fonction : load_base
     # But : Charger le fichier de base (2.xml), qui ne contient que la structure du fichier .pkt sans DEVICE
     def load_base(self):
-        tree = ET.parse("resources/xml/empty.xml")
+        tree = ET.parse("src/resources/xml/empty.xml")
         root = tree.getroot()
         return tree, root  # On retourne à la fois l'arbre complet (pour l'enregistrement) et la racine (pour injection)
 
@@ -69,7 +69,7 @@ class PktBuilder:
         return tree  # Pour éventuellement sauvegarder ensuite via tree.write(...)
     
 
-    def generateXML(self,tree, output_path="generated1.xml"):
+    def generateXML(self,tree, output_path="src/resources/generated/generated1.xml"):
         """
         Écrit l'arbre XML complet dans un fichier.
         """
@@ -79,7 +79,7 @@ class PktBuilder:
         tree.write(output_path, encoding="utf-8", xml_declaration=True)
         print(f"✅ Fichier généré avec succès : {output_path}")
 
-    def generatePKT(self, xml_path: str, output_path="generated.pkt"):
+    def generatePKT(self, xml_path: str, output_path="src/resources/generated/generated.pkt"):
         """
         Génère un fichier .pkt à partir d'un fichier XML spécifié.
 

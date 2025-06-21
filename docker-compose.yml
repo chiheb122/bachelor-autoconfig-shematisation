@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  auto-config:
+    build: .
+    container_name: auto-config
+    volumes:
+      - ./src:/app/src
+    tty: true
+    stdin_open: true
+
