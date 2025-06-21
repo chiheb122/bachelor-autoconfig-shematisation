@@ -84,7 +84,7 @@ tree = builder.inject_devices()
 builder.generateXML(tree)
 
 # Étape 5 : Générer le fichier .pkt
-builder.generatePKT("generated1.xml")
+builder.generatePKT("src/resources/generated/generated1.xml")
 
 # # Vérification visuelle du JSON généré
 # print(json.dumps(parsed_router, indent=2))

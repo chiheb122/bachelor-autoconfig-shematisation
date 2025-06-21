@@ -29,7 +29,7 @@ env/
 # Fichiers générés automatiquement (XML)
 topologie/*.xml
 src/resources/xml/generated*.xml
-src/resources/generated
+src/resources/generated/*
 # Fichiers Packet Tracer générés
 *.pkt
 *.pka
