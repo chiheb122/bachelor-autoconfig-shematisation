@@ -5,23 +5,15 @@ import re
 from src.models.Link import Link
 
 # Étape 1 : Lire et parser les configurations
-parsed_router = parse_config_to_json("src/config/R0.txt")
-parsed_switch = parse_config_to_json("src/config/switch.txt")
+parsed_router = parse_config_to_json("src/data/config/R0.txt")
+parsed_switch = parse_config_to_json("src/data/config/switch.txt")
 
 # Charge le fichier brut
-lines = read_config_file("src/config/R1.txt")
-lines2 = read_config_file("src/config/R0.txt")
+lines = read_config_file("src/data/config/R1.txt")
+lines2 = read_config_file("src/data/config/R0.txt")
 
 
-# # Crée une instance du parseur
-# R0 = CiscoConfigParser(lines)
-# R1 = CiscoConfigParser(lines2)
-
-
-# print(R1)
-# print(R0)
 print(parsed_router)
-# print(parsed_router["name"])
 # Étape 2 : Créer les objets via la factory
 r1 = DeviceFactory.create_device(parsed_router["type"], parsed_router["mac"], parsed_router["name"], parsed_router["raw"])
 s1 = DeviceFactory.create_device(parsed_switch["type"], parsed_switch["mac"], parsed_switch["name"], parsed_switch["raw"])
@@ -35,7 +27,7 @@ for intf in parsed_switch["config"]["interfaces"].values():
 r1.load_router()
 s1.load_switch()
 
-parsedcdp = parse_cdp_neighbors("src/config/cdpsw.txt")
+parsedcdp = parse_cdp_neighbors("src/data/config/cdpsw.txt")
 print(parsedcdp)
 # 2. Création des liens après que tous les mem_addr soient attribués
 
