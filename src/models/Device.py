@@ -1,6 +1,7 @@
 import uuid
 from abc import abstractmethod,ABC
 from ..models import Interface
+import xml.etree.ElementTree as ET  # Librairie standard pour manipuler du XML en Python
 
 
 class Device(ABC):
@@ -46,4 +47,19 @@ class Device(ABC):
     def connect(self,a,b):
         """Méthode abstraite à implémenter dans les sous-classes"""
         pass
+
+    def _inject_config_lines(self, parent_node: ET.Element, config_string: str):
+        """
+        Injecte une configuration dans un noeud XML (<RUNNINGCONFIG> ou <STARTUPCONFIG>)
+        en créant un sous-élément <LINE> pour chaque ligne de texte.
+
+        Args:
+            parent_node (ET.Element): le noeud XML parent (RUNNINGCONFIG ou STARTUPCONFIG)
+            config_string (str): la configuration CLI au format brut (avec sauts de lignes)
+        """
+        parent_node.clear()
+        for line in config_string.strip().splitlines():
+            line_node = ET.SubElement(parent_node, "LINE")
+            line_node.text = line
+
 

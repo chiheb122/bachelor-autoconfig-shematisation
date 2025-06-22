@@ -31,6 +31,8 @@ class Switch(Device):
         self.switch_template = root
         return root
 
+
+
     def parseXml(self):
         """
         Analyse et modifie un modèle XML de switch en injectant des valeurs spécifiques à l'instance.
@@ -51,10 +53,23 @@ class Switch(Device):
         switch = copy.deepcopy(self.switch_template)  # On duplique le modèle pour pouvoir le modifier
         # Modifier le nom du switcher
         switch.find(".//NAME").text = self.hostname
+        switch.find(".//SYS_NAME").text = self.hostname
          # Injecter les identifiants uniques
         ref_id_node = switch.find(".//SAVE_REF_ID")
         if ref_id_node is not None:
             ref_id_node.text = str(self.ref_id)
+
+        # Injecter la configuration ligne par ligne
+        if self.config:
+            running_node = switch.find(".//RUNNINGCONFIG")
+            startup_node = switch.find(".//STARTUPCONFIG")
+
+            if running_node is not None:
+                self._inject_config_lines(running_node, self.config)
+
+            if startup_node is not None:
+                self._inject_config_lines(startup_node, self.config)
+
         # Modifier la position (décalage de +10 sur X, par exemple)
         logical = switch.find(".//LOGICAL")
         if logical is not None:
@@ -65,3 +80,6 @@ class Switch(Device):
             if y_node is not None and y_node.text.isdigit():
                 y_node.text = str(int(y_node.text) + 10)
         return switch
+
+
+

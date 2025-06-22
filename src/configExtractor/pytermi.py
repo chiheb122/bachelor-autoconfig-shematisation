@@ -55,8 +55,9 @@ def identify_device_type(ser):
     send(ser, PASSWORD_CONSOLE, 1)
     send(ser, 'enable', 1)
     send(ser, PASSWORD_ENABLE, 1)
-    send(ser, 'terminal length 0', 1)
 
+    send(ser, 'end', 1)  # Quitte le mode configuration
+    send(ser, 'terminal length 0', 1)  # Pour éviter le pagination
     # Test spécifique Switch
     vlan_response = send(ser, 'show vlan brief', 2)
     if "VLAN Name" in vlan_response:
@@ -122,7 +123,7 @@ def clean_config_output(raw_output):
 def ask_network_folder():
     """Demande à l'utilisateur un nom de sous-dossier pour stocker les fichiers de configuration."""
     folder_name = input("Nom du dossier pour ce réseau (ex: resau1) : ").strip()
-    full_path = BASE_DIR / "config" / folder_name
+    full_path = BASE_DIR / "data/config" / folder_name
     full_path.mkdir(parents=True, exist_ok=True)
     return full_path
 

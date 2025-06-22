@@ -40,3 +40,4 @@ src/resources/generated/*
 *.pem
 # Ignorer les fichiers générés
 generated1.xml
+src/data/config/*
