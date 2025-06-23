@@ -1,5 +1,6 @@
 import re
 from src.models.Interface import Interface
+from src.models.factory.DeviceFactory import DeviceFactory
 
 def detect_device_type(config_lines):
     is_router = False
@@ -87,20 +88,26 @@ def normalize_interface_name(name: str) -> str:
 def parse_cdp_neighbors(output):
     with open(output, "r") as f:
         lines = f.readlines()
-        
+
     neighbors = []
-    for line in lines[1:]:
-        match = re.match(r"(\S+)\s+(\S+\s+\S+)\s+\d+\s+\S+\s+\S+\s+(\S+\s+\S+)", line)
-        if match:
-            device_id = match.group(1)
-            local_intf = normalize_interface_name(match.group(2).replace(" ", ""))
-            port_id    = normalize_interface_name(match.group(3).replace(" ", ""))
-            neighbors.append({
-                "device_id": device_id,
-                "local_interface": local_intf,
-                "port_id": port_id
-            })
+    for line in lines:
+        # Ignorer l'en-tête ou ligne vide
+        if not line.strip() or line.startswith("Device ID") or line.startswith("----"):
+            continue
+
+            # Regex robuste : capture Device ID, Local Interface, puis extrait le dernier champ comme Port ID
+            parts = line.split()
+            if len(parts) >= 6:
+                device_id = parts[0]
+                local_intf = normalize_interface_name("".join(parts[1:3]))  # ex: Gig 0/1
+                port_id = normalize_interface_name("".join(parts[-2:]))     # ex: Fas 0/1
+                neighbors.append({
+                    "device_id": device_id,
+                    "local_interface": local_intf,
+                    "port_id": port_id
+                })
     return neighbors
+
 
 
 def read_config_file(file_path):
@@ -145,3 +152,4 @@ class CiscoConfigParser:
 
     def __str__(self):
         return f"Hostname: {self.hostname}, Interfaces: {self.interfaces} \nNeighbors: {self.neighbors}"
+
