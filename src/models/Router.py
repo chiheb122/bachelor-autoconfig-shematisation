@@ -32,6 +32,7 @@ class Router(Device):
 
         # Modifier le nom du routeur
         router.find(".//NAME").text = self.hostname
+        router.find(".//SYS_NAME").text = self.hostname
 
         # Injecter les identifiants uniques
         ref_id_node = router.find(".//SAVE_REF_ID")
@@ -40,6 +41,17 @@ class Router(Device):
         mem_addr_node = router.find(".//MEM_ADDR")
         if mem_addr_node is not None:
             mem_addr_node.text = str(self.mem_addr)
+
+        # Injecter la configuration ligne par ligne
+        if self.config:
+            running_node = router.find(".//RUNNINGCONFIG")
+            startup_node = router.find(".//STARTUPCONFIG")
+
+            if running_node is not None:
+                self._inject_config_lines(running_node, self.config)
+
+            if startup_node is not None:
+                self._inject_config_lines(startup_node, self.config)
 
         # Modifier la position (décalage de +10 sur X, par exemple)
         logical = router.find(".//LOGICAL")
