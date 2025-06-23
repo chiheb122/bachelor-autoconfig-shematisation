@@ -12,6 +12,7 @@ PASSWORD_CONSOLE = None            # Mot de passe console (saisi dynamiquement)
 PASSWORD_ENABLE = None             # Mot de passe enable (saisi dynamiquement)
 CMD_DETECTION = 'show version'     # Commande pour identifier le type de l'appareil
 CMD_CONFIG = 'show running-config' # Commande pour extraire la configuration complète
+CMD_NEIGHBORS = 'show cdp neighbors'
 OUTPUT_FOLDER = 'dumps'            # Dossier de sortie (non utilisé ici, remplacé par config/)
 BASE_DIR = Path(__file__).resolve().parent.parent
 # --------------------------- #
@@ -83,6 +84,22 @@ def save_config(ser, device_type, output_path):
     print(f"Configuration sauvegardée dans {filename}")
 
 
+def save_neighbors(ser, device_type, output_path):
+    """Extrait les voisins CDP avec `show cdp neighbors` et les enregistre dans un fichier .txt."""
+    print("Extraction des voisins CDP...")
+    neighbors = send(ser, CMD_NEIGHBORS, 2)
+    cleaned_neighbors = clean_config_output(neighbors)
+    if not cleaned_neighbors.strip():
+        print("Aucune donnée CDP reçue.")
+        return
+
+    filename = Path(output_path) / f"{device_type}_neighbors.txt"
+
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(cleaned_neighbors)
+    print(f"Voisins CDP sauvegardés dans {filename}")
+
+
 def clean_config_output(raw_output):
     """Supprime les lignes inutiles de la configuration brute pour obtenir un fichier plus lisible."""
     lines = raw_output.splitlines()
@@ -97,6 +114,8 @@ def clean_config_output(raw_output):
         if line.lower().startswith('current configuration'):
             continue
         if line.lower().startswith('show running-config'):
+            continue
+        if line.lower().startswith('show cdp neighbors'):
             continue
         if re.match(r'^.*#\s*show\s+running-config$', line.lower()):
             continue
@@ -167,6 +186,7 @@ def main():
         device_type, version_info = identify_device_type(ser)
         print(f"Type d'appareil détecté : {device_type}")
         save_config(ser, device_type,network_path)
+        save_neighbors(ser, device_type,network_path)
     finally:
         ser.close()
         print("Connexion série fermée.")
