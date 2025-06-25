@@ -86,26 +86,38 @@ def normalize_interface_name(name: str) -> str:
         return name  # si rien ne match, on retourne le nom d'origine
 
 def parse_cdp_neighbors(output):
-    with open(output, "r") as f:
-        lines = f.readlines()
+    # Si output est un chemin de fichier, on lit le fichier
+    if not "\n" in output and not output.strip().startswith("Device ID"):
+        with open(output, "r") as f:
+            lines = f.readlines()
+    else:
+        lines = output.strip().splitlines()
 
     neighbors = []
+    parsing = False
     for line in lines:
-        # Ignorer l'en-tête ou ligne vide
-        if not line.strip() or line.startswith("Device ID") or line.startswith("----"):
+        line = line.strip()
+        if not line:
             continue
-
-            # Regex robuste : capture Device ID, Local Interface, puis extrait le dernier champ comme Port ID
-            parts = line.split()
-            if len(parts) >= 6:
-                device_id = parts[0]
-                local_intf = normalize_interface_name("".join(parts[1:3]))  # ex: Gig 0/1
-                port_id = normalize_interface_name("".join(parts[-2:]))     # ex: Fas 0/1
-                neighbors.append({
-                    "device_id": device_id,
-                    "local_interface": local_intf,
-                    "port_id": port_id
-                })
+        if line.startswith("Device ID"):
+            parsing = True
+            continue
+        if not parsing:
+            continue
+        # Arrêter si on atteint la fin du tableau (optionnel)
+        if "Total cdp entries" in line or line == "":
+            break
+        # On suppose que toutes les lignes ici sont des voisins
+        parts = line.split()
+        if len(parts) >= 6:
+            device_id = parts[0]
+            local_intf = normalize_interface_name("".join(parts[1:3]))
+            port_id = normalize_interface_name("".join(parts[-2:]))
+            neighbors.append({
+                "device_id": device_id,
+                "local_interface": local_intf,
+                "port_id": port_id
+            })
     return neighbors
 
 

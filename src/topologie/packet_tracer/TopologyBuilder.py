@@ -34,7 +34,11 @@ class TopologyBuilder:
                 continue
 
             dev_a = devices_by_hostname.get(local_host)
-            dev_b = next((d for d in devices if remote_intf in d.config.interfaces), None)
+            dev_b = next(
+                (d for d in devices if d != dev_a and any(intf.name.lower() == remote_intf.lower() for intf in d.interfaces)),
+                None
+            )
+
 
             if not dev_a or not dev_b:
                 print(f"⚠️ Appareils introuvables pour {local_host} -> {remote_intf}")

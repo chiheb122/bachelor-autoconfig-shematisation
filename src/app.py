@@ -8,8 +8,8 @@ class TopologyGenerator:
     @staticmethod
     def run():
         # Tu peux ici demander dynamiquement à l'utilisateur le dossier :
-        folder = input("📁 Entrez le chemin du dossier de config : ").strip()
-
+        # folder = input("📁 Entrez le chemin du dossier de config : ").strip()
+        folder = "/Users/chiba/Desktop/TB/configExtract/src/data/config/testt"
         parsed_devices, neighbors = TopologyLoader.load_config_from_folder(folder)
         devices = TopologyBuilder.create_devices(parsed_devices)
         links = TopologyBuilder.build_links(devices, neighbors)
