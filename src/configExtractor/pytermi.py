@@ -185,7 +185,8 @@ def main():
     ser = connect_to_cisco_device()
     if not ser:
         print("Aucun appareil Cisco trouvé.")
-        return
+        raise SystemExit("Aucune connexion série établie. Veuillez vérifier les connexions et réessayer.")
+    
 
     try:
         device_type, version_info = identify_device_type(ser)
