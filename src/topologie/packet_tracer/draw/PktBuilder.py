@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 import sys
 sys.path.append("lib/pka2xml_py")
 import pka2core #type: ignore
-from src.topologie.converter.pkt2xml import encrypt_xml_to_pkt  # Librairie standard pour manipuler du XML en Python
+from src.topologie.packet_tracer.draw.pkt2xml import encrypt_xml_to_pkt  # Librairie standard pour manipuler du XML en Python
 
 
 class PktBuilder:

@@ -72,12 +72,17 @@ def identify_device_type(ser):
     # Fallback : inconnu
     return 'unknown', vlan_response + "\n" + route_response
 
+def extract_hostname_from_config(config_text):
+    for line in config_text.splitlines():
+        if line.strip().startswith("hostname"):
+            return line.strip().split()[1]  # retourne juste le nom
 
 def save_config(ser, device_type, output_path):
     """Extrait la configuration avec `show running-config`, la nettoie, et l'enregistre dans un fichier .txt."""
     config = send(ser, CMD_CONFIG, 3)
     cleaned_config = clean_config_output(config)
-    filename = Path(output_path) / f"{device_type}_config.txt"
+    hostname = extract_hostname_from_config(cleaned_config)
+    filename = Path(output_path) / f"{device_type}_{hostname}_config.txt"
 
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(cleaned_config)

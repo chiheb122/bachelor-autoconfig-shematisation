@@ -1,6 +1,6 @@
 from src.models.factory.DeviceFactory import DeviceFactory
-from src.topologie.converter.parser_config import parse_cdp_neighbors, parse_config_to_json,read_config_file
-from src.topologie.draw.PktBuilder import PktBuilder
+from src.topologie.converter.parser_config import parse_cdp_neighbors, parse_config_to_json
+from src.topologie.packet_tracer.draw.PktBuilder import PktBuilder
 import re
 from src.models.Link import Link
 
