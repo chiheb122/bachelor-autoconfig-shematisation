@@ -15,6 +15,7 @@ CMD_CONFIG = 'show running-config' # Commande pour extraire la configuration com
 CMD_NEIGHBORS = 'show cdp neighbors'
 OUTPUT_FOLDER = 'dumps'            # Dossier de sortie (non utilisé ici, remplacé par config/)
 BASE_DIR = Path(__file__).resolve().parent.parent
+HOSTNAME = None  # Variable pour stocker le nom d'hôte extrait de la configuration
 # --------------------------- #
 
 def list_serial_ports():
@@ -115,8 +116,9 @@ def save_config(ser, device_type, output_path):
     print("Extraction de la configuration...")
     config = send(ser, CMD_CONFIG, 6)
     cleaned_config = clean_config_output(config)
-    hostname = extract_hostname_from_config(cleaned_config)
-    filename = Path(output_path) / f"{device_type}_{hostname}_config.txt"
+    global HOSTNAME
+    HOSTNAME = extract_hostname_from_config(cleaned_config)
+    filename = Path(output_path) / f"{device_type}_{HOSTNAME}_config.txt"
 
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(cleaned_config)
@@ -132,7 +134,7 @@ def save_neighbors(ser, device_type, output_path):
         print("Aucune donnée CDP reçue.")
         return
 
-    filename = Path(output_path) / f"{device_type}_neighbors.txt"
+    filename = Path(output_path) / f"{device_type}_{HOSTNAME}_neighbors.txt"
 
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(cleaned_neighbors)
