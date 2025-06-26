@@ -32,6 +32,7 @@ def connect_to_cisco_device():
 
             # Send enter
             ser.write(b'\r')
+           # Attendre un peu pour que l'appareil réponde
             time.sleep(1)
             output = ser.read_all().decode(errors='ignore')
 
@@ -44,11 +45,43 @@ def connect_to_cisco_device():
             print(f"Erreur sur {port}: {e}")
     return None
 
-def send(ser, cmd, wait=1.5):
-    """Envoie une commande au port série et retourne la réponse brute après un délai."""
+def send(ser, cmd, timeout=30):
+    """
+    Envoie une commande et lit la sortie complète jusqu'à détection du prompt (finissant par #).
+    Gère aussi les pages avec '--More--'.
+
+    Args:
+        ser: objet série
+        cmd: commande à envoyer
+        timeout: durée max d'attente
+    """
+    import re
+
+    ser.reset_input_buffer()
+    ser.reset_output_buffer()
     ser.write((cmd + '\r').encode())
-    time.sleep(wait)
-    return ser.read_all().decode(errors='ignore')
+
+    buffer = ''
+    start_time = time.time()
+
+    while time.time() - start_time < timeout:
+        if ser.in_waiting:
+            chunk = ser.read(ser.in_waiting).decode(errors='ignore')
+            buffer += chunk
+
+            # Pagination : envoyer espace
+            if '--More--' in chunk or '--More--' in buffer[-20:]:
+                ser.write(b' ')  # espace pour continuer
+                time.sleep(0.2)
+
+            # Fin de commande : ligne finissant par #
+            if re.search(r'\n.*#\s*$', buffer):
+                break
+
+        time.sleep(0.1)
+
+    return buffer
+
 
 def identify_device_type(ser):
     """Identifie s’il s’agit d’un switch ou d’un routeur en envoyant des commandes spécifiques."""
@@ -79,7 +112,8 @@ def extract_hostname_from_config(config_text):
 
 def save_config(ser, device_type, output_path):
     """Extrait la configuration avec `show running-config`, la nettoie, et l'enregistre dans un fichier .txt."""
-    config = send(ser, CMD_CONFIG, 3)
+    print("Extraction de la configuration...")
+    config = send(ser, CMD_CONFIG, 6)
     cleaned_config = clean_config_output(config)
     hostname = extract_hostname_from_config(cleaned_config)
     filename = Path(output_path) / f"{device_type}_{hostname}_config.txt"
@@ -106,6 +140,21 @@ def save_neighbors(ser, device_type, output_path):
 
 
 def clean_config_output(raw_output):
+    """
+    Nettoie la sortie brute de configuration d'un équipement réseau.
+
+    Cette fonction prend en entrée une chaîne de caractères représentant la sortie brute d'une commande de configuration
+    (par exemple, la sortie d'un "show running-config" sur un équipement Cisco) et supprime les lignes non pertinentes
+    ou inutiles pour obtenir un fichier de configuration plus lisible et exploitable. Les lignes ignorées incluent
+    notamment les entêtes, les prompts de commande, et les commandes exécutées. Les lignes vides consécutives sont
+    également réduites à une seule.
+
+    Args:
+        raw_output (str): La sortie brute de la configuration à nettoyer.
+
+    Returns:
+        str: La configuration nettoyée, prête à être exploitée ou sauvegardée.
+    """
     """Supprime les lignes inutiles de la configuration brute pour obtenir un fichier plus lisible."""
     lines = raw_output.splitlines()
     cleaned = []
