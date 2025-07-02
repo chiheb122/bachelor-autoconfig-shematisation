@@ -4,6 +4,7 @@ import copy  # Permet de dupliquer un objet (deepcopy pour dupliquer entièremen
 
 
 class Router(Device):
+    position_offset = 0  # Compteur de classe partagé par tous les objets Router
 
     def __init__(self, macAdresse: str, hostname: str, config=None):
         super().__init__(macAdresse, hostname)
@@ -53,15 +54,16 @@ class Router(Device):
             if startup_node is not None:
                 self._inject_config_lines(startup_node, self.config)
 
-        # Modifier la position (décalage de +10 sur X, par exemple)
-        logical = router.find(".//LOGICAL")
+        # Modifier la position (décalage unique pour chaque routeur)
+        logical = router.find(".//WORKSPACE//LOGICAL")
         if logical is not None:
             x_node = logical.find("X")
             y_node = logical.find("Y")
             if x_node is not None and x_node.text.isdigit():
-                x_node.text = str(int(x_node.text) + 10)
+                x_node.text = str(int(x_node.text) + 50 * Router.position_offset)
             if y_node is not None and y_node.text.isdigit():
-                y_node.text = str(int(y_node.text) + 10)
+                y_node.text = str(int(y_node.text) + 50 * Router.position_offset)
+            Router.position_offset += 1  # Incrémente pour le prochain routeur
 
         # (Optionnel) Injecter les identifiants sur les interfaces
         # for intf in self.interfaces:
