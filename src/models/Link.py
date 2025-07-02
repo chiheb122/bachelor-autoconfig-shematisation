@@ -90,8 +90,8 @@ class Link:
         # Injecter les ports dans le bon ordre
         ports = link.findall(".//PORT")
         if len(ports) >= 2:
-            ports[0].text = self.iface_b
-            ports[1].text = self.iface_a
+            ports[0].text = self.iface_a
+            ports[1].text = self.iface_b
         else:
             raise ValueError("Le modèle de link ne contient pas deux balises <PORT>")
 

@@ -1,4 +1,5 @@
 import re
+import os
 from src.models.Interface import Interface
 from src.models.factory.DeviceFactory import DeviceFactory
 
@@ -30,7 +31,7 @@ def parse_config_to_json(config_path):
     if device_type == "unknown":
         raise ValueError("Type de périphérique non reconnu dans le fichier.")
 
-    parser = CiscoConfigParser(config_lines)
+    parser = CiscoConfigParser(config_lines, config_path=config_path)
 
     interfaces = {}
     for iface_name, iface_data in parser.interfaces.items():
@@ -85,7 +86,7 @@ def normalize_interface_name(name: str) -> str:
     else:
         return name  # si rien ne match, on retourne le nom d'origine
 
-def parse_cdp_neighbors(output):
+def parse_cdp_neighbors(output, local_hostname=None):
     # Si output est un chemin de fichier, on lit le fichier
     if not "\n" in output and not output.strip().startswith("Device ID"):
         with open(output, "r") as f:
@@ -110,12 +111,13 @@ def parse_cdp_neighbors(output):
         # On suppose que toutes les lignes ici sont des voisins
         parts = line.split()
         if len(parts) >= 6:
-            device_id = parts[0]
+            neighbor_id = parts[0]
             local_intf = normalize_interface_name("".join(parts[1:3]))
             port_id = normalize_interface_name("".join(parts[-2:]))
             neighbors.append({
-                "device_id": device_id,
+                "device_id": local_hostname,      # <-- le device local
                 "local_interface": local_intf,
+                "neighbor_id": neighbor_id,       # <-- le voisin
                 "port_id": port_id
             })
     return neighbors
@@ -130,12 +132,17 @@ def read_config_file(file_path):
         return file.readlines() 
 
 class CiscoConfigParser:
-    def __init__(self, lines):
+    def __init__(self, lines, config_path=None):
         self.lines = lines
         self.hostname = None
         self.interfaces = {}
-        self.neighbors = {}
+        self.neighbors = []
         self.parse()
+        # Ajout du parsing neighbors ici si config_path fourni
+        if config_path:
+            neighbors_path = config_path.replace("_config.txt", "_neighbors.txt")
+            if os.path.exists(neighbors_path):
+                self.neighbors = parse_cdp_neighbors(neighbors_path, local_hostname=self.hostname)
 
     def parse(self):
         current_iface = None
