@@ -4,6 +4,11 @@ from src.configExtractor.pytermi import main
 if __name__ == "__main__":
     try:
         main()  # Exécute la fonction principale pour démarrer l'extraction de configuration
+        response = input("Avez-vous d'autres configurations à extraire ? (oui/non)")
+        while response.lower() == "oui":
+            main()  # Relance l'extraction de configuration si l'utilisateur le souhaite
+            response = input("Avez-vous d'autres configurations à extraire ? (oui/non)")
+        # Si l'utilisateur ne souhaite pas extraire d'autres configurations, on termine le programme
         print("Extraction de la configuration terminée.")
     except Exception as e:
         print(f"Une erreur s'est produite lors de l'extraction de la configuration : {e}")
