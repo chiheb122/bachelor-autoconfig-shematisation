@@ -50,7 +50,7 @@ class TopologyBuilder:
             if type(dev_a) == type(dev_b):
                 cable_type = "eCrossOver"
             else:
-                cable_type = "eStraight"
+                cable_type = "eStraightThrough"
             
             links.append(Link(dev_a, local_intf, dev_b, remote_intf, cable_type=cable_type))
 

@@ -82,6 +82,11 @@ class Link:
 
         # Modifier le type de câble
         link.find(".//TYPE").text = self.link_type
+        link.find(".//CABLE//TYPE").text = self.cable_type
+
+        if self.cable_type == "eCrossOver":
+            link.find(".//CABLE//GEO_VIEW_COLOR").text = "#f7990d"
+            
 
         # Injecter les identifiants des devices
         link.find(".//FROM").text = self.device_a.ref_id
