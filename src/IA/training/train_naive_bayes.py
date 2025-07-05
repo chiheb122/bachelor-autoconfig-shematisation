@@ -23,11 +23,11 @@ print("\n## Étape 1 : Chargement et Première Exploration des Données")
 
 # Tenter de charger le dataset.csv
 try:
-    df = pd.read_csv("dataset.csv")
+    df = pd.read_csv("/Users/chiba/Desktop/TB/configExtract/src/IA/training/dataset.csv")
     print("Dataset 'dataset.csv' chargé avec succès.")
-
 except FileNotFoundError:
     print("Le fichier 'dataset.csv' est introuvable.")
+    exit(1)  # <-- arrêter le script proprement
 
 print("\n### 1.1. Aperçu des 5 premières lignes du DataFrame :")
 print(df.head())
@@ -117,13 +117,15 @@ print("\n## Étape 4 : Démonstration du Calcul des Probabilités pour une Confi
 
 # 4.1. Sélection d'une configuration d'exemple
 sample_index_in_test = 0
+true_label_encoded = y_test.iloc[sample_index_in_test]
+
 sample_config_X = X_test[sample_index_in_test].reshape(1, -1)
 
 print("\n### 4.1. Caractéristiques de la configuration d'exemple :")
 sample_config_df = pd.DataFrame(sample_config_X, columns=feature_names_processed)
 print(sample_config_df.T.rename(columns={0: 'Valeur'}))
 
-true_label_encoded = y_test[sample_index_in_test]
+# Utilise aussi .iloc ici !
 true_label = label_encoder.inverse_transform([true_label_encoded])[0]
 print(f"\n### 4.1. Vraie étiquette pour cette configuration : '{true_label}'")
 
