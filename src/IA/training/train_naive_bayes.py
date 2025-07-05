@@ -66,7 +66,7 @@ print(f"\n### 2.2. Taille des caractéristiques (X) avant One-Hot Encoding : {X.
 print(f"### 2.2. Taille de la variable cible (y) : {y.shape}")
 
 # 2.3. Gestion des variables catégorielles avec One-Hot Encoding
-categorical_features = ['device_type', 'vtp_mode']
+categorical_features = ['vtp_mode']
 numerical_features = X.select_dtypes(include=np.number).columns.tolist()
 
 preprocessor = ColumnTransformer(
