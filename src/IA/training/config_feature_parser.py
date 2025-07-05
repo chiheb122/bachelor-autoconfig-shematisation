@@ -1,21 +1,13 @@
 import re
 import os
 import pandas as pd
-import re
+
 def is_config_ok(features):
-    # Critères communs à tous les équipements
     required_common = ["has_hostname", "has_enable_secret", "has_line_vty", "vty_has_login", "has_ssh"]
+    routing_ok = features.get("Has_routing_protocole", 0)
+    ospf_ok = not features.get("has_ospf", 0) or not features.get("ospf_no_network", 0)
+    eigrp_ok = not features.get("has_eigrp", 0) or not features.get("eigrp_bad_network", 0)
 
-    # Cas routeur : besoin d’un moyen de routage
-    routing_ok = (
-        features["has_ospf"] or features["has_rip"] or features["has_eigrp"] or features["has_static"]
-    )
-
-    # Si OSPF ou EIGRP sont présents, leurs networks doivent être définis
-    ospf_ok = not features["has_ospf"] or (features["has_ospf"] and not features["ospf_no_network"])
-    eigrp_ok = not features["has_eigrp"] or (features["has_eigrp"] and not features["eigrp_bad_network"])
-
-    # Aucune erreur critique
     if all(features.get(k, 0) for k in required_common) and routing_ok and ospf_ok and eigrp_ok:
         return "ok"
     return "incomplete_config"
@@ -26,137 +18,107 @@ def extract_config_features(config_path):
 
     features = {
         "filename": os.path.basename(config_path),
-        "device_type": "router",
-        "has_ospf": 0,
-        "has_rip": 0,
-        "has_eigrp": 0,
-        "has_static": 0,
-        "nb_interfaces": 0,
-        "nb_subinterfaces": 0,
-        "ospf_no_network": 0,
-        "eigrp_bad_network": 0,
-        "missing_redis_static": 0,
-        "uses_vlan": 0,
-        "has_switchport": 0,
-        "has_enable_secret": 0,
-        "has_line_vty": 0,
-        "vty_has_login": 0,
-        "vty_has_transport_input": 0,
-        "has_ssh": 0,
-        "has_password_plaintext": 0,
         "has_hostname": 0,
-        "has_acl": 0,
-        "has_vtp": 0,
-        "has_trunk": 0,
-        "has_access_ports": 0,
+        "has_secretPass": 0,
+        "has_dhcp_server": 0,
+        "ip_addresses_overlap": 0,
+        "has_nat_configured": 0,
+        "vtp_password_configured": 0,
+        "Has_routing_protocole": 0,
+        "has_description_on_interfaces": 0,
+        "dhcp_pool_configured": 0,
+        "has_cdp_enabled": 0,
+        "no_ip_domain_lookup": 0,
+        "has_ssh": 0,
+        "vtp_domain_configured": 0,
+        "vtp_mode": "none",
+        "has_vlan": 0,
+        "missing_network_on_routing": 0,
+        "acl_configured": 0,
+        "has_switchportonVlan": 0,
+        "vlan_interface_management_ip": 0,
         "label": ""
     }
 
-    in_router_block = None
-    in_vty_block = False
-    in_interface_block = False
-    router_blocks = {"ospf": [], "rip": [], "eigrp": []}
-    interface_count = 0
-    subinterface_count = 0
-    has_static_routes = False
-    static_found = False
-    networks_found = {"ospf": False, "eigrp": False}
+    interfaces = {}
+    current_iface = None
+    ip_map = set()
 
-    for i, line in enumerate(lines):
-        if line.startswith("interface"):
-            interface_count += 1
-            in_interface_block = True
-            if "." in line:
-                subinterface_count += 1
-            continue
+    for line in lines:
+        l = line.lower()
 
-        if in_interface_block and (line.startswith("!") or line.startswith("interface")):
-            in_interface_block = False
-
-        if in_interface_block:
-            if "switchport mode trunk" in line:
-                features["has_trunk"] = 1
-            if "switchport mode access" in line:
-                features["has_access_ports"] = 1
-
-        if line.startswith("ip route"):
-            has_static_routes = True
-
-        if "switchport" in line:
-            features["has_switchport"] = 1
-
-        if line.startswith("interface vlan"):
-            features["uses_vlan"] = 1
-
-        if line.startswith("vtp mode") or line.startswith("vtp domain"):
-            features["has_vtp"] = 1
-
-        if line.startswith("enable secret"):
-            features["has_enable_secret"] = 1
-
-        if line.startswith("line vty"):
-            features["has_line_vty"] = 1
-            in_vty_block = True
-            continue
-
-        if in_vty_block:
-            if line.startswith("!") or line.startswith("line"):
-                in_vty_block = False
-            else:
-                if "login" in line:
-                    features["vty_has_login"] = 1
-                if "transport input" in line:
-                    features["vty_has_transport_input"] = 1
-
-        if "ip ssh" in line or "crypto key generate rsa" in line:
-            features["has_ssh"] = 1
-
-        if re.match(r"password \d? \S+", line):
-            features["has_password_plaintext"] = 1
-
-        if line.startswith("hostname"):
+        if l.startswith("hostname") and "router" not in l and "switch" not in l:
             features["has_hostname"] = 1
 
-        if line.startswith("access-list") or "ip access-group" in line:
-            features["has_acl"] = 1
+        if "enable secret" in l:
+            features["has_secretPass"] = 1
 
-        if line.startswith("router ospf"):
-            features["has_ospf"] = 1
-            in_router_block = "ospf"
-            continue
+        if l.startswith("ip dhcp pool"):
+            features["dhcp_pool_configured"] = 1
 
-        if line.startswith("router rip"):
-            features["has_rip"] = 1
-            in_router_block = "rip"
-            continue
+        if l.startswith("ip dhcp") or "dhcp" in l:
+            features["has_dhcp_server"] = 1
 
-        if line.startswith("router eigrp"):
-            features["has_eigrp"] = 1
-            in_router_block = "eigrp"
-            continue
+        if l.startswith("router ospf") or l.startswith("router rip") or l.startswith("router eigrp"):
+            features["Has_routing_protocole"] = 1
 
-        if line.startswith("router"):
-            in_router_block = None
+        if l.startswith("interface"):
+            current_iface = l.split()[1]
+            interfaces[current_iface] = {}
 
-        if in_router_block:
-            router_blocks[in_router_block].append(line)
-            if line.strip().startswith("network"):
-                networks_found[in_router_block] = True
-            if in_router_block == "eigrp" and "redistribute static" in line:
-                static_found = True
+        if current_iface:
+            if "description" in l:
+                features["has_description_on_interfaces"] = 1
+            if "ip address" in l:
+                try:
+                    ip = l.split()[2]
+                    if ip in ip_map:
+                        features["ip_addresses_overlap"] = 1
+                    else:
+                        ip_map.add(ip)
+                    if current_iface.startswith("vlan"):
+                        features["vlan_interface_management_ip"] = 1
+                except:
+                    pass
+            if "switchport access vlan" in l:
+                features["has_switchportonVlan"] = 1
 
-    features["nb_interfaces"] = interface_count
-    features["nb_subinterfaces"] = subinterface_count
-    features["has_static"] = 1 if has_static_routes else 0
-    features["missing_redis_static"] = 1 if has_static_routes and not static_found else 0
-    features["ospf_no_network"] = 1 if features["has_ospf"] and not networks_found["ospf"] else 0
-    features["eigrp_bad_network"] = 1 if features["has_eigrp"] and not networks_found["eigrp"] else 0
+        if l.startswith("ip nat inside") or l.startswith("ip nat outside") or "overload" in l:
+            features["has_nat_configured"] = 1
 
-    if features["has_switchport"] or features["uses_vlan"]:
-        features["device_type"] = "switch"
+        if l.startswith("vtp password"):
+            features["vtp_password_configured"] = 1
+
+        if l.startswith("vtp domain"):
+            features["vtp_domain_configured"] = 1
+
+        if l.startswith("vtp mode"):
+            try:
+                features["vtp_mode"] = l.split()[2]
+            except:
+                pass
+
+        if l.startswith("vlan") and "vlan" in l:
+            features["has_vlan"] = 1
+
+        if l.startswith("network") and ("ospf" in lines or "eigrp" in lines or "rip" in lines):
+            features["missing_network_on_routing"] = 0
+        elif any(proto in " ".join(lines) for proto in ["router ospf", "router eigrp", "router rip"]):
+            features["missing_network_on_routing"] = 1
+
+        if l.startswith("access-list") or "access-group" in l:
+            features["acl_configured"] = 1
+
+        if "cdp run" in l or "cdp enable" in l:
+            features["has_cdp_enabled"] = 1
+
+        if l.startswith("no ip domain-lookup"):
+            features["no_ip_domain_lookup"] = 1
+
+        if "crypto key" in l or "ip ssh" in l:
+            features["has_ssh"] = 1
 
     features["label"] = is_config_ok(features)
-
     return features
 
 def parse_folder_to_csv(folder_path, output_csv="dataset.csv"):
@@ -172,28 +134,15 @@ def parse_folder_to_csv(folder_path, output_csv="dataset.csv"):
     print(f"✅ Dataset enregistré dans {output_csv}")
     return df
 
-
 def generate_variant(config_text: str, block_keywords: list[str]) -> str:
-    """
-    Supprime les blocs de configuration contenant certains mots-clés.
-
-    Args:
-        config_text (str): Le contenu brut de la configuration.
-        block_keywords (list[str]): Liste de mots-clés à rechercher pour supprimer les blocs associés.
-
-    Returns:
-        str: La configuration modifiée avec les blocs supprimés.
-    """
     lines = config_text.splitlines()
     result = []
     skip = False
 
     for line in lines:
-        # Si le début d'un bloc contient un mot-clé
         if any(kw in line for kw in block_keywords):
             skip = True
             continue
-        # Si on arrive à un nouveau bloc, on arrête de sauter
         if skip and (
                 line.strip() == "!" or re.match(r"^(interface|router|line|end|hostname|access-list|!)", line.strip())):
             skip = False
@@ -202,18 +151,7 @@ def generate_variant(config_text: str, block_keywords: list[str]) -> str:
 
     return "\n".join(result)
 
-
 if __name__ == "__main__":
-    folder_path = "D:/HEG/sem6/TB/Tb_code/bachelor-autoconfig-shematisation/src/data/config/train"
+    folder_path = "/Users/chiba/Desktop/TB/configExtract/src/data/config/reseau12"
     output_csv = "dataset.csv"
     parse_folder_to_csv(folder_path, output_csv)
-
-    #with open("D:/HEG/sem6/TB/Tb_code/bachelor-autoconfig-shematisation/src/config/save/base_switch.txt", "r") as f:
-    #    config = f.read()
-    #variant = generate_variant(config, ["hostname"])
-
-    #with open("../../data/config/train/variant_ok_SW_config.txt", "w") as f:
-    #    f.write(variant)
-
-
-
