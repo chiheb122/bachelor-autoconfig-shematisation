@@ -1,0 +1,4 @@
+filename,device_type,has_ospf,has_rip,has_eigrp,has_static,nb_interfaces,ospf_no_network,eigrp_bad_network,missing_redis_static,uses_vlan,has_switchport,label
+router_Rchiheb_config.txt,router,0,0,0,1,3,0,0,1,0,0,
+router_Rtest_config.txt,router,0,0,0,1,3,0,0,1,0,0,
+switch_swchiheb_config.txt,switch,0,0,0,0,10,0,0,0,0,1,
