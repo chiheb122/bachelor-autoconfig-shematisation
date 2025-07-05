@@ -1,0 +1,4 @@
+filename,has_hostname,has_secretPass,has_dhcp_server,ip_addresses_overlap,has_nat_configured,vtp_password_configured,Has_routing_protocole,has_description_on_interfaces,dhcp_pool_configured,has_cdp_enabled,no_ip_domain_lookup,has_ssh,vtp_domain_configured,vtp_mode,has_vlan,missing_network_on_routing,acl_configured,has_switchportonVlan,vlan_interface_management_ip,label
+router_Rchiheb_config.txt,1,1,1,0,0,0,0,1,0,0,0,1,0,none,0,0,0,0,0,incomplete_config
+router_Rtest_config.txt,1,1,1,0,0,0,0,1,0,0,0,1,0,none,0,0,0,0,0,incomplete_config
+switch_swchiheb_config.txt,1,0,0,0,0,0,0,0,0,0,1,0,0,none,1,0,0,0,1,incomplete_config
