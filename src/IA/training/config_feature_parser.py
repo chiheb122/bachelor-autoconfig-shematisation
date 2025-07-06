@@ -152,6 +152,7 @@ def generate_variant(config_text: str, block_keywords: list[str]) -> str:
     return "\n".join(result)
 
 if __name__ == "__main__":
-    folder_path = "D:/HEG/sem6/TB/Tb_code/bachelor-autoconfig-shematisation/src/data/config/other"
-    output_csv = "dataset1.csv"
-    parse_folder_to_csv(folder_path, output_csv)
+    # folder_path = "D:/HEG/sem6/TB/Tb_code/bachelor-autoconfig-shematisation/src/data/config/other"
+    # output_csv = "dataset1.csv"
+    # parse_folder_to_csv(folder_path, output_csv)
+    print(extract_config_features("/Users/chiba/Desktop/TB/configExtract/src/IA/training/Router0_running-config.txt"))
