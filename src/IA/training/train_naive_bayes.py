@@ -71,6 +71,19 @@ class ConfigClassifier:
         pred_proba = self.model.predict_proba(X)[0]
         pred_label_encoded = self.model.predict(X)[0]
         pred_label = self.label_encoder.inverse_transform([pred_label_encoded])[0]
+        # AffiCHER un graphique des probabilités
+        plt.figure(figsize=(8, 5))
+        sns.barplot(x=self.label_encoder.classes_, y=pred_proba, palette='viridis')
+        plt.title(f'Probabilités de Classe pour {pred_label}')
+        plt.xlabel('Classe')
+        plt.ylabel('Probabilité')
+        plt.xticks(rotation=45)
+        plt.show()
+        print(f"Prédiction : {pred_label} avec probabilités {pred_proba}")
+        # Retourne la prédiction et les probabilités
+        if len(pred_proba) == 0:
+            print("Aucune probabilité prédite, vérifiez l'entrée.")
+            return None
         return {
             "prediction": pred_label,
             "probabilities": {label: float(pred_proba[i]) for i, label in enumerate(self.label_encoder.classes_)}
@@ -120,25 +133,25 @@ if __name__ == "__main__":
 
     # Exemple custom à prédire
     new_example = {
-        'has_hostname': 1,
-        'has_secretPass': 1,
-        'has_dhcp_server': 1,
-        'ip_addresses_overlap': 1,
-        'has_nat_configured': 0,
-        'vtp_password_configured': 0,
-        'Has_routing_protocole': 1,
-        'has_description_on_interfaces': 0,
-        'dhcp_pool_configured': 1,
-        'has_cdp_enabled': 0,
-        'no_ip_domain_lookup': 1,
-        'has_ssh': 0,
-        'vtp_domain_configured': 0,
-        'vtp_mode': 'none',
-        'has_vlan': 0,
-        'missing_network_on_routing': 1,
-        'acl_configured': 1,
-        'has_switchportonVlan': 0,
-        'vlan_interface_management_ip': 1
+    "has_hostname": 1,
+    "has_secretPass": 1,
+    "has_dhcp_server": 1,
+    "ip_addresses_overlap": 1,
+    "has_nat_configured": 1,
+    "vtp_password_configured": 0,
+    "Has_routing_protocole": 1,
+    "has_description_on_interfaces": 1,
+    "dhcp_pool_configured": 0,
+    "has_cdp_enabled": 1,
+    "no_ip_domain_lookup": 0,
+    "has_ssh": 1,
+    "vtp_domain_configured": 0,
+    "vtp_mode": "none",
+    "has_vlan": 0,
+    "missing_network_on_routing": 1,
+    "acl_configured": 1,
+    "has_switchportonVlan": 0,
+    "vlan_interface_management_ip": 0
     }
     result = clf.predict(new_example)
     print("\nRésultat prédiction custom :", result)
