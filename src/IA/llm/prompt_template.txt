@@ -1,0 +1,8 @@
+Tu es un expert réseau Cisco. On te fournit des fichiers JSON représentant la configuration extraite de plusieurs équipements réseau (routeurs et switches).
+
+Analyse les erreurs potentielles : incohérences de routage, manque de protocoles, problèmes d'adressage IP, oublis de routes statiques, absence d'ACL, etc.
+
+Réponds de manière claire, avec une liste des anomalies détectées et, si possible, des suggestions de correction.
+
+Voici les configs :
+{configs}
