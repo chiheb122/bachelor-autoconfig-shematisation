@@ -6,15 +6,16 @@ import xml.etree.ElementTree as ET
 import sys
 sys.path.append("lib/pka2xml_py")
 import pka2core #type: ignore
-from src.topologie.packet_tracer.draw.pkt2xml import encrypt_xml_to_pkt  # Librairie standard pour manipuler du XML en Python
+from src.topologie.packet_tracer.draw.pkt2xml import encrypt_xml_to_pkt ,decrypt_pkt_to_xml # Librairie standard pour manipuler du XML en Python
 
 
 class PktBuilder:
 
-    def __init__(self,base_template_path:str,devices:list[Device], links:list[Link] = None): # type: ignore
+    def __init__(self,base_template_path:str,devices:list[Device], links:list[Link] = None, notes:str = None): # type: ignore
         self.base_template:str = base_template_path
         self.devices:devices[Device] = devices # type: ignore
         self.links = links if links is not None else []
+        self.notes = notes if notes is not None else "pas de notes"
 
     # Fonction : load_base
     # But : Charger le fichier de base (2.xml), qui ne contient que la structure du fichier .pkt sans DEVICE
@@ -65,7 +66,13 @@ class PktBuilder:
                 links_node.append(link_xml)
             else:
                 print(f"⚠️ Type de lien non pris en charge : {type(link)}")
-     
+        # Ajout des notes si elles existent
+        notes_node = root.find(".//PHYSICALWORKSPACE//NOTES")
+        if notes_node is None:
+            raise ValueError("Aucun bloc <NOTES> trouvé dans la base XML")
+        else: 
+            notes_node.append(self.add_note("src/resources/xml/note.xml", 93, 755, 40006, self.notes))  # Exemple d'ajout de note
+
         return tree  # Pour éventuellement sauvegarder ensuite via tree.write(...)
     
 
@@ -102,8 +109,46 @@ class PktBuilder:
             pkt_bytes = encrypt_xml_to_pkt(xml_path)
             with open(output_path, "wb") as f:
                 f.write(pkt_bytes)
-            print(f"✅ Fichier .pkt généré avec succès : {output_path}")
+            print(f"Fichier .pkt généré avec succès : {output_path}")
         except Exception as e:
-            print(f"❌ Erreur lors du chiffrement du fichier XML : {e}")
+            print(f"Erreur lors du chiffrement du fichier XML : {e}")
 
 
+    def decryptPKT(self, pkt_path: str, output_xml_path="src/resources/generated/decryptedRc.xml"):
+        """
+        Déchiffre un fichier .pkt et enregistre le contenu XML dans un fichier. 
+        """
+        try:
+            xml_content = decrypt_pkt_to_xml(pkt_path)
+            with open(output_xml_path, "w", encoding="utf-8") as f:
+                f.write(xml_content)
+            print(f"Fichier XML déchiffré avec succès : {output_xml_path}")
+        except Exception as e:
+            print(f"Erreur lors du déchiffrement du fichier .pkt : {e}")
+
+    """
+    Une fonction pour ajouter des notes dans le fichier XML.
+    Cette fonction prend en entrée un fichier XML, une position (x, y, z)
+    et un texte pour la note, puis ajoute une note dans le fichier XML.
+    """
+    def add_note(self, xml_path: str, x: int, y: int, z: int, text: str):
+        try:
+            tree = ET.parse(xml_path)
+            root = tree.getroot()
+            note = ET.Element("NOTE")
+            note.set("uuid", "{108d6f6e-2332-452d-bd99-40957797174f}")
+            ET.SubElement(note, "X").text = str(x)
+            ET.SubElement(note, "Y").text = str(y)
+            ET.SubElement(note, "Z").text = str(z)
+            ET.SubElement(note, "TEXT", translate="true").text = text
+            ET.SubElement(note, "NOTECLUSTERID").text = "1-1"
+            ET.SubElement(note, "MEM_ADDR").text = "105553149369344"
+            root.append(note)
+            return root  # Retourne la racine modifiée pour éventuellement sauvegarder
+        except Exception as e:
+            print(f"Erreur lors de l'ajout de la note : {e}")
+       
+# if __name__ == "__main__":
+#     pkt_builder = PktBuilder()
+#     # Exemple d'utilisation des méthodes
+#     pkt_builder.decryptPKT("/Users/chiba/Desktop/TB/configExtract/src/resources/generated/63-13_SimulationRC_65200.pkt")

@@ -1,0 +1,14 @@
+<RECTANGLE uuid="{662e649b-e814-462a-9d4d-c01ba389ffe0}">
+    <TopLeftX>360</TopLeftX>
+    <TopLeftY>18</TopLeftY>
+    <BottomRightX>851</BottomRightX>
+    <BottomRightY>85</BottomRightY>
+    <Color>
+        <Red>255</Red>
+        <Green>66</Green>
+        <Blue>26</Blue>
+    </Color>
+    <Filled OUTLINED="true" OUTLINECOLOR="#000000">1</Filled>
+    <RECTCLUSTERID>1-1</RECTCLUSTERID>
+    <MEM_ADDR>105553134608640</MEM_ADDR>
+</RECTANGLE>
