@@ -4,5 +4,5 @@ Analyse les erreurs potentielles : incohérences de routage, manque de protocole
 
 Réponds de manière claire, avec une liste des anomalies détectées et, si possible, des suggestions de correction.
 
-Voici les configs :
+Voici les configs avec une structure json ou vous trouver la totalité de la config en text initiale dans raw de chaque objet json :
 {configs}
