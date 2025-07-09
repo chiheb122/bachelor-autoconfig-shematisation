@@ -6,7 +6,7 @@ import copy  # Permet de dupliquer un objet (deepcopy pour dupliquer entièremen
 class Switch(Device):
     position_offset = 0  # Compteur de classe partagé par tous les objets Switch
 
-    def __init__(self, macAdresse: str, hostname: str, config=None):
+    def __init__(self, macAdresse: str, hostname: str, config=None, notconfigured: bool = False):
         """
         Initialise une nouvelle instance de la classe Switch.
 
@@ -22,6 +22,8 @@ class Switch(Device):
         super().__init__(macAdresse, hostname)
         self.switch_template = None  # Initialisation
         self.config = config
+        self.position_x = 0
+        self.position_y = 0
 
     def connect(self, a, b):
         pass
@@ -77,11 +79,16 @@ class Switch(Device):
             x_node = logical.find("X")
             y_node = logical.find("Y")
             if x_node is not None and x_node.text.isdigit():
-                x_node.text = str(int(x_node.text) + 50 * Switch.position_offset)
+                self.position_x = int(x_node.text) + 50 * Switch.position_offset
+                x_node.text = str(self.position_x)
             if y_node is not None and y_node.text.isdigit():
-                y_node.text = str(int(y_node.text) + 50 * Switch.position_offset)
+                self.position_y = int(y_node.text) + 50 * Switch.position_offset
+                y_node.text = str(self.position_y)
             Switch.position_offset += 1  # Incrémente pour le prochain switch
         return switch
 
 
+    def get_position(self):
+        print(f"Position du switch : X={self.position_x}, Y={self.position_y}")
+        return self.position_x, self.position_y
 

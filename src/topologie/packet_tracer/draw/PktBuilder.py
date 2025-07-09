@@ -24,8 +24,6 @@ class PktBuilder:
         root = tree.getroot()
         return tree, root  # On retourne à la fois l'arbre complet (pour l'enregistrement) et la racine (pour injection)
 
-
-    def inject_devices(self):
         """
         Injecte les appareils (routeurs, switches) et les liens dans la structure XML de base du fichier pkt.
         Cette méthode charge la structure de base du fichier pkt, puis ajoute les objets appareils (instances de Router ou Switch)
@@ -39,9 +37,12 @@ class PktBuilder:
             - Les types d'appareils non pris en charge sont signalés par un message d'avertissement.
             - Les types de liens non pris en charge sont également signalés par un message d'avertissement.
         """
+    def inject_devices(self):
         # Charger la structure de base du fichier pkt (sans appareils)
         tree, root = self.load_base()
         devices_node = root.find(".//DEVICES")
+        rectangles_to_add = []
+
         if devices_node is None:
             raise ValueError("❌ Aucun bloc <DEVICES> trouvé dans la base XML")
         for device in self.devices:
@@ -55,6 +56,18 @@ class PktBuilder:
                 devices_node.append(switch_xml)
             else:
                 print(f"⚠️ Type d'appareil non pris en charge : {type(device)}")
+            # Ajout des rectangles pour les appareils en cas de besoin
+            if device.notconfigured:
+                x, y = device.get_position()
+                if x is not None and y is not None:
+                    rectangles_to_add.append((x, y))
+
+        rectangles_node = root.find("RECTANGLES")
+        # Ajouter les rectangles pour les appareils non configurés
+        if rectangles_to_add:
+            for x, y in rectangles_to_add:
+                rectangles_node.append(self.add_rectangle(x, y))  # Ajouter le rectangle à la liste des rectangles
+
         # Ajouter les liens
         for link in self.links:
             if isinstance(link, Link):
@@ -78,36 +91,32 @@ class PktBuilder:
 
         return tree  # Pour éventuellement sauvegarder ensuite via tree.write(...)
     
-
-    def generateXML(self,tree, output_path="src/resources/generated/generated1.xml"):
-        """
+    """
         Écrit l'arbre XML complet dans un fichier.
-        """
-        # for elem in tree.getroot().iter():
-        #     if isinstance(elem.text, dict):
-        #         print(f"❌ ERREUR: dict trouvé dans .text pour <{elem.tag}> : {elem.text}")
+    """
+    def generateXML(self,tree, output_path="src/resources/generated/generated1.xml"):
         tree.write(output_path, encoding="utf-8", xml_declaration=True)
         print(f"✅ Fichier généré avec succès : {output_path}")
 
-    def generatePKT(self, xml_path: str, output_path="src/resources/generated/generated.pkt"):
-        """
-        Génère un fichier .pkt à partir d'un fichier XML spécifié.
+    """
+    Génère un fichier .pkt à partir d'un fichier XML spécifié.
 
-        Cette méthode chiffre le fichier XML donné via le chemin `xml_path` en utilisant la fonction
+    Cette méthode chiffre le fichier XML donné via le chemin `xml_path` en utilisant la fonction
         `encrypt_xml_to_pkt`, puis écrit le résultat chiffré dans un fichier de sortie au format binaire.
         Le chemin du fichier de sortie peut être spécifié via `output_path`, sinon il sera nommé
         "generated.pkt" par défaut.
 
-        Args:
+    Args:
             xml_path (str): Chemin vers le fichier XML à chiffrer.
             output_path (str, optional): Chemin du fichier .pkt généré. Par défaut "generated.pkt".
 
-        Raises:
+    Raises:
             Exception: Affiche un message d'erreur si le chiffrement ou l'écriture échoue.
 
-        Affiche:
+    Affiche:
             Un message de succès si le fichier est généré avec succès, sinon un message d'erreur.
-        """
+    """
+    def generatePKT(self, xml_path: str, output_path="src/resources/generated/generated.pkt"):
         try:
             pkt_bytes = encrypt_xml_to_pkt(xml_path)
             with open(output_path, "wb") as f:
@@ -152,7 +161,29 @@ class PktBuilder:
             print(f"Erreur de parsing XML : {e}")
         except Exception as e:
             print(f"Erreur lors de l'ajout de la note : {e}")
-       
+
+    """    Fonction pour ajouter un rectangle dans le fichier XML.
+    """
+    def add_rectangle(self, x: int, y: int):
+        try:
+            # Charger le modèle de rectangle
+            rect_tree = ET.parse("src/resources/xml/rectangleRed.xml")
+            rect_root = rect_tree.getroot()
+            rect_copy = copy.deepcopy(rect_root)  # Créer une copie du rectangle pour éviter de modifier le modèle original
+
+            # Modifier les attributs du rectangle
+            offset = 30
+            rect_copy.find("TopLeftX").text = str(x - offset)
+            rect_copy.find("TopLeftY").text = str(y - offset)
+            rect_copy.find("BottomRightX").text = str(x + offset)
+            rect_copy.find("BottomRightY").text = str(y + offset)
+
+            return rect_copy  # Retourne le rectangle ajouté pour une éventuelle utilisation ultérieure
+        except ET.ParseError as e:
+            print(f"Erreur de parsing XML : {e}")
+        except Exception as e:
+            print(f"Erreur lors de l'ajout du rectangle : {e}")
+
 # if __name__ == "__main__":
 #     pkt_builder = PktBuilder()
 #     # Exemple d'utilisation des méthodes

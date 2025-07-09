@@ -6,10 +6,12 @@ import copy  # Permet de dupliquer un objet (deepcopy pour dupliquer entièremen
 class Router(Device):
     position_offset = 0  # Compteur de classe partagé par tous les objets Router
 
-    def __init__(self, macAdresse: str, hostname: str, config=None):
-        super().__init__(macAdresse, hostname)
+    def __init__(self, macAdresse: str, hostname: str, config=None, notconfigured: bool = False):
+        super().__init__(macAdresse, hostname, notconfigured=notconfigured)
         self.router_template = None  # Initialisation
         self.config = config
+        self.position_x = 0
+        self.position_y = 0
 
     def connect(self, a, b):
         pass
@@ -59,10 +61,12 @@ class Router(Device):
         if logical is not None:
             x_node = logical.find("X")
             y_node = logical.find("Y")
-            if x_node is not None and x_node.text.isdigit():
-                x_node.text = str(int(x_node.text) + 50 * Router.position_offset)
-            if y_node is not None and y_node.text.isdigit():
-                y_node.text = str(int(y_node.text) + 50 * Router.position_offset)
+            if x_node is not None and x_node.text:
+                self.position_x = int(float(x_node.text)) + 50 * Router.position_offset
+                x_node.text = str(self.position_x)
+            if y_node is not None and y_node.text:
+                self.position_y = int(float(y_node.text)) + 50 * Router.position_offset
+                y_node.text = str(self.position_y)
             Router.position_offset += 1  # Incrémente pour le prochain routeur
 
         # (Optionnel) Injecter les identifiants sur les interfaces
@@ -72,5 +76,12 @@ class Router(Device):
         #         mem_addr_node = intf_node.find("MEM_ADDR")
         #         if mem_addr_node is not None:
         #             mem_addr_node.text = str(intf.mem_addr)
+
+
         print(router)
+          
         return router
+
+    def get_position(self):
+        print(f"Position du routeur {self.hostname} : ({self.position_x}, {self.position_y})")
+        return self.position_x, self.position_y

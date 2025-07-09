@@ -14,7 +14,6 @@ class TopologyGenerator:
         folder = input("Entrez le chemin du dossier de config : ").strip()
         folder = folder if folder else "/Users/chiba/Desktop/TB/configExtract/src/data/config/reseau12"
         parsed_devices, neighbors = TopologyLoader.load_config_from_folder(folder)
-
         # # Appeler l'agent expert
         # agent = ConfigAnalyzerAgent(api_key="xtYaX6IAmdMtieAK2owvfVmoGTA8IgjA")
         # response = agent.analyze_configs(parsed_devices)
@@ -25,6 +24,11 @@ class TopologyGenerator:
 
 
         devices = TopologyBuilder.create_devices(parsed_devices)
+        # Simuler que le routeur Rchiheb il est mal configuré
+        for device in devices:
+            if device.hostname == "Rchiheb":
+                device.notconfigured = True
+                print(device)
         links = TopologyBuilder.build_links(devices, neighbors)
         # Enregistrer les configs dans MongoDB
         # for device in parsed_devices:

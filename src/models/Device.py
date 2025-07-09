@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET  # Librairie standard pour manipuler du XML e
 class Device(ABC):
 
     
-    def __init__(self, macAdresse: str, hostname: str):
+    def __init__(self, macAdresse: str, hostname: str, notconfigured: bool = False):
         """
         Initialise une nouvelle instance de la classe Device.
 
@@ -27,6 +27,7 @@ class Device(ABC):
         self.ref_id: str = f"save-ref-id:{uuid.uuid4().int >> 64}"
         self.mem_addr: int = uuid.uuid4().int >> 52
         self.interfaces: list = []
+        self.notconfigured: bool = notconfigured
 
     def add_interface(self, interface: Interface):
         """
