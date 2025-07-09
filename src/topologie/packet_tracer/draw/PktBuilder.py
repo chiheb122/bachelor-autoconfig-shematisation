@@ -7,7 +7,7 @@ import sys
 sys.path.append("lib/pka2xml_py")
 import pka2core #type: ignore
 from src.topologie.packet_tracer.draw.pkt2xml import encrypt_xml_to_pkt ,decrypt_pkt_to_xml # Librairie standard pour manipuler du XML en Python
-
+import copy
 
 class PktBuilder:
 
@@ -67,11 +67,14 @@ class PktBuilder:
             else:
                 print(f"⚠️ Type de lien non pris en charge : {type(link)}")
         # Ajout des notes si elles existent
-        notes_node = root.find(".//PHYSICALWORKSPACE//NOTES")
+        physical_ws = root.find(".//PHYSICALWORKSPACE")
+        if physical_ws is None:
+            raise ValueError("Aucun bloc <PHYSICALWORKSPACE> trouvé dans la base XML")
+        notes_node = physical_ws.find("NOTES")
         if notes_node is None:
             raise ValueError("Aucun bloc <NOTES> trouvé dans la base XML")
         else: 
-            notes_node.append(self.add_note("src/resources/xml/note.xml", 93, 755, 40006, self.notes))  # Exemple d'ajout de note
+            notes_node.append(self.add_note("src/resources/xml/note.xml", 49, 56, 40006, self.notes))  # Exemple d'ajout de note
 
         return tree  # Pour éventuellement sauvegarder ensuite via tree.write(...)
     
@@ -133,18 +136,20 @@ class PktBuilder:
     """
     def add_note(self, xml_path: str, x: int, y: int, z: int, text: str):
         try:
-            tree = ET.parse(xml_path)
-            root = tree.getroot()
-            note = ET.Element("NOTE")
-            note.set("uuid", "{108d6f6e-2332-452d-bd99-40957797174f}")
-            ET.SubElement(note, "X").text = str(x)
-            ET.SubElement(note, "Y").text = str(y)
-            ET.SubElement(note, "Z").text = str(z)
-            ET.SubElement(note, "TEXT", translate="true").text = text
-            ET.SubElement(note, "NOTECLUSTERID").text = "1-1"
-            ET.SubElement(note, "MEM_ADDR").text = "105553149369344"
-            root.append(note)
-            return root  # Retourne la racine modifiée pour éventuellement sauvegarder
+            # Charger le modèle de note
+            note_tree = ET.parse(xml_path)
+            note_root = note_tree.getroot()
+            note_copy = copy.deepcopy(note_root)  # Créer une copie de la note pour éviter de modifier le modèle original
+            # Modifier les attributs de la note
+            note_copy.find(".//X").text = str(x)
+            note_copy.find(".//Y").text = str(y)
+            note_copy.find(".//Z").text = str(z)
+            note_copy.find(".//TEXT").text = text
+    
+            print(note_copy)
+            return note_copy  # Retourne la note ajoutée pour une éventuelle utilisation ultérieure
+        except ET.ParseError as e:
+            print(f"Erreur de parsing XML : {e}")
         except Exception as e:
             print(f"Erreur lors de l'ajout de la note : {e}")
        

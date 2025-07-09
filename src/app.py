@@ -15,7 +15,7 @@ class TopologyGenerator:
         folder = folder if folder else "/Users/chiba/Desktop/TB/configExtract/src/data/config/reseau12"
         parsed_devices, neighbors = TopologyLoader.load_config_from_folder(folder)
 
-        # Appeler l'agent expert
+        # # Appeler l'agent expert
         # agent = ConfigAnalyzerAgent(api_key="xtYaX6IAmdMtieAK2owvfVmoGTA8IgjA")
         # response = agent.analyze_configs(parsed_devices)
         # # Afficher le résultat de l'analyse
