@@ -6,19 +6,10 @@ import copy  # Permet de dupliquer un objet (deepcopy pour dupliquer entièremen
 class Switch(Device):
     position_offset = 0  # Compteur de classe partagé par tous les objets Switch
 
+    """
+    Initialise une nouvelle instance de la classe Switch.
+    """
     def __init__(self, macAdresse: str, hostname: str, config=None, notconfigured: bool = False):
-        """
-        Initialise une nouvelle instance de la classe Switch.
-
-        Args:
-            macAdresse (str): L'adresse MAC du switch.
-            hostname (str): Le nom d'hôte du switch.
-            config (optionnel): La configuration initiale du switch. Par défaut à None.
-
-        Attributs:
-            switch_template: Modèle de configuration du switch, initialisé à None.
-            config: Configuration du switch, peut être None ou un objet de configuration.
-        """
         super().__init__(macAdresse, hostname)
         self.switch_template = None  # Initialisation
         self.config = config
@@ -34,9 +25,6 @@ class Switch(Device):
         self.switch_template = root
         return root
 
-
-
-    def parseXml(self):
         """
         Analyse et modifie un modèle XML de switch en injectant des valeurs spécifiques à l'instance.
 
@@ -51,6 +39,8 @@ class Switch(Device):
         Lève :
             ValueError: Si le modèle de switch (`self.switch_template`) n'est pas chargé.
         """
+
+    def parseXml(self):
         if self.switch_template is None:
             raise ValueError("Le modèle de switch n'est pas chargé. Appelle load_switch() echoue.")
         switch = copy.deepcopy(self.switch_template)  # On duplique le modèle pour pouvoir le modifier
@@ -88,7 +78,7 @@ class Switch(Device):
         return switch
 
 
+    """ Retourne la position du switch."""
     def get_position(self):
-        print(f"Position du switch : X={self.position_x}, Y={self.position_y}")
         return self.position_x, self.position_y
 

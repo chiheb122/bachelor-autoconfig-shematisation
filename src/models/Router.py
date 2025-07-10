@@ -76,9 +76,6 @@ class Router(Device):
         #         mem_addr_node = intf_node.find("MEM_ADDR")
         #         if mem_addr_node is not None:
         #             mem_addr_node.text = str(intf.mem_addr)
-
-
-        print(router)
           
         return router
 
