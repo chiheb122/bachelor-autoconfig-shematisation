@@ -15,24 +15,24 @@ class TopologyGenerator:
         folder = folder if folder else "/Users/chiba/Desktop/TB/configExtract/src/data/config/reseau12"
         parsed_devices, neighbors = TopologyLoader.load_config_from_folder(folder)
         # # Appeler l'agent expert
-        # agent = ConfigAnalyzerAgent(api_key="xtYaX6IAmdMtieAK2owvfVmoGTA8IgjA")
-        # response = agent.analyze_configs(parsed_devices)
-        # # Afficher le résultat de l'analyse
-        # print("\n Résultat de l'analyse expert réseau:\n")
-        # print(response)
-        response = "### Anomalies détectées : #### Router Rchiheb **Interface GigabitEthernet0/0 (box internet) :**"
+        agent = ConfigAnalyzerAgent()
+        response = agent.analyze_configs(parsed_devices)
+        # Afficher le résultat de l'analyse
+        print("\n Résultat de l'analyse expert réseau:\n")
+        print(response)
+        # response = "### Anomalies détectées : #### Router Rchiheb **Interface GigabitEthernet0/0 (box internet) :**"
 
 
-        devices = TopologyBuilder.create_devices(parsed_devices)
+        # devices = TopologyBuilder.create_devices(parsed_devices)
         # Simuler que le routeur Rchiheb il est mal configuré
-        for device in devices:
-            if device.hostname == "Rchiheb":
-                device.notconfigured = True
-                print(device)
-        links = TopologyBuilder.build_links(devices, neighbors)
+        # for device in devices:
+        #     if device.hostname == "Rchiheb":
+        #         device.notconfigured = True
+        #         print(device)
+        # links = TopologyBuilder.build_links(devices, neighbors)
         # Enregistrer les configs dans MongoDB
         # for device in parsed_devices:
         #     save_config_network(folder.split('/')[-1], prepare_for_mongo(device))
 
         # Exécuter la topologie
-        TopologyExecutor.generate(devices, links, notes=response)
+        # TopologyExecutor.generate(devices, links, notes=response)
