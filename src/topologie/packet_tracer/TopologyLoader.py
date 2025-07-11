@@ -10,7 +10,7 @@ class TopologyLoader:
 
         # Tous les fichiers se terminant par "_config.txt"
         for filename in os.listdir(folder_path):
-            if filename.endswith("_config.txt"):
+            if filename.endswith("config.txt"):
                 full_path = os.path.join(folder_path, filename)
                 parsed = parse_config_to_json(full_path)
                 parsed_devices.append(parsed)

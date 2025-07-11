@@ -1,0 +1,13 @@
+ Résultat de l'analyse expert réseau:
+
+ It appears that you have provided a list of router configurations for various devices in a network. These configurations include settings for interfaces, routing protocols (OSPF, RIP), access control lists, and more.
+
+Here's a brief summary of each configuration:
+
+1. The first configuration is for a device named "R1" with two Gigabit Ethernet interfaces connected to LAN 1 and LAN 2, respectively. It also has an RC interface (172.16.0.4) and a VLAN 30 interface (192.168.3.1). R1 runs OSPF for intra-domain routing and RIP for inter-domain routing.
+
+2. The second configuration is for a device named "R2" with two Gigabit Ethernet interfaces connected to LAN 10 (192.168.10.1) and LAN 11 (192.168.11.1), respectively. It also has a VLAN 10 interface (192.168.10.2) and a VLAN 30 interface (192.168.3.0). R2 runs EIGRP for routing.
+
+3. The third configuration is for a device named "Rstatic" with two Gigabit Ethernet interfaces connected to LAN 10 (192.168.10.1) and LAN 11 (192.168.11.1), respectively. It also has a static route for networks 192.168.0.0 and 192.168.3.0. Rstatic runs EIGRP and redistributes the static routes.
+
+4. The last configuration is for a switch named "Switch". This switch has several FastEthernet interfaces, one of which (FastEthernet0/3) is configured with port security to allow only one MAC address (000C.CF10.40C2).
