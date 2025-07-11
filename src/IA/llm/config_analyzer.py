@@ -30,7 +30,7 @@ class ConfigAnalyzerAgent:
         ! Manque SSH et ACL
         """
         # Générer le message à partir du prompt
-        messages = self.prompt.invoke({"configs": config_test})
+        messages = self.prompt.invoke({"configs": configs})
         # Appeler le LLM avec les messages générés
         response = self.llm.invoke(messages)
         # Retourner le contenu du résultat

@@ -8,16 +8,14 @@ Ton objectif est de vérifier si le réseau est correctement configuré dans son
 Tu dois évaluer les points suivants :
 
 1. Sécurité
-   - Un `hostname` est-il défini ?
-   - Un mot de passe `enable secret` est-il présent ?
    - Les lignes VTY sont-elles protégées (`login`, `transport input ssh`) ?
    - Y a-t-il une configuration SSH valide (clé RSA, version) ?
    - Y a-t-il des ACL configurées ?
 
 2. Configuration IP
-   - Chaque interface IP est-elle activée (`no shutdown`) ?
+   - Chaque interface IP qui possède une IP est-elle activée (`no shutdown`) ?
    - Y a-t-il des conflits d’adresses IP entre équipements ?
-   - Les VLANs ont-ils une interface de gestion ?
+   - Les VLANs ont-ils bien configuré entenant compte le type de l'appareille ?
    - La commande `no ip domain-lookup` est-elle présente ?
 
 3. Routage
@@ -25,11 +23,12 @@ Tu dois évaluer les points suivants :
    - Les `network` sont-ils bien définis dans les protocoles ?
    - Des routes statiques sont-elles manquantes pour atteindre certains sous-réseaux ?
    - La redondance de routage est-elle assurée ?
+   - Le routage permet-il la communication entre tous les équipements du réseau ?
 
 4. VLAN & Switching
    - Des VLANs sont-ils définis ?
    - Les ports sont-ils bien en mode `access` ou `trunk` ?
-   - Le VTP est-il configuré (domaine, mot de passe, mode) ?
+   - Le VTP existe-il si oui est ce qu'il est bien configuré (domaine, mot de passe, mode) ?
    - Les ports inactifs sont-ils en `shutdown` ?
 
 5. Bonnes pratiques
@@ -37,9 +36,9 @@ Tu dois évaluer les points suivants :
    - Y a-t-il une configuration minimale valable même en cas de panne partielle ?
    - Le routage est-il structuré et cohérent ?
 
-Réponds exclusivement dans ce format JSON :
+Réponds strictement sous ce format JSON en français :
 ```json
-{
+{{
   "statut": "OK" ou "INCOMPLET",
   "problemes": [
     "Description courte d’un problème détecté",
@@ -49,9 +48,22 @@ Réponds exclusivement dans ce format JSON :
     "Suggestion claire pour corriger ou améliorer",
     "Deuxième recommandation utile"
   ]
-}
+}}
 
 
 [USER]
-Configuration à analyser:
+Les configurations à analyser, extraites automatiquement des équipements Cisco d’un réseau mis en place.
+Elles sont au format JSON. Chaque objet représente un équipement et suit la structure suivante :
+concentre plus sur raw de ce json puisqu'il comporte tout la config extraite
+{{
+  "type": "router" ou "switch",
+  "name": "Nom de l’équipement",
+  "mac": "00:11:22:33:44:55",
+  "config": {{
+    "interfaces": {{...}},  // Détail des interfaces de l’équipement
+    "neighbors": [...]    // Liste des voisins CDP
+  }},
+  "raw": "...",           // Configuration brute en texte (show running-config)
+}}
+Voici les configurations à auditer :
 {configs}
