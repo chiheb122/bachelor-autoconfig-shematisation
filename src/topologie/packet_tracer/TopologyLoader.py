@@ -1,7 +1,7 @@
 # src/topologie/topology_loader.py
 
 import os
-from src.config.parser_config import parse_config_to_json
+from src.configs.parser_config import parse_config_to_json
 
 class TopologyLoader:
     @staticmethod

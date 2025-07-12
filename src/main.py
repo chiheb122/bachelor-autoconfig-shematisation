@@ -1,5 +1,5 @@
 from src.app import TopologyGenerator
-from src.config.extract.pytermi import main
+from src.configs.extract.pytermi import main
 
 if __name__ == "__main__":
     try:
