@@ -9,7 +9,7 @@ class TopologyBuilder:
         devices = []
         for pd in parsed_devices:
             device = DeviceFactory.create_device(pd["type"], pd["mac"], pd["name"], pd["raw"])
-            for intf in pd["config"]["interfaces"].values():
+            for intf in pd["configs"]["interfaces"].values():
                 device.add_interface(intf)
             device.load_router() if pd["type"] == "router" else device.load_switch()
             devices.append(device)

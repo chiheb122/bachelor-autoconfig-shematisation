@@ -1,7 +1,6 @@
 import re
 import os
 from src.models.Interface import Interface
-from src.models.factory.DeviceFactory import DeviceFactory
 
 def detect_device_type(config_lines):
     is_router = False
@@ -50,7 +49,7 @@ def parse_config_to_json(config_path):
         "type": device_type,
         "name": parser.hostname or "Unknown",
         "mac": "00:11:22:33:44:55",  # Placeholder
-        "config": {
+        "configs": {
             "interfaces": interfaces,
             "neighbors": parser.neighbors
         },
