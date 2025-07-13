@@ -57,13 +57,50 @@ def extract_config_features(config_path):
     except UnicodeDecodeError:
         with open(config_path, "r", encoding="latin-1") as f:
             lines = [line.strip() for line in f if line.strip()]
-
-    features = FEATURE_TEMPLATE.copy()
+    features = extract_features_from_lines(lines)
     features["filename"] = os.path.basename(config_path)
-    # Détection des sections
-    current_section = None
-    routing_protocol = None
+    return features
+
+def parse_folder_to_csv(folder_path, output_csv="dataset.csv"):
+    data = []
+    for file in os.listdir(folder_path):
+        if file.endswith(".txt") and "config" in file.lower():
+            features = extract_config_features(os.path.join(folder_path, file))
+            data.append(features)
     
+    pd.DataFrame(data).to_csv(output_csv, index=False)
+    print(f"Dataset généré : {output_csv}")
+    return data
+
+
+def extract_features_from_folder(folder_path):
+    """    Extrait les features de tous les fichiers de configuration dans un dossier.
+    """
+    features = []
+    for file in os.listdir(folder_path):
+        if file.endswith(".txt") and "config" in file.lower():
+            file_path = os.path.join(folder_path, file)
+            feature_set = extract_config_features(file_path)
+            features.append(feature_set)
+    return features
+
+
+def extract_features_from_configRaw(config, without_label=False):
+    lines = config.splitlines()
+    features = extract_features_from_lines([line.strip() for line in lines if line.strip()],without_label)
+    return features
+
+def extract_features_from_lines(lines,without_label=False):
+    features = FEATURE_TEMPLATE.copy()
+    # Si on ne veut pas le label, on le retire
+    if without_label:
+        del features["label"]
+        del features["filename"]
+
+
+
+    current_section = None  
+    routing_protocol = None  
     for line in lines:
             # Hostname
             if "hostname" in line and not any(x in line for x in ["-", "router", "switch"]):
@@ -118,20 +155,10 @@ def extract_config_features(config_path):
                     if ip in ip_addresses:
                         features["ip_addresses_overlap"] = 1
                     ip_addresses.add(ip)
-        
+    if without_label:
+        return features
     features["label"] = is_config_ok(features)
     return features
-
-def parse_folder_to_csv(folder_path, output_csv="dataset.csv"):
-    data = []
-    for file in os.listdir(folder_path):
-        if file.endswith(".txt") and "config" in file.lower():
-            features = extract_config_features(os.path.join(folder_path, file))
-            data.append(features)
-    
-    pd.DataFrame(data).to_csv(output_csv, index=False)
-    print(f"Dataset généré : {output_csv}")
-    return data
 
 # Exemple d'utilisation
 if __name__ == "__main__":

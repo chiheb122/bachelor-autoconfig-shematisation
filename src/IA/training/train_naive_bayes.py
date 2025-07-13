@@ -6,7 +6,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 
 class ConfigClassifier:
-    def __init__(self, df):
+    def __init__(self, df=None):
+        if df is None:
+            # 1. Chargement des données
+            df = pd.read_csv("/Users/chiba/Desktop/TB/configExtract/src/IA/training/dataset.csv")
         self.df = df.copy()
         self._prepare_data()
         self._train_model()
