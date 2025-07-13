@@ -7,6 +7,10 @@ from src.topologie.packet_tracer.TopologyExecutor import TopologyExecutor
 from src.configs.save.save_configs_to_mongo import save_config_network,prepare_for_mongo
 from src.IA.training.train_naive_bayes import ConfigClassifier
 from src.IA.training.config_feature_parser import extract_features_from_configRaw
+from src.configs.extract.pytermi import main
+from colorama import Fore, Style, init
+
+init(autoreset=True)
 
 class TopologyGenerator:
     @staticmethod
@@ -109,3 +113,41 @@ class TopologyGenerator:
                     elif not is_list:
                         formatted_response += f"{value}\n"
         return formatted_response
+
+def main_menu():
+    while True:
+        print("\n ##############################")
+        print("######## Menu Principal ########")
+        print(Fore.BLUE + "1. Extraire les configs")
+        print(Fore.BLUE + "2. Générer la topologie Packet Tracer")
+        print(Fore.BLUE + "3. Générer la topologie Graphviz")
+        print(Fore.BLUE + "0. Quitter")
+        choix = input("Votre choix : ").strip()
+        if choix == "1":
+            # Extraction configs (à adapter selon ta logique)
+            try:
+                response = input("Avez-vous des configurations à extraire ? (oui/non)")
+                while response.lower() == "oui":
+                    main()  # Relance l'extraction de configuration si l'utilisateur le souhaite
+                    response = input("Avez-vous d'autres configurations à extraire ? (oui/non)")
+                    # Si l'utilisateur ne souhaite pas extraire d'autres configurations, on termine le programme
+                    print("Extraction de la configuration terminée.")
+            except Exception as e:
+                print(f"Une erreur s'est produite lors de l'extraction de la configuration : {e}")
+                # Après l'extraction, génère la topologie
+                print("Pour générer la topologie, veuillez choisir l'option 2 ou 3.")
+        elif choix == "2":
+            print("Génération de la topologie Packet Tracer...")
+            TopologyGenerator.run()  # ou une méthode dédiée si tu veux séparer
+        elif choix == "3":
+            print("Génération de la topologie Graphviz...")
+            # Appelle ici la fonction qui génère le graphviz (ex: draw_network)
+            # ...
+        elif choix == "0":
+            print("Au revoir !")
+            break
+        else:
+            print("Choix invalide.")
+
+if __name__ == "__main__":
+    main_menu()
