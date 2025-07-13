@@ -29,7 +29,7 @@ class TopologyGenerator:
             # Extraire les features de la config
             features = extract_features_from_configRaw(device.config,True)
             # Prédire avec le modèle
-            prediction = evaluation.predict(features)
+            prediction = evaluation.predict(features, plot=False)
             # Ajouter le nom de l'appareil
             predictions.append({
                 "hostname": device.hostname,
@@ -40,21 +40,21 @@ class TopologyGenerator:
                 device.notconfigured = True
 
 
-        #agent = ConfigAnalyzerAgent()
-        #configs = agent.returnConfigs(parsed_devices)
-        #response = agent.analyze_configs(configs)
+        agent = ConfigAnalyzerAgent()
+        configs = agent.returnConfigs(parsed_devices)
+        response = agent.analyze_configs(configs, predictions)
         # Afficher le résultat de l'analyse
-        #print("\n Résultat de l'analyse expert réseau:\n")
-        #print
+        print("\n Résultat de l'analyse expert réseau:\n")
+        print(response)
 
         # lire le rapport txt
-        fichier = "/Users/chiba/Desktop/TB/configExtract/src/IA/llm/rapport.txt"
-        response = ""
-        with open(fichier, "r", encoding="utf-8") as f:
-            texte_complet = f.read()
-            result_json = json.loads(texte_complet)
-            response = result_json
-            f.close()
+        # fichier = "/Users/chiba/Desktop/TB/configExtract/src/IA/llm/rapport.txt"
+        # response = ""
+        # with open(fichier, "r", encoding="utf-8") as f:
+        #     texte_complet = f.read()
+        #     result_json = json.loads(texte_complet)
+        #     response = result_json
+        #     f.close()
 
         reponse_llm += TopologyGenerator.format_response(response)
 
@@ -76,6 +76,18 @@ class TopologyGenerator:
     # Formatter la réponse pour l'afficher dans l'interface
     @staticmethod
     def format_response(response):
+        # Nettoyer les balises Markdown éventuelles
+        if isinstance(response, str):
+            response = response.strip()
+            if response.startswith("```json"):
+                response = response[7:]
+            if response.startswith("```"):
+                response = response[3:]
+            if response.endswith("```"):
+                response = response[:-3]
+            response = response.strip()
+            response = json.loads(response)
+        
         formatted_response = ""
         showcase = [
             ("statut", "Statut de l'appareil", False),
