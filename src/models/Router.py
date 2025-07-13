@@ -68,13 +68,12 @@ class Router(Device):
         if logical is not None:
             x_node = logical.find("X")
             y_node = logical.find("Y")
-            if x_node is not None and x_node.text:
-                self.position_x = int(float(x_node.text)) + 50 * Router.position_offset
+            if x_node is not None and y_node is not None and x_node.text.isdigit() and y_node.text.isdigit():
+                self.position_x = int(float(x_node.text)) + 100 * Router.position_offset
+                self.position_y = int(float(y_node.text)) + 60 * Router.position_offset
                 x_node.text = str(self.position_x)
-            if y_node is not None and y_node.text:
-                self.position_y = int(float(y_node.text)) + 50 * Router.position_offset
                 y_node.text = str(self.position_y)
-            Router.position_offset += 1  # Incrémente pour le prochain routeur
+                Router.position_offset += 1
 
         # (Optionnel) Injecter les identifiants sur les interfaces
         # for intf in self.interfaces:
