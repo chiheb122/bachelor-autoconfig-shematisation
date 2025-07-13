@@ -45,6 +45,13 @@ class Router(Device):
         if mem_addr_node is not None:
             mem_addr_node.text = str(self.mem_addr)
 
+        # Injecter les mac adresse
+        for port in router.findall(".//PORT"):
+            mac_node = port.find("MACADDRESS")
+            if mac_node is not None:
+                mac_node.text = self.generate_fake_mac()
+
+
         # Injecter la configuration ligne par ligne
         if self.config:
             running_node = router.find(".//RUNNINGCONFIG")

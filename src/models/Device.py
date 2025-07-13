@@ -2,7 +2,7 @@ import uuid
 from abc import abstractmethod,ABC
 from ..models import Interface
 import xml.etree.ElementTree as ET  # Librairie standard pour manipuler du XML en Python
-
+import random
 
 class Device(ABC):
 
@@ -62,5 +62,10 @@ class Device(ABC):
         for line in config_string.strip().splitlines():
             line_node = ET.SubElement(parent_node, "LINE")
             line_node.text = line
+
+    # une petite méthode pour générer des mac addresses fictives
+    def generate_fake_mac(self):
+        suffix = f"{random.randint(0, 0xFFFF):04X}"  # 4 chiffres hexadécimaux, majuscules
+        return f"0001.9672.{suffix}"
 
 

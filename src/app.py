@@ -4,7 +4,7 @@ from src.IA.llm.config_analyzer import ConfigAnalyzerAgent
 from src.topologie.packet_tracer.TopologyLoader import TopologyLoader
 from src.topologie.packet_tracer.TopologyBuilder import TopologyBuilder
 from src.topologie.packet_tracer.TopologyExecutor import TopologyExecutor
-# from src.config.save.save_configs_to_mongo import save_config_network,prepare_for_mongo
+from src.configs.save.save_configs_to_mongo import save_config_network,prepare_for_mongo
 
 
 class TopologyGenerator:
@@ -62,14 +62,14 @@ class TopologyGenerator:
 
 
         # Simuler que le routeur Rchiheb il est mal configuré
-        for device in devices:
-            if device.hostname == "Rchiheb":
-                device.notconfigured = True
-                print(device)
+        # for device in devices:
+        #     if device.hostname == "Rchiheb":
+        #         device.notconfigured = True
+        #         print(device)
 
         # Enregistrer les configs dans MongoDB
-         #for device in parsed_devices:
-         #    save_config_network(folder.split('/')[-1], prepare_for_mongo(device))
+        for device in parsed_devices:
+            save_config_network(folder.split('/')[-1], prepare_for_mongo(device))
 
         # Exécuter la topologie
         TopologyExecutor.generate(devices, links, notes=reponse_llm)

@@ -696,7 +696,6 @@
                                     <VLAN_COUNT>6</VLAN_COUNT>
                                     <VLANS>
                                         <VLAN rspan="0" number="1" name="default"/>
-                                        <VLAN rspan="0" number="10" name="PosteUtilisateurs"/>
                                         <VLAN rspan="0" number="1002" name="fddi-default"/>
                                         <VLAN rspan="0" number="1003" name="token-ring-default"/>
                                         <VLAN rspan="0" number="1004" name="fddinet-default"/>
@@ -747,7 +746,6 @@
         <SCP_SERVER_ENABLED>false</SCP_SERVER_ENABLED>
         <VLANS>
             <VLAN rspan="0" number="1" name="default"/>
-            <VLAN rspan="0" number="10" name="PosteUtilisateurs"/>
             <VLAN rspan="0" number="1002" name="fddi-default"/>
             <VLAN rspan="0" number="1003" name="token-ring-default"/>
             <VLAN rspan="0" number="1004" name="fddinet-default"/>

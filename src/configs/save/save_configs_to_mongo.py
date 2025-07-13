@@ -35,7 +35,7 @@ def save_config_network(network_name, config_data):
 def prepare_for_mongo(device):
     import sys
     device = device.copy()
-    interfaces = device["config"]["interfaces"]
+    interfaces = device["configs"]["interfaces"]
     # Convertir chaque Interface en dict si besoin
     for k, v in interfaces.items():
         if hasattr(v, '__dict__'):

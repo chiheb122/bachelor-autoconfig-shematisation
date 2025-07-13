@@ -1,22 +1,38 @@
 import re
 import os
 from src.models.Interface import Interface
+import random
 
 def detect_device_type(config_lines):
     is_router = False
     is_switch = False
+    nb_gig = 0
+    nb_serial = 0
+    nb_vlan = 0
+    nb_switchport = 0
 
     for line in config_lines:
-        line = line.lower().strip()
-
-        if line.startswith("interface vlan") or "switchport" in line:
-            is_switch = True
-        if "router ospf" in line or "ip route" in line:
+        l = line.lower().strip()
+        if l.startswith("interface gigabitethernet"):
+            nb_gig += 1
+        if l.startswith("interface serial"):
+            nb_serial += 1
+        if l.startswith("interface vlan"):
+            nb_vlan += 1
+        if "switchport" in l:
+            nb_switchport += 1
+        if l.startswith("router ") or "ip routing" in l or "ip route" in l:
             is_router = True
+        if "vtp mode" in l or "spanning-tree" in l:
+            is_switch = True
 
-    if is_router:
+    # Heuristique :
+    # - Beaucoup de switchport et vlan, peu de gig/serial => switch
+    # - Plusieurs gig/serial sans switchport => routeur
+    # - Routage dynamique/statique => routeur
+    if is_router or (nb_gig + nb_serial > 0 and nb_switchport == 0):
         return "router"
-    if is_switch:
+    if is_switch or (nb_switchport > 0 and nb_vlan > 0):
         return "switch"
     return "unknown"
 
@@ -139,7 +155,7 @@ class CiscoConfigParser:
         self.parse()
         # Ajout du parsing neighbors ici si config_path fourni
         if config_path:
-            neighbors_path = config_path.replace("_config.txt", "_neighbors.txt")
+            neighbors_path = config_path.replace("config.txt", "neighbors.txt")
             if os.path.exists(neighbors_path):
                 self.neighbors = parse_cdp_neighbors(neighbors_path, local_hostname=self.hostname)
 
@@ -167,6 +183,9 @@ class CiscoConfigParser:
                 self.interfaces[current_iface]["description"] = " ".join(line.split()[1:])
             elif line.lower().startswith("cdp entry") or "show cdp neighbors" in line:
                 pass  # Ajoute plus tard pour les liaisons
+            
+        if "status" not in self.interfaces[current_iface]:
+            self.interfaces[current_iface]["status"] = "up"
 
     def __str__(self):
         return f"Hostname: {self.hostname}, Interfaces: {self.interfaces} \nNeighbors: {self.neighbors}"

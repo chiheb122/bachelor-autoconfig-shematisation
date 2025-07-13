@@ -52,6 +52,25 @@ class Switch(Device):
         if ref_id_node is not None:
             ref_id_node.text = str(self.ref_id)
 
+        # Injecter les mac adresse
+        for port in switch.findall(".//PORT"):
+            mac_node = port.find("MACADDRESS")
+            if mac_node is not None:
+                mac_node.text = self.generate_fake_mac()
+
+        # Injecter les vlans qui sont dans la config
+        for interface in self.interfaces:
+            if interface.vlan is not None:
+                vlan_number = str(interface.vlan)
+                for vlan_node in switch.findall(".//VLANS"):
+                    # Vérifie si le VLAN existe déjà dans ce bloc
+                    existing_vlans = {vlan.get("number") for vlan in vlan_node.findall("VLAN")}
+                    if vlan_number not in existing_vlans:
+                        vlan_entry = ET.SubElement(vlan_node, "VLAN")
+                        vlan_entry.set("rspan", "0")
+                        vlan_entry.set("number", vlan_number)
+                        vlan_entry.set("name", f"VLAN{vlan_number}")
+
         # Injecter la configuration ligne par ligne
         if self.config:
             running_node = switch.find(".//RUNNINGCONFIG")
