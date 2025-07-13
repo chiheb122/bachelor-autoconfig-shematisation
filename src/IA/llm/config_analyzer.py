@@ -1,25 +1,24 @@
 from pathlib import Path
 #from langchain.chat_models import init_chat_model
 from langchain_core.prompts import ChatPromptTemplate
-# from langchain_ollama.llms import OllamaLLM
+from langchain_ollama.llms import OllamaLLM
 from langchain_groq import ChatGroq
-from src.topologie.packet_tracer.TopologyLoader import TopologyLoader
 
 
 class ConfigAnalyzerAgent:
     def __init__(self):
         # Initialiser le modèle LLM avec Ollama en local
-        #self.llm = OllamaLLM(model="mistral:latest", temperature=0.1, max_tokens=1000)
+        self.llm = OllamaLLM(model="llama3-gradient", temperature=0.1, max_tokens=None, reasoning_format="parsed", timeout=None, max_retries=2)
         # Initialiser le modèle LLM avec Groq 
-        self.llm = ChatGroq(
-            model="deepseek-r1-distill-llama-70b",
-            temperature=0,
-            max_tokens=None,
-            reasoning_format="parsed",
-            timeout=None,
-            max_retries=2,
-            api_key="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"
-        )
+        # self.llm = ChatGroq(
+        #     model="deepseek-r1-distill-llama-70b",
+        #     temperature=0,
+        #     max_tokens=None,
+        #     reasoning_format="parsed",
+        #     timeout=None,
+        #     max_retries=2,
+        #     api_key="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"
+        # )
         # Charger le prompt depuis le fichier
         template_path = Path(__file__).parent / "prompt_template.txt"
         system_template = template_path.read_text()

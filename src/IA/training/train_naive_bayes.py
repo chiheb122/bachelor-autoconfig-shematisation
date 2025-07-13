@@ -81,20 +81,21 @@ class ConfigClassifier:
         plt.xlabel('Prédit')
         plt.ylabel('Réel')
         plt.show()
-    
-    def predict(self, config_features):
+
+    def predict(self, config_features, plot=True):
         """Prédiction simple avec affichage des probabilités"""
         config_df = pd.DataFrame([config_features])
         proba = self.model.predict_proba(config_df)[0]
         pred = self.model.predict(config_df)[0]
         
-        # Affichage graphique
-        plt.figure(figsize=(6, 4))
-        sns.barplot(x=self.model.classes_, y=proba, palette='viridis')
-        plt.title(f'Probabilités de Prédiction ({pred})')
-        plt.ylabel('Probabilité')
-        plt.ylim(0, 1)
-        plt.show()
+        # Affichage graphique seulement si demandé
+        if plot:
+            plt.figure(figsize=(6, 4))
+            sns.barplot(x=self.model.classes_, y=proba, palette='viridis')
+            plt.title(f'Probabilités de Prédiction ({pred})')
+            plt.ylabel('Probabilité')
+            plt.ylim(0, 1)
+            plt.show()
         
         return {
             'prediction': pred,
