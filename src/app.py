@@ -128,12 +128,19 @@ class TopologyGenerator:
 
 def main_menu():
     while True:
-        print("\n ##############################")
-        print("######## Menu Principal ########")
-        print(Fore.BLUE + "1. Extraire les configs")
-        print(Fore.BLUE + "2. Générer la topologie Packet Tracer")
-        print(Fore.BLUE + "3. Générer la topologie Graphviz")
-        print(Fore.BLUE + "0. Quitter")
+        menu = f"""
+\033[1m\033[94m
+==============================
+   Travail de Bachelor réalisé par @chiheb_BIDANI
+==============================
+
+Sémantisation visuelle des configurations réseau et detection intelligente des erreurs par l'IA
+\033[91m\nNotice : Assurez-vous que les fichiers de config se terminent par _config.txt et les neighbors avec _neighbors.txt\033[0m
+
+\n{Fore.BLUE}1. Extraire les configs\n{Fore.BLUE}2. Générer la topologie Packet Tracer\n{Fore.BLUE}3. Générer la topologie Graphviz\n{Fore.BLUE}0. Quitter\n"""
+        
+        print(menu)
+        
         choix = input("Votre choix : ").strip()
         if choix == "1":
             # Extraction configs (à adapter selon ta logique)
@@ -147,10 +154,8 @@ def main_menu():
             except Exception as e:
                 print(f"Une erreur s'est produite lors de l'extraction de la configuration : {e}")
                 # Après l'extraction, génère la 
-                
-
-            print("Pour générer la topologie, veuillez choisir l'option 2 ou 3 au menu principal.")
-            main_menu()
+                print("Pour générer la topologie, veuillez choisir l'option 2 ou 3 au menu principal.")
+                main_menu()
 
         elif choix == "2":
             print("Génération de la topologie Packet Tracer...")
