@@ -1,5 +1,5 @@
 # src/topologie/topology_executor.py
-from src.topologie.packet_tracer.draw.PktBuilder import PktBuilder
+from src.topologie.packet_tracer.PktBuilder import PktBuilder
 
 class TopologyExecutor:
     @staticmethod
