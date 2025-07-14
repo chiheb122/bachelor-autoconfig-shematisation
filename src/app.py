@@ -1,9 +1,9 @@
 # src/app.py
 import json
 from src.IA.llm.config_analyzer import ConfigAnalyzerAgent
-from src.topologie.packet_tracer.TopologyLoader import TopologyLoader
-from src.topologie.packet_tracer.TopologyBuilder import TopologyBuilder
-from src.topologie.packet_tracer.TopologyExecutor import TopologyExecutor
+from src.topologie.TopologyLoader import TopologyLoader
+from src.topologie.TopologyBuilder import TopologyBuilder
+from src.topologie.TopologyExecutor import TopologyExecutor
 from src.configs.save.save_configs_to_mongo import save_config_network,prepare_for_mongo
 from src.IA.training.train_naive_bayes import ConfigClassifier
 from src.IA.training.config_feature_parser import extract_features_from_configRaw

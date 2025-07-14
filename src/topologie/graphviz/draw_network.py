@@ -1,6 +1,6 @@
 from graphviz import Graph
-from src.topologie.packet_tracer.TopologyLoader import TopologyLoader
-from src.topologie.packet_tracer.TopologyBuilder import TopologyBuilder
+from src.topologie.TopologyLoader import TopologyLoader
+from src.topologie.TopologyBuilder import TopologyBuilder
 import os
 
 IMG_DIR = os.path.abspath("src/resources/img")

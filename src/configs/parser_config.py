@@ -1,7 +1,6 @@
 import re
 import os
 from src.models.Interface import Interface
-import random
 
 def detect_device_type(config_lines):
     is_router = False
