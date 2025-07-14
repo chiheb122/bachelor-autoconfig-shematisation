@@ -9,12 +9,13 @@ from src.IA.training.train_naive_bayes import ConfigClassifier
 from src.IA.training.config_feature_parser import extract_features_from_configRaw
 from src.configs.extract.pytermi import main
 from colorama import Fore, Style, init
+from src.topologie.graphviz.draw_network import draw_network
 
 init(autoreset=True)
 
 class TopologyGenerator:
     @staticmethod
-    def run():
+    def run(packet_tracer=False):
         reponse_llm = "Résumé de l'analyse des configurations :\n\n"
 
         # Demander dynamiquement à l'utilisateur le dossier :
@@ -43,39 +44,50 @@ class TopologyGenerator:
             if prediction.get("prediction") == "incomplete_config":
                 device.notconfigured = True
 
-
-        agent = ConfigAnalyzerAgent()
-        configs = agent.returnConfigs(parsed_devices)
-        response = agent.analyze_configs(configs, predictions)
-        # Afficher le résultat de l'analyse
-        print("\n Résultat de l'analyse expert réseau:\n")
-        print(response)
+        # Appeler l'agent expert du modèle LLM avec les prédictions faites en local
+        # agent = ConfigAnalyzerAgent()
+        # configs = agent.returnConfigs(parsed_devices)
+        # response = agent.analyze_configs(configs, predictions)
+        # # Afficher le résultat de l'analyse
+        # print("\n Résultat de l'analyse expert réseau:\n")
+        # print(response)
 
         # lire le rapport txt
-        # fichier = "/Users/chiba/Desktop/TB/configExtract/src/IA/llm/rapport.txt"
-        # response = ""
-        # with open(fichier, "r", encoding="utf-8") as f:
-        #     texte_complet = f.read()
-        #     result_json = json.loads(texte_complet)
-        #     response = result_json
-        #     f.close()
+        fichier = "/Users/chiba/Desktop/TB/configExtract/src/IA/llm/rapport.txt"
+        response = ""
+        with open(fichier, "r", encoding="utf-8") as f:
+            texte_complet = f.read()
+            result_json = json.loads(texte_complet)
+            response = result_json
+            f.close()
 
         reponse_llm += TopologyGenerator.format_response(response)
 
-
-        # Simuler que le routeur Rchiheb il est mal configuré
-        # for device in devices:
-        #     if device.hostname == "Rchiheb":
-        #         device.notconfigured = True
-        #         print(device)
 
         # Enregistrer les configs dans MongoDB
         # for device in parsed_devices:
         #     save_config_network(folder.split('/')[-1], prepare_for_mongo(device))
 
         # Exécuter la topologie
-        TopologyExecutor.generate(devices, links, notes=reponse_llm)
+        if packet_tracer:
+            TopologyGenerator.packet_tracer(devices, links, reponse_llm)
+        else:
+            nom_folder = folder.rstrip('/').split('/')[-1]
+            output_file = f"{nom_folder}"
+            TopologyGenerator.graphviz(devices, links, output_file=output_file, output_path=folder)
 
+
+
+
+    @staticmethod
+    def packet_tracer(devices, links, reponse_IA):
+        # Logique pour générer la topologie avec Packet Tracer
+        TopologyExecutor.generate(devices, links, notes=reponse_IA)
+
+    @staticmethod
+    def graphviz(devices, links, output_file="topologie_graphviz", output_path="."):
+        # Logique pour générer la topologie avec Graphviz
+        draw_network(devices, links, output_file=output_file, output_path=output_path)
 
     # Formatter la réponse pour l'afficher dans l'interface
     @staticmethod
@@ -134,15 +146,18 @@ def main_menu():
                     print("Extraction de la configuration terminée.")
             except Exception as e:
                 print(f"Une erreur s'est produite lors de l'extraction de la configuration : {e}")
-                # Après l'extraction, génère la topologie
-                print("Pour générer la topologie, veuillez choisir l'option 2 ou 3.")
+                # Après l'extraction, génère la 
+                
+
+            print("Pour générer la topologie, veuillez choisir l'option 2 ou 3 au menu principal.")
+            main_menu()
+
         elif choix == "2":
             print("Génération de la topologie Packet Tracer...")
-            TopologyGenerator.run()  # ou une méthode dédiée si tu veux séparer
+            TopologyGenerator.run(packet_tracer=True)  # ou une méthode dédiée si tu veux séparer
         elif choix == "3":
             print("Génération de la topologie Graphviz...")
-            # Appelle ici la fonction qui génère le graphviz (ex: draw_network)
-            # ...
+            TopologyGenerator.run(packet_tracer=False)
         elif choix == "0":
             print("Au revoir !")
             break

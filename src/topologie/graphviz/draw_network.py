@@ -1,28 +1,41 @@
 from graphviz import Graph
 from src.topologie.packet_tracer.TopologyLoader import TopologyLoader
 from src.topologie.packet_tracer.TopologyBuilder import TopologyBuilder
+import os
 
-def draw_network(devices, links, output_file="topologie"):
+IMG_DIR = os.path.abspath("src/resources/img")
+
+def draw_network(devices, links, output_file="topologie", output_path="."):
     dot = Graph(comment="Topologie réseau", format='png')
     dot.attr(overlap='false')
 
     for dev in devices:
-        # Couleur selon l'état de config
+        img = ""  # Valeur par défaut si le type n'est pas reconnu
+
+        # Définir l'image selon le type
+        if dev.__class__.__name__ == "Router":
+            img = os.path.join(IMG_DIR, "Router.png")
+        elif dev.__class__.__name__ == "Switch":
+            img = os.path.join(IMG_DIR, "Switch.png")
+        else:
+            img = ""
+
+        # Définir la couleur selon l'état de config
         if getattr(dev, "notconfigured", False):
             color = 'red'
         elif dev.__class__.__name__ == "Router":
             color = 'lightblue'
-            img= f"src/resources/img/Router.png"  # Chemin vers l'image du routeur
-
-        else:
+        elif dev.__class__.__name__ == "Switch":
             color = 'lightgreen'
-            img= f"src/resources/img/Switch.png"  # Chemin vers l'image du switch
+        else:
+            color = 'grey'
+
         shape = 'ellipse' if dev.__class__.__name__ == "Router" else 'box'
         # Ajoute un label avec le statut si dispo
         label = dev.hostname
         if hasattr(dev, "statut"):
             label += f"\n(complet)"
-        dot.node(dev.hostname, label='', shape='none', style='filled', fillcolor=color, image=img, imagescale='true', width='0.7', height='0.3',xlabel=label)
+        dot.node(dev.hostname, label='', shape=shape, style='filled', fillcolor=color, image=img, imagescale='true', width='0.7', height='0.3',xlabel=label)
 
 
     for link in links:
@@ -40,8 +53,10 @@ def draw_network(devices, links, output_file="topologie"):
         dot.edge(link.device_a.hostname, link.device_b.hostname, label=label, style=style)
 
 
-    dot.render(output_file, cleanup=True)
-    print(f"✅ Diagramme généré : {output_file}.png")
+    dot.render(f"{output_path}/{output_file}", cleanup=True, format='png')
+    output_file = f"{output_path}/{output_file}"
+    # Affiche le message de succès
+    print(f"Diagramme généré : {output_file}.png")
 
 
 def get_interface_by_name(interfaces, name):
