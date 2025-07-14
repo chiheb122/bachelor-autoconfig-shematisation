@@ -69,20 +69,20 @@ class TopologyGenerator:
         #     save_config_network(folder.split('/')[-1], prepare_for_mongo(device))
 
         # Exécuter la topologie
+        nom_folder = folder.rstrip('/').split('/')[-1]
+        output_file = f"{nom_folder}"
         if packet_tracer:
-            TopologyGenerator.packet_tracer(devices, links, reponse_llm)
+            TopologyGenerator.packet_tracer(devices, links, reponse_llm, output_path=folder, output_file=output_file)
         else:
-            nom_folder = folder.rstrip('/').split('/')[-1]
-            output_file = f"{nom_folder}"
             TopologyGenerator.graphviz(devices, links, output_file=output_file, output_path=folder)
 
 
 
 
     @staticmethod
-    def packet_tracer(devices, links, reponse_IA):
+    def packet_tracer(devices, links, reponse_IA, output_path=".", output_file="topologie_packet_tracer"):
         # Logique pour générer la topologie avec Packet Tracer
-        TopologyExecutor.generate(devices, links, notes=reponse_IA)
+        TopologyExecutor.generate(devices, links, notes=reponse_IA, output_path=output_path, output_file=output_file)
 
     @staticmethod
     def graphviz(devices, links, output_file="topologie_graphviz", output_path="."):
