@@ -12,7 +12,10 @@ Ce projet a été réalisé dans le cadre de mon travail de Bachelor. Il vise à
 
 - Python 3
 - Cisco Packet Tracer 8.2.2
-
+- [Graphviz](https://graphviz.org/) installé côté système (pour l’exécutable `dot`)
+```bash
+dot -V
+```
 
 ## 📁 Structure du projet
 

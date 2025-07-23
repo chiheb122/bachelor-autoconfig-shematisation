@@ -8,8 +8,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 class ConfigClassifier:
     def __init__(self, df=None):
         if df is None:
-            # 1. Chargement des données
-            df = pd.read_csv("/Users/chiba/Desktop/TB/configExtract/src/IA/training/dataset.csv")
+            # 1. Chargement des données avec chemin relatif depuis la racine du projet
+            df = pd.read_csv("src/IA/training/dataset.csv")
         self.df = df.copy()
         self._prepare_data()
         self._train_model()
@@ -104,8 +104,8 @@ class ConfigClassifier:
 
 # Exemple d'utilisation
 if __name__ == "__main__":
-    # 1. Chargement des données
-    df = pd.read_csv("/Users/chiba/Desktop/TB/configExtract/src/IA/training/dataset.csv")
+    # 1. Chargement des données avec chemin relatif depuis la racine du projet
+    df = pd.read_csv("src/IA/training/dataset.csv")
     
     # 2. Initialisation et entraînement
     clf = ConfigClassifier(df)

@@ -1,5 +1,6 @@
 # src/app.py
 import json
+from pathlib import Path
 from src.IA.llm.config_analyzer import ConfigAnalyzerAgent
 from src.topologie.TopologyLoader import TopologyLoader
 from src.topologie.TopologyBuilder import TopologyBuilder
@@ -20,7 +21,12 @@ class TopologyGenerator:
 
         # Demander dynamiquement à l'utilisateur le dossier :
         folder = input("Entrez le chemin du dossier de configs : ").strip()
-        folder = folder if folder else "/Users/chiba/Desktop/TB/configExtract/src/data/config/reseau12"
+        folder = Path(folder).resolve()
+
+        if not folder.exists():
+            print("!! Le dossier spécifié n'existe pas.")
+            return
+        # folder = folder if folder else "/Users/chiba/Desktop/TB/configExtract/src/data/config/reseau12"
         parsed_devices, neighbors = TopologyLoader.load_config_from_folder(folder)
         devices = TopologyBuilder.create_devices(parsed_devices)
         links = TopologyBuilder.build_links(devices, neighbors)
@@ -53,7 +59,7 @@ class TopologyGenerator:
         # print(response)
 
         # lire le rapport txt
-        fichier = "/Users/chiba/Desktop/TB/configExtract/src/IA/llm/rapport.txt"
+        fichier = "src/IA/llm/rapport.txt"
         response = ""
         with open(fichier, "r", encoding="utf-8") as f:
             texte_complet = f.read()
@@ -69,7 +75,7 @@ class TopologyGenerator:
         #     save_config_network(folder.split('/')[-1], prepare_for_mongo(device))
 
         # Exécuter la topologie
-        nom_folder = folder.rstrip('/').split('/')[-1]
+        nom_folder = folder.name
         output_file = f"{nom_folder}"
         if packet_tracer:
             TopologyGenerator.packet_tracer(devices, links, reponse_llm, output_path=folder, output_file=output_file)

@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     libcrypto++-dev \
     zlib1g-dev \
     git \
+    graphviz \
     minicom \
     && rm -rf /var/lib/apt/lists/*
 
