@@ -177,8 +177,8 @@ Auteur : Chiheb BIDANI (@chiheb122)
 
         elif choix == "2":
             if is_windows:
-                print(f"{Fore.RED}⚠️  Cette option n'est pas disponible sur Windows.")
-                print(f"{Fore.YELLOW}💡 Utilisez l'option 3 (Graphviz) comme alternative.")
+                print(f"{Fore.RED} Cette option n'est pas disponible sur Windows.")
+                print(f"{Fore.YELLOW} Utilisez l'option 3 (Graphviz) comme alternative.")
             else:
                 print("Génération de la topologie Packet Tracer...")
                 TopologyGenerator.run(packet_tracer=True)
