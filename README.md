@@ -72,7 +72,11 @@ cd nomDeDossier
 ### 2. Installer les dépendances Python
 ```bash
 python3 -m venv venv
+# LINUX
 source venv/bin/activate  # (ou .venv/bin/activate selon votre config)
+# WINDOWS
+.venv\Scripts\activate
+
 pip install -r requirements.txt
 ```
 

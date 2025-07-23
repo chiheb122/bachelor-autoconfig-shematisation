@@ -33,5 +33,8 @@ RUN cp build/lib.linux-x86_64-3.9/pka2core.cpython-39-x86_64-linux-gnu.so ../pka
 # Revenir au dossier de base
 WORKDIR /app
 
+# Installer les dépendances Python du projet
+RUN pip install -r requirements.txt
+
 # Point d'entrée interactif par défaut
-CMD ["bash"]
+CMD ["python3", "-m", "src.main"]
