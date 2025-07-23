@@ -11,10 +11,10 @@ TIMEOUT = 1                        # Délai d’attente pour la lecture série
 PASSWORD_CONSOLE = None            # Mot de passe console (saisi dynamiquement)
 PASSWORD_ENABLE = None             # Mot de passe enable (saisi dynamiquement)
 CMD_DETECTION = 'show version'     # Commande pour identifier le type de l'appareil
-CMD_CONFIG = 'show running-configs' # Commande pour extraire la configuration complète
+CMD_CONFIG = 'show running-config' # Commande pour extraire la configuration complète
 CMD_NEIGHBORS = 'show cdp neighbors'
-OUTPUT_FOLDER = 'dumps'            # Dossier de sortie (non utilisé ici, remplacé par configs/)
-BASE_DIR = Path(__file__).resolve().parent.parent
+OUTPUT_FOLDER = 'dumps'            # Dossier de sortie (non utilisé ici, remplacé par /)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # Chemin de base du projet
 HOSTNAME = None  # Variable pour stocker le nom d'hôte extrait de la configuration
 # --------------------------- #
 
@@ -112,7 +112,7 @@ def extract_hostname_from_config(config_text):
             return line.strip().split()[1]  # retourne juste le nom
 
 def save_config(ser, device_type, output_path):
-    """Extrait la configuration avec `show running-configs`, la nettoie, et l'enregistre dans un fichier .txt."""
+    """Extrait la configuration avec `show running-config`, la nettoie, et l'enregistre dans un fichier .txt."""
     print("Extraction de la configuration...")
     config = send(ser, CMD_CONFIG, 6)
     cleaned_config = clean_config_output(config)
@@ -146,7 +146,7 @@ def clean_config_output(raw_output):
     Nettoie la sortie brute de configuration d'un équipement réseau.
 
     Cette fonction prend en entrée une chaîne de caractères représentant la sortie brute d'une commande de configuration
-    (par exemple, la sortie d'un "show running-configs" sur un équipement Cisco) et supprime les lignes non pertinentes
+    (par exemple, la sortie d'un "show running-config" sur un équipement Cisco) et supprime les lignes non pertinentes
     ou inutiles pour obtenir un fichier de configuration plus lisible et exploitable. Les lignes ignorées incluent
     notamment les entêtes, les prompts de commande, et les commandes exécutées. Les lignes vides consécutives sont
     également réduites à une seule.
@@ -169,11 +169,11 @@ def clean_config_output(raw_output):
             continue
         if line.lower().startswith('current configuration'):
             continue
-        if line.lower().startswith('show running-configs'):
+        if line.lower().startswith('show running-config'):
             continue
         if line.lower().startswith('show cdp neighbors'):
             continue
-        if re.match(r'^.*#\s*show\s+running-configs$', line.lower()):
+        if re.match(r'^.*#\s*show\s+running-config$', line.lower()):
             continue
         if re.match(r'^\S+#$', line):  # prompt final type "Switch#"
             continue
@@ -198,7 +198,7 @@ def clean_config_output(raw_output):
 def ask_network_folder():
     """Demande à l'utilisateur un nom de sous-dossier pour stocker les fichiers de configuration."""
     folder_name = input("Nom du dossier pour ce réseau (ex: resau1) : ").strip()
-    full_path = BASE_DIR / "data/configs" / folder_name
+    full_path = BASE_DIR / "data/config" / folder_name
     full_path.mkdir(parents=True, exist_ok=True)
     return full_path
 

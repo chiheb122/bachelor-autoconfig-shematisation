@@ -1,5 +1,6 @@
 # src/app.py
 import json
+import platform
 from pathlib import Path
 from src.IA.llm.config_analyzer import ConfigAnalyzerAgent
 from src.topologie.TopologyLoader import TopologyLoader
@@ -133,17 +134,28 @@ class TopologyGenerator:
         return formatted_response
 
 def main_menu():
+    is_windows = platform.system() == "Windows"
+    
     while True:
+        # Préparer le texte pour l'option Packet Tracer
+        packet_tracer_option = f"{Fore.LIGHTBLACK_EX}2. Générer la topologie Packet Tracer (non disponible sur Windows)" if is_windows else f"{Fore.BLUE}2. Générer la topologie Packet Tracer"
+        
         menu = f"""
 \033[1m\033[94m
-==============================
-   Travail de Bachelor réalisé par @chiheb_BIDANI
-==============================
+===============================================================
+             Haute École de Gestion de Genève (HEG)
+       Travail de Bachelor – Année académique 2024-2025
+===============================================================
 
-Sémantisation visuelle des configurations réseau et detection intelligente des erreurs par l'IA
+Projet : Schématisation visuelle des configurations réseau  
+         et détection intelligente des erreurs par l'IA
+
+Auteur : Chiheb BIDANI (@chiheb122)
+
 \033[91m\nNotice : Assurez-vous que les fichiers de config se terminent par _config.txt et les neighbors avec _neighbors.txt\033[0m
 
-\n{Fore.BLUE}1. Extraire les configs\n{Fore.BLUE}2. Générer la topologie Packet Tracer\n{Fore.BLUE}3. Générer la topologie Graphviz\n{Fore.BLUE}0. Quitter\n"""
+\n{Fore.BLUE}Menu principal :\n{Fore.BLUE}
+1. Extraire les configurations\n{packet_tracer_option}\n{Fore.BLUE}3. Générer la topologie Graphviz\n{Fore.BLUE}0. Quitter\n"""
         
         print(menu)
         
@@ -164,8 +176,12 @@ Sémantisation visuelle des configurations réseau et detection intelligente des
                 main_menu()
 
         elif choix == "2":
-            print("Génération de la topologie Packet Tracer...")
-            TopologyGenerator.run(packet_tracer=True)  # ou une méthode dédiée si tu veux séparer
+            if is_windows:
+                print(f"{Fore.RED}⚠️  Cette option n'est pas disponible sur Windows.")
+                print(f"{Fore.YELLOW}💡 Utilisez l'option 3 (Graphviz) comme alternative.")
+            else:
+                print("Génération de la topologie Packet Tracer...")
+                TopologyGenerator.run(packet_tracer=True)
         elif choix == "3":
             print("Génération de la topologie Graphviz...")
             TopologyGenerator.run(packet_tracer=False)
