@@ -23,4 +23,4 @@ zipp==3.23.0
 zstandard==0.23.0
 pybind11
 setuptools
-wheel
+pymongo

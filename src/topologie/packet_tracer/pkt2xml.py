@@ -1,6 +1,12 @@
 from pathlib import Path
 import re
-import pka2core #type: ignore
+import platform
+
+if platform.system() in ["Linux", "Darwin"]:
+    import pka2core  # type: ignore
+else:
+    print("!! Le module 'pka2core' ne peut être importé que sur Linux ou macOS.")
+
 
 def decrypt_pkt_to_xml(input_path: str) -> str:
     """

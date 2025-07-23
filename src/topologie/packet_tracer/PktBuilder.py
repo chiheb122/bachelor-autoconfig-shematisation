@@ -5,7 +5,6 @@ from src.models.Router import Router
 import xml.etree.ElementTree as ET
 import sys
 sys.path.append("lib/pka2xml_py")
-import pka2core #type: ignore
 from src.topologie.packet_tracer.pkt2xml import encrypt_xml_to_pkt ,decrypt_pkt_to_xml # Librairie standard pour manipuler du XML en Python
 import copy
 
