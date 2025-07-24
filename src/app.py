@@ -10,8 +10,8 @@ from src.configs.save.save_configs_to_mongo import save_config_network,prepare_f
 from src.IA.training.train_naive_bayes import ConfigClassifier
 from src.IA.training.config_feature_parser import extract_features_from_configRaw
 from src.configs.extract.pytermi import main
-from colorama import Fore, Style, init
-from src.topologie.graphviz.draw_network import draw_network
+from colorama import Fore, init
+from src.topologie.graphviz.draw_network import GraphvizRender
 
 init(autoreset=True)
 
@@ -81,7 +81,7 @@ class TopologyGenerator:
         if packet_tracer:
             TopologyGenerator.packet_tracer(devices, links, reponse_llm, output_path=folder, output_file=output_file)
         else:
-            TopologyGenerator.graphviz(devices, links, output_file=output_file, output_path=folder)
+            TopologyGenerator.graphviz(devices, links, output_file=output_file, output_path=folder, responsellm=response)
 
 
 
@@ -92,9 +92,12 @@ class TopologyGenerator:
         TopologyExecutor.generate(devices, links, notes=reponse_IA, output_path=output_path, output_file=output_file)
 
     @staticmethod
-    def graphviz(devices, links, output_file="topologie_graphviz", output_path="."):
+    def graphviz(devices, links, output_file="topologie_graphviz", output_path=".", responsellm=None):
         # Logique pour générer la topologie avec Graphviz
-        draw_network(devices, links, output_file=output_file, output_path=output_path)
+        drawnetwork = GraphvizRender(devices, links, output_file=output_file, output_path=output_path, responsellm=responsellm)
+        drawnetwork.draw_network()
+        # Générer le rapport HTML
+        drawnetwork.generate_html_report()
 
     # Formatter la réponse pour l'afficher dans l'interface
     @staticmethod

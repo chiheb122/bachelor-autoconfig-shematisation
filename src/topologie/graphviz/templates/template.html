@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Analyse réseau</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 10px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        #network-image {
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        li:hover {
+            background-color: #ddd;
+        }
+
+        .statut {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar">
+        <h3>Appareils</h3>
+        <ul>
+            {% for device in devices %}
+            <li onclick="showDevice('{{ device.name }}')">{{ device.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="content">
+        <img id="network-image" src="{{ output_file }}.png" alt="Topologie réseau">
+        <h2 id="device-title">Sélectionnez un appareil</h2>
+        <p id="device-statut"></p>
+        <div id="device-details"></div>
+    </div>
+
+    <script>
+        const data = {{ devices | tojson | safe }};
+
+        function showDevice(name) {
+            const device = data.find(d => d.name === name);
+            if (!device) return;
+
+            document.getElementById("device-title").textContent = device.name;
+            document.getElementById("device-statut").textContent = "Statut : " + device.statut;
+
+            let html = '';
+
+            if (device.networks && device.networks.length > 0) {
+                html += '<h4>Réseaux :</h4><ul>' + device.networks.map(n => `<li>${n}</li>`).join('') + '</ul>';
+            }
+
+            if (device.problemes && device.problemes.length > 0) {
+                html += '<h4>Problèmes :</h4><ul>' + device.problemes.map(p => `<li>${p}</li>`).join('') + '</ul>';
+            }
+
+            if (device.recommandations && device.recommandations.length > 0) {
+                html += '<h4>Recommandations :</h4><ul>' + device.recommandations.map(r => `<li>${r}</li>`).join('') + '</ul>';
+            }
+
+            if (device.commandes && device.commandes.length > 0) {
+                html += '<h4>Commandes proposées :</h4><ul>' + device.commandes.map(c => `<li><code>${c}</code></li>`).join('') + '</ul>';
+            }
+
+            document.getElementById("device-details").innerHTML = html;
+        }
+    </script>
+
+</body>
+
+</html>
