@@ -1,6 +1,5 @@
 from graphviz import Graph
 from jinja2 import Environment, FileSystemLoader
-import json
 import os
 
 IMG_DIR = os.path.abspath("src/resources/img")
