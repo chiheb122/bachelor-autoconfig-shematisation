@@ -17,7 +17,7 @@ class ConfigAnalyzerAgent:
         #     reasoning_format="parsed",
         #     timeout=None,
         #     max_retries=2,
-        #     api_key="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"
+        #     api_key="your api key"
         # )
         # Charger le prompt depuis le fichier
         template_path = Path(__file__).parent / "prompt_template.txt"
