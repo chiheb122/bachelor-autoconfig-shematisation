@@ -185,6 +185,7 @@ Auteur : Chiheb BIDANI (@chiheb122)
             else:
                 print("Génération de la topologie Packet Tracer...")
                 TopologyGenerator.run(packet_tracer=True)
+                break  # Sortir de la boucle après la génération
         elif choix == "3":
             print("Génération de la topologie Graphviz...")
             TopologyGenerator.run(packet_tracer=False)

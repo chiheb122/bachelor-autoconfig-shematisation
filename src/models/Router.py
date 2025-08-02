@@ -86,5 +86,5 @@ class Router(Device):
         return router
 
     def get_position(self):
-        print(f"Position du routeur {self.hostname} : ({self.position_x}, {self.position_y})")
+        # print(f"Position du routeur {self.hostname} : ({self.position_x}, {self.position_y})")
         return self.position_x, self.position_y

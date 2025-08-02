@@ -95,7 +95,7 @@ class PktBuilder:
     """
     def generateXML(self,tree, output_path="src/resources/generated/generated1.xml"):
         tree.write(output_path, encoding="utf-8", xml_declaration=True)
-        print(f"✅ Fichier généré avec succès : {output_path}")
+        print(f"Fichier XML généré avec succès : {output_path}")
 
     """
     Génère un fichier .pkt à partir d'un fichier XML spécifié.
@@ -154,7 +154,7 @@ class PktBuilder:
             note_copy.find(".//Z").text = str(z)
             note_copy.find(".//TEXT").text = text
     
-            print(note_copy)
+            # print(note_copy)
             return note_copy  # Retourne la note ajoutée pour une éventuelle utilisation ultérieure
         except ET.ParseError as e:
             print(f"Erreur de parsing XML : {e}")
