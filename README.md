@@ -2,6 +2,7 @@
 
 Ce projet a été réalisé dans le cadre de mon travail de Bachelor. Il vise à automatiser la création de topologies réseau dans Cisco Packet Tracer ou Graphviz à partir des fichiers de configuration au format JSON.
 
+![Aperçu de l'interface du programme](src/resources/img/interface.png)
 ---
 ## 🎯 Objectif
 
@@ -115,3 +116,5 @@ Ce projet est sous licence MIT.
 Le fichier `LICENSE` est présent à la racine du dépôt.  
 
 ---
+
+> ℹ️ **Notice** : Le dossier src/data/config contient un exemple complet des fichiers de configuration extraits ainsi que les topologies générées (Packet Tracer et Graphviz).  
