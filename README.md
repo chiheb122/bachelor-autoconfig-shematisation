@@ -109,3 +109,9 @@ python -m src.main
 
 ---
 
+## 📄 Licence
+
+Ce projet est sous licence MIT.  
+Le fichier `LICENSE` est présent à la racine du dépôt.  
+
+---
