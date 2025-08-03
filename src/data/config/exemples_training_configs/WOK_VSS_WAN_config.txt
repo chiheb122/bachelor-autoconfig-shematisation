@@ -1,0 +1,1433 @@
+Building configuration...
+
+Current configuration : 32650 bytes
+!
+! Last configuration change at 08:10:58 GMT Tue Feb 26 2019 by am42590
+! NVRAM config last updated at 10:02:35 GMT Sun Feb 24 2019 by am42590
+!
+version 15.2
+service nagle
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime
+service timestamps log datetime localtime
+service password-encryption
+service linenumber
+service pt-vty-logging
+service sequence-numbers
+service counters max age 10
+!
+hostname WOK_VSS_WAN
+!
+boot-start-marker
+boot system flash bootdisk:s2t54-ipservicesk9-mz.SPA.152-1.SY6.bin
+boot-end-marker
+!
+!
+logging buffered 16384
+logging monitor warnings
+enable secret 5 <removed>
+!
+aaa new-model
+!
+!
+aaa authentication banner ^CCC
+Access to this resource is restricted to authorised personnel using one-time password authentication.
+
+Please login using your RSA SecurID key. To gain access to enable mode, please enter the enable password.
+^C
+aaa authentication fail-message ^CCC
+Login failed. Please wait until your RSA SecurID key refreshes, and then try again.
+^C
+aaa authentication login default group radius enable
+aaa authentication enable default enable
+aaa accounting exec default start-stop group tacacs+
+aaa accounting commands 0 default start-stop group tacacs+
+aaa accounting commands 15 default start-stop group tacacs+
+!
+!
+!
+!
+!
+aaa session-id common
+platform ip cef load-sharing ip-only
+platform qos 10g-only
+no platform multicast routing replication egress
+clock timezone GMT 0 0
+clock summer-time GMT recurring
+no ip source-route
+!
+ip vrf DATADOMAIN
+ rd 172.22.245.33:6
+!
+ip vrf DOMINO
+ rd 172.29.116.9:5
+!
+ip vrf HEM9A
+ rd 172.29.116.1:1
+!
+ip vrf HEM9A/HEMTST_v9000
+ rd 172.29.116.1:3
+!
+ip vrf HEM9A_v9000
+ rd 172.29.116.1:2
+!
+ip vrf HEMAP
+ rd 172.29.48.6:2
+!
+ip vrf HEMAP/HEMLA_v9000
+ rd 172.29.48.6:3
+!
+ip vrf HEMAP_v9000
+ rd 172.29.48.6:1
+!
+ip vrf HEMLA
+ rd 172.29.48.9:2
+!
+ip vrf HEMLA_v9000
+ rd 172.29.48.9:1
+!
+ip vrf HEMTST_v9000
+ rd 172.29.48.27:2
+!
+ip vrf PROTECTIER
+ rd 172.18.251.48:8
+!
+ip vrf PROTECTIER2
+ rd 172.18.251.64:9
+!
+ip vrf SVC
+ rd 172.22.245.64:1
+!
+ip vrf iSeries
+ rd 172.18.251.0:3
+!
+ip vrf wintel1
+ rd 172.18.251.48:3
+!
+!
+no ip bootp server
+no ip domain-lookup
+ip name-server 172.18.202.13
+ip name-server 172.29.12.4
+vtp mode transparent
+!
+!
+!
+!
+!
+!
+switch virtual domain 210
+ switch mode virtual
+ switch 1 priority 110
+!
+!
+table-map cos-discard-class-map
+ map from  0 to 0
+ map from  1 to 8
+ map from  2 to 16
+ map from  3 to 26
+ map from  4 to 32
+ map from  5 to 46
+ map from  6 to 48
+ map from  7 to 56
+!
+!
+flow exporter Export1
+ destination 172.18.248.59
+ source Loopback1
+ transport udp 2055
+!
+flow platform cache timeout inactive 60
+flow platform cache timeout active 60
+!
+flow monitor MONITOR1
+ exporter Export1
+ cache timeout active 60
+ record platform-original ipv4 full
+!
+!
+!
+!
+!
+!
+archive
+ log config
+  logging enable
+  logging size 20
+  notify syslog contenttype plaintext
+!
+spanning-tree mode rapid-pvst
+spanning-tree portfast edge default
+spanning-tree portfast edge bpduguard default
+no spanning-tree optimize bpdu transmission
+spanning-tree extend system-id
+spanning-tree vlan 1-1005 priority 28672
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause gbic-invalid
+errdisable recovery cause psecure-violation
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause loopback
+port-channel per-module load-balance
+port-channel load-balance src-dst-mixed-ip-port
+!
+redundancy
+ main-cpu
+  auto-sync running-config
+ mode sso
+!
+vlan internal allocation policy ascending
+vlan access-log ratelimit 2000
+!
+vlan 3
+ name VLAN_VMTN
+!
+vlan 5
+ name VLAN_F
+!
+vlan 6
+ name VLAN_I
+!
+vlan 7
+ name VLAN_X247
+!
+vlan 8
+ name VLAN_X48
+!
+vlan 9-10 
+!
+vlan 11
+ name backbone
+!
+vlan 12-16 
+!
+vlan 17
+ name Xseries_226
+!
+vlan 18
+ name FILTRATION_VDI
+!
+vlan 19
+ name VIDEO_VLAN
+!
+vlan 20
+ name VoIP_VLAN
+!
+vlan 21
+ name VDI_VLAN
+!
+vlan 22
+ name Storwize_V7000
+!
+vlan 23
+ name vSphere
+!
+vlan 28 
+!
+vlan 40
+ name SteelApp
+!
+vlan 50
+ name VM_SP_Pri
+!
+vlan 51
+ name VM_SP_Sec
+!
+vlan 52
+ name VM_SP_Test
+!
+vlan 100
+ remote-span
+!
+vlan 101
+ name IBM_Flash_storage
+!
+vlan 102
+ name HMC_Redditch
+!
+vlan 103
+ name HMC_Woking
+!
+vlan 150
+ name APC_PDU
+!
+vlan 151
+ name Stingray_Trans
+!
+vlan 201
+ name ESXi_Mgmt
+!
+vlan 202
+ name vMotion
+!
+vlan 203
+ name Wintel_Mgmt
+!
+vlan 204
+ name Avamar_Backup
+!
+vlan 205
+ name Data_Domain_Rep
+!
+vlan 206
+ name Data_Domain_Data
+!
+vlan 207
+ name SVC_Replication
+!
+vlan 208
+ name ProtecTier_Rep
+!
+vlan 209
+ name ProtecTIER_Rep2
+!
+vlan 210
+ name CLOUD_PROV_1
+!
+vlan 211
+ name CLOUD_PROV_2
+!
+vlan 212
+ name Citrix_VDI_POC
+!
+vlan 301 
+!
+vlan 304
+ name VLAN_GCC1_304
+!
+vlan 305
+ name VLAN_GCC1_305
+!
+vlan 306
+ name Performance_Mgt_1
+!
+vlan 307
+ name Performance_Mgt_2
+!
+vlan 400 
+!
+vlan 401
+ name AVAMAR_BACKUP
+!
+vlan 402
+ name AVAMAR_REPLICATION
+!
+vlan 500 
+!
+vlan 600
+ name Polycom_HA
+!
+vlan 601
+ name OSV_ADMIN
+!
+vlan 700
+ name Lync
+!
+vlan 801
+ name XIV_Iseries_1
+!
+vlan 802
+ name XIV_Iseries_2
+!
+vlan 803
+ name XIV_Iseries_3
+!
+vlan 804
+ name XIV_Wintel_1
+!
+vlan 806
+ name XIV_Wintel_3
+!
+vlan 807
+ name ERSPAN
+!
+vlan 808
+ name DOM_HA_Replication
+!
+vlan 811
+ name HEM9A_REP
+!
+vlan 812
+ name HEMAP_REP
+!
+vlan 900
+ name Riverbed_WAN0_0
+!
+vlan 901
+ name Riverbed_WAN0_1
+!
+vlan 921
+ name native921
+!
+vlan 950
+ name native950
+!
+vlan 951
+ name Native951
+!
+vlan 1000
+ name Rack_VLAN
+!
+ip tcp path-mtu-discovery
+!
+class-map match-any class-copp-icmp-redirect-unreachable
+class-map match-all class-copp-glean
+class-map match-all class-copp-receive
+class-map match-all class-copp-options
+class-map match-all class-copp-broadcast
+class-map match-all class-copp-mcast-acl-bridged
+class-map match-all class-copp-slb
+class-map match-all class-copp-mtu-fail
+class-map match-all class-copp-ttl-fail
+class-map match-all class-copp-arp-snooping
+class-map match-any class-copp-mcast-copy
+class-map match-any class-copp-ip-connected
+class-map match-any class-copp-match-igmp
+ match access-group name acl-copp-match-igmp
+class-map match-all class-copp-unknown-protocol
+class-map match-any class-copp-vacl-log
+class-map match-all class-copp-mcast-ipv6-control
+class-map match-any class-copp-match-pimv6-data
+ match access-group name acl-copp-match-pimv6-data
+class-map match-any class-copp-mcast-punt
+class-map match-all class-copp-unsupp-rewrite
+class-map match-all class-copp-ucast-egress-acl-bridged
+class-map match-all class-copp-ip-admission
+class-map match-any class-copp-dpss-divert
+class-map match-all class-copp-service-insertion
+class-map match-all class-copp-mac-pbf
+class-map match-any class-copp-match-mld
+ match access-group name acl-copp-match-mld
+class-map match-all class-copp-ucast-ingress-acl-bridged
+class-map match-all class-copp-dhcp-snooping
+class-map match-all class-copp-wccp
+class-map match-all class-copp-nd
+class-map match-any class-copp-ipv6-connected
+class-map match-all class-copp-mcast-rpf-fail
+class-map match-any class-copp-match-ndv6hl
+ match access-group name acl-copp-match-ndv6hl
+class-map match-any class-copp-ucast-rpf-fail
+class-map match-all class-copp-mcast-ip-control
+class-map match-any class-copp-match-pim-data
+ match access-group name acl-copp-match-pim-data
+class-map match-any class-copp-match-ndv6
+ match access-group name acl-copp-match-ndv6
+class-map match-any class-copp-mcast-v4-data-on-routedPort
+class-map match-any class-copp-mcast-v6-data-on-routedPort
+!
+policy-map policy-default-autocopp
+ class class-copp-mcast-v4-data-on-routedPort
+   police rate 10 pps burst 1 packets    conform-action drop     exceed-action drop 
+ class class-copp-mcast-v6-data-on-routedPort
+   police rate 10 pps burst 1 packets    conform-action drop     exceed-action drop 
+ class class-copp-match-mld
+   police rate 10000 pps burst 10000 packets    conform-action set-discard-class-transmit 48    exceed-action transmit 
+ class class-copp-match-igmp
+   police rate 10000 pps burst 10000 packets    conform-action set-discard-class-transmit 48    exceed-action transmit 
+ class class-copp-icmp-redirect-unreachable
+   police rate 100 pps burst 10 packets    conform-action transmit     exceed-action drop 
+ class class-copp-ucast-rpf-fail
+   police rate 100 pps burst 10 packets    conform-action transmit     exceed-action drop 
+ class class-copp-vacl-log
+   police rate 2000 pps burst 1 packets    conform-action transmit     exceed-action drop 
+ class class-copp-mcast-punt
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+ class class-copp-mcast-copy
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+ class class-copp-ip-connected
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+ class class-copp-ipv6-connected
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+ class class-copp-match-pim-data
+   police rate 1000 pps burst 1000 packets    conform-action transmit     exceed-action drop 
+ class class-copp-match-pimv6-data
+   police rate 1000 pps burst 1000 packets    conform-action transmit     exceed-action drop 
+ class class-copp-match-ndv6
+   police rate 1000 pps burst 1000 packets    conform-action set-discard-class-transmit 48    exceed-action drop 
+!
+!
+ auto qos default
+!
+!
+!
+template data
+!
+!
+interface Loopback1
+ ip address 10.18.206.2 255.255.255.255
+!
+interface Port-channel11
+ description Etherchannel 11 WOK_VSS_WAN to WOK_Temp_Switch
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface Port-channel23
+ description 20G MEC 23 from WOK_VSS_WAN to WOK_VSS_CORE
+ switchport
+ switchport trunk native vlan 921
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9216
+!
+interface Port-channel50
+ description DCI MEC 50 from WAN_DIST1_WOK to WAN_DIST1_RED (20G DWDM)
+ switchport
+ switchport trunk native vlan 950
+ switchport mode trunk
+ switchport trunk allowed vlan 1-804,806-4094
+ switchport nonegotiate
+ mtu 9216
+ spanning-tree bpdufilter enable
+!
+interface Port-channel100
+ description VSL Between WOK_VSS_WAN1 and WOK_VSS_WAN2
+ no switchport
+ no ip address
+ no platform qos channel-consistency
+ switch virtual link 1
+!
+interface Port-channel200
+ description VSLBetween WOK_VSS_WAN2 and 1 WOK_VSS_WAN1
+ no switchport
+ no ip address
+ no platform qos channel-consistency
+ switch virtual link 2
+!
+interface Port-channel205
+ description Data Domain Replication
+ switchport
+ switchport mode access
+ switchport access vlan 205
+!
+interface GigabitEthernet1/1/1
+ no switchport
+ no ip address
+ shutdown
+!
+interface GigabitEthernet1/1/2
+ no switchport
+ no ip address
+ shutdown
+!
+interface GigabitEthernet1/1/3
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet1/1/4
+ description VSL from WOK_VSS_WAN1 to WOK_VSS_WAN2 Te2/4
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 100 mode on
+!
+interface TenGigabitEthernet1/1/5
+ description DCI MEC 50 from RED_VSS_WAN1 to WOK_VSS_WAN1 Te1/1/5 (CAL151258)
+ switchport
+ switchport trunk native vlan 950
+ switchport mode trunk
+ switchport trunk allowed vlan 1-804,806-4094
+ switchport nonegotiate
+ mtu 9216
+ channel-group 50 mode on
+!
+interface GigabitEthernet1/2/1
+ description Connection to Interceptor InPath0
+ no switchport
+ ip address 10.18.195.187 255.255.255.248
+!
+interface GigabitEthernet1/2/2
+ description SVC Replication
+ switchport
+ switchport mode access
+ switchport access vlan 207
+ switchport nonegotiate
+ mtu 9216
+!
+interface GigabitEthernet1/2/3
+ description SVC Replication
+ switchport
+ switchport mode access
+ switchport access vlan 207
+ switchport nonegotiate
+ mtu 9216
+!
+interface GigabitEthernet1/2/4
+ description Juniper IDP Management
+ switchport
+ switchport mode access
+ switchport access vlan 5
+!
+interface GigabitEthernet1/2/5
+ description iSeries ProtecTier Replication
+ switchport
+ switchport mode access
+ switchport access vlan 208
+!
+interface GigabitEthernet1/2/6
+ description Connection to Steelhead 7050 WAN0_0
+ switchport
+ switchport mode access
+ switchport access vlan 900
+ spanning-tree portfast edge
+!
+interface GigabitEthernet1/2/7
+ description Riverbed ARX5000
+ switchport
+!
+interface GigabitEthernet1/2/8
+ description DomHA Replication
+ switchport
+ switchport mode access
+ switchport access vlan 808
+ mtu 9216
+!
+interface GigabitEthernet1/2/9
+ description HEM9A Replication
+ switchport
+ switchport mode access
+ switchport access vlan 801
+ mtu 9216
+!
+interface GigabitEthernet1/2/10
+ description HEMAP-HA Replication
+ switchport
+ switchport mode access
+ switchport access vlan 802
+ mtu 9216
+!
+interface GigabitEthernet1/2/11
+ description HEMLA-HA Replication
+ switchport
+ switchport mode access
+ switchport access vlan 803
+ mtu 9216
+!
+interface GigabitEthernet1/2/12
+ description iSeries ProtecTier Replication2
+ switchport
+ switchport mode access
+ switchport access vlan 209
+!
+interface GigabitEthernet1/2/13
+ description Bluecoat Proxy SG200 172.18.246.96
+ switchport
+ switchport access vlan 5
+!
+interface GigabitEthernet1/2/14
+ description ASA Primary
+ switchport
+ switchport access vlan 5
+!
+interface GigabitEthernet1/2/15
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet1/2/16
+ description Stonesoft EPS SPAN Port
+ switchport
+!
+interface GigabitEthernet1/2/17
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet1/2/18
+ description McAfee DLP5500
+ switchport
+!
+interface GigabitEthernet1/2/19
+ description Path Selection VPN Router
+ no switchport
+ ip address 10.18.195.142 255.255.255.248
+ spanning-tree portfast edge
+!
+interface GigabitEthernet1/2/20
+ description Data Domain Replication
+ switchport
+ switchport mode access
+ switchport access vlan 205
+ channel-group 205 mode active
+!
+interface GigabitEthernet1/2/21
+ description connection to RB7055 WAN0_0
+ switchport
+ switchport mode access
+ switchport access vlan 900
+ spanning-tree portfast edge
+!
+interface GigabitEthernet1/2/22
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet1/2/23
+ description XIV Replication
+ switchport
+ switchport mode access
+ switchport access vlan 806
+ mtu 9216
+!
+interface GigabitEthernet1/2/24
+ description VSS Dual Active Detection link
+ no switchport
+ no ip address
+ no cdp enable
+ dual-active fast-hello
+!
+interface TenGigabitEthernet1/3/1
+ description Cascade Shark 10G SPAN connection
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface TenGigabitEthernet1/3/2
+ description HEM9A v9000 Replication
+ switchport
+ switchport mode access
+ switchport access vlan 811
+ mtu 9216
+!
+interface TenGigabitEthernet1/3/3
+ description Etherchannel 11 WOK_Temp_Switch TE1/0/1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 11 mode on
+!
+interface TenGigabitEthernet1/3/4
+ description HEMAP v9000 Replication
+ switchport
+ switchport mode access
+ switchport access vlan 812
+ mtu 9216
+!
+interface TenGigabitEthernet1/3/5
+ description link to WAN_VSS2_TE2/3/5 (Planned VSL)
+ switchport
+ switchport access vlan 100
+ shutdown
+!
+interface TenGigabitEthernet1/3/6
+ description Connection to SteelHead G142
+ switchport
+ switchport mode access
+ switchport access vlan 900
+ spanning-tree portfast edge
+!
+interface TenGigabitEthernet1/3/7
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface TenGigabitEthernet1/3/8
+ description MEC 23 from WOK_VSS_WAN1 to WOK_VSS_CORE Te1/1/8
+ switchport
+ switchport trunk native vlan 921
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9216
+ channel-group 23 mode on
+!
+interface GigabitEthernet2/1/1
+ no switchport
+ no ip address
+ shutdown
+!
+interface GigabitEthernet2/1/2
+ no switchport
+ no ip address
+ shutdown
+!
+interface GigabitEthernet2/1/3
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/1/4
+ description VSL from WOK_VSS_WAN2 to WOK_VSS_WAN1 Te1/4
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 200 mode on
+!
+interface TenGigabitEthernet2/1/5
+ description DCI MEC 50 from RED_VSS_WAN2 to WOK_VSS_WAN2 Te2/1/5 (CAL151265)
+ switchport
+ switchport trunk native vlan 950
+ switchport mode trunk
+ switchport trunk allowed vlan 1-804,806-4094
+ switchport nonegotiate
+ mtu 9216
+ channel-group 50 mode on
+!
+interface GigabitEthernet2/2/1
+ description Connection To Interceptor InPath1
+ no switchport
+ ip address 10.18.195.195 255.255.255.248
+ delay 900
+ shutdown
+!
+interface GigabitEthernet2/2/2
+ description SVC Replication
+ switchport
+ switchport mode access
+ switchport access vlan 207
+ switchport nonegotiate
+ mtu 9216
+!
+interface GigabitEthernet2/2/3
+ description SVC Replication
+ switchport
+ switchport mode access
+ switchport access vlan 207
+ switchport nonegotiate
+ mtu 9216
+!
+interface GigabitEthernet2/2/4
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/5
+ description ARISTA 7150 Management 172.18.248.3
+ switchport
+ switchport mode access
+ spanning-tree portfast edge
+!
+interface GigabitEthernet2/2/6
+ description Connection to Steelhead 7050 WAN0_1 (Not required at present)
+ switchport
+ switchport mode access
+ switchport access vlan 901
+ shutdown
+ spanning-tree portfast edge
+!
+interface GigabitEthernet2/2/7
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/8
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/9
+ description iSeries ProtecTier Replication
+ switchport
+ switchport mode access
+ switchport access vlan 208
+!
+interface GigabitEthernet2/2/10
+ description iSeries ProtecTier Replication2
+ switchport
+ switchport mode access
+ switchport access vlan 209
+!
+interface GigabitEthernet2/2/11
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/12
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/13
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/14
+ description ASA Secondary
+ switchport
+ switchport access vlan 5
+!
+interface GigabitEthernet2/2/15
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/16
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/17
+ description StoneGate 3202 Node 1 Management
+ switchport
+ switchport mode access
+!
+interface GigabitEthernet2/2/18
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/19
+ description New NextGen Firewall Management Port Node2
+ switchport
+ switchport mode access
+!
+interface GigabitEthernet2/2/20
+ description Data Domain Replication
+ switchport
+ switchport mode access
+ switchport access vlan 205
+ channel-group 205 mode active
+!
+interface GigabitEthernet2/2/21
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface GigabitEthernet2/2/22
+ description Cascade 04260-EX Management
+ switchport
+!
+interface GigabitEthernet2/2/23
+ description XIV Replication
+ switchport
+ switchport mode access
+ switchport access vlan 804
+ mtu 9216
+!
+interface GigabitEthernet2/2/24
+ description VSS Dual Active Detection link
+ no switchport
+ no ip address
+ no cdp enable
+ dual-active fast-hello
+!
+interface TenGigabitEthernet2/3/1
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface TenGigabitEthernet2/3/2
+ description HEMTST v9000 Replication
+ switchport
+ switchport mode access
+ switchport access vlan 811
+ mtu 9216
+!
+interface TenGigabitEthernet2/3/3
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface TenGigabitEthernet2/3/4
+ description HEMLA v9000 Replication
+ switchport
+ switchport mode access
+ switchport access vlan 812
+ mtu 9216
+!
+interface TenGigabitEthernet2/3/5
+ description link to WAN_VSS2_TE1/3/5 (Planned VSL)
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface TenGigabitEthernet2/3/6
+ description Connection to Steelhead G143
+ switchport
+ switchport mode access
+ switchport access vlan 901
+ spanning-tree portfast edge
+!
+interface TenGigabitEthernet2/3/7
+ switchport
+ switchport access vlan 500
+ shutdown
+!
+interface TenGigabitEthernet2/3/8
+ description MEC 23 from WOK_VSS_WAN1 to WOK_VSS_CORE Te2/1/8
+ switchport
+ switchport trunk native vlan 921
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9216
+ channel-group 23 mode on
+!
+interface Vlan1
+ description Management
+ ip address 172.18.248.251 255.255.255.0 secondary
+ ip address 172.18.248.245 255.255.255.0
+ ip helper-address 172.18.202.3
+ ip helper-address 172.29.2.53
+ no ip redirects
+ ip flow monitor MONITOR1 output
+!
+interface Vlan10
+ description Routing VLAN
+ ip address 172.18.246.245 255.255.255.192
+ ip helper-address 172.18.202.3
+ ip helper-address 172.29.2.53
+ ip flow monitor MONITOR1 input
+ ip flow monitor MONITOR1 output
+!
+interface Vlan100
+ no ip address
+!
+interface Vlan205
+ description Data Domain Replication
+ ip vrf forwarding DATADOMAIN
+ ip address 172.22.245.45 255.255.255.240
+ ip flow monitor MONITOR1 input
+!
+interface Vlan207
+ description SVC VRF Replication
+ mtu 9216
+ ip vrf forwarding SVC
+ ip address 172.22.245.93 255.255.255.224
+ ip flow monitor MONITOR1 input
+!
+interface Vlan208
+ description iSeries ProtecTier Replication
+ ip vrf forwarding PROTECTIER
+ ip address 172.18.251.61 255.255.255.240
+ ip flow monitor MONITOR1 input
+!
+interface Vlan209
+ description iSeries ProtecTier Replication2
+ ip vrf forwarding PROTECTIER2
+ ip address 172.18.251.77 255.255.255.240
+ ip flow monitor MONITOR1 input
+!
+interface Vlan306
+ description Performance Management 1
+ ip address 172.18.205.126 255.255.255.128
+!
+interface Vlan307
+ description Performance Management 2
+ ip address 172.18.205.254 255.255.255.128
+!
+interface Vlan801
+ description HEM9A VRF Replication
+ mtu 9216
+ ip vrf forwarding HEM9A
+ ip address 172.18.251.13 255.255.255.240
+ ip flow monitor MONITOR1 input
+!
+interface Vlan802
+ description HEMAP VRF Replication
+ mtu 9216
+ ip vrf forwarding HEMAP
+ ip address 172.18.251.29 255.255.255.240
+ ip flow monitor MONITOR1 input
+!
+interface Vlan803
+ description HEMLA VRF Replication
+ mtu 9216
+ ip vrf forwarding HEMLA
+ ip address 172.18.251.45 255.255.255.240
+ ip flow monitor MONITOR1 input
+!
+interface Vlan804
+ description XIV Wintel 1
+ mtu 9216
+ ip vrf forwarding wintel1
+ ip address 172.18.254.253 255.255.255.0
+ ip flow monitor MONITOR1 input
+ ip flow monitor MONITOR1 output
+!
+interface Vlan806
+ description XIV Wintel 3
+ mtu 9216
+ ip vrf forwarding wintel1
+ ip address 172.18.253.253 255.255.255.0
+ ip flow monitor MONITOR1 input
+!
+interface Vlan807
+ description ERSPAN destination SVI Interface IP Address 10.18.124.30
+ ip address 10.18.124.30 255.255.255.248
+!
+interface Vlan808
+ description Domino Cluster Replication
+ ip address 172.18.251.253 255.255.255.192
+!
+interface Vlan811
+ description HEM9A/HEMTST VRF Replication
+ mtu 9216
+ ip vrf forwarding HEM9A/HEMTST_v9000
+ ip address 172.18.251.85 255.255.255.248
+ ip flow monitor MONITOR1 input
+!
+interface Vlan812
+ description HEMAP/HEMLA VRF Replication
+ mtu 9216
+ ip vrf forwarding HEMAP/HEMLA_v9000
+ ip address 172.18.251.93 255.255.255.248
+!
+interface Vlan900
+ description Riverbed 0_0 VLAN
+ ip address 172.28.52.30 255.255.255.240
+!
+interface Vlan901
+ description Riverbed 0_1 VLAN
+ ip address 172.28.52.158 255.255.255.240
+!
+!
+router eigrp 1
+ distribute-list 50 in GigabitEthernet1/2/1
+ distribute-list 50 in GigabitEthernet2/2/1
+ network 10.18.195.136 0.0.0.7
+ network 10.18.195.184 0.0.0.7
+ network 10.18.195.192 0.0.0.7
+ network 10.18.195.216 0.0.0.7
+ network 10.18.195.224 0.0.0.7
+ network 10.18.195.232 0.0.0.7
+ network 10.18.206.2 0.0.0.0
+ network 172.18.246.192 0.0.0.63
+ network 172.18.248.0 0.0.0.255
+ network 172.18.249.0 0.0.0.127
+ network 172.18.251.192 0.0.0.63
+ network 172.28.52.16 0.0.0.15
+ network 172.28.52.144 0.0.0.15
+ redistribute static
+ passive-interface default
+ no passive-interface Vlan10
+ no passive-interface GigabitEthernet1/2/1
+ no passive-interface GigabitEthernet2/2/1
+ no passive-interface GigabitEthernet1/2/19
+ nsf
+!
+ip forward-protocol nd
+!
+ip ftp username admin
+ip ftp password 7 <removed>
+no ip http server
+no ip http secure-server
+ip route 10.200.2.0 255.255.255.224 172.18.248.238
+ip route 10.200.3.0 255.255.255.224 172.18.248.238
+ip route 10.200.25.0 255.255.255.0 172.18.248.238
+ip tacacs source-interface Vlan1
+!
+ip access-list extended acl-copp-match-igmp
+ permit igmp any any
+ip access-list extended acl-copp-match-pim-data
+ deny   pim any host 224.0.0.13
+ permit pim any any
+!
+ip radius source-interface Vlan1 
+logging trap notifications
+logging host 172.18.250.83
+access-list 10 permit 172.18.247.64
+access-list 10 permit 172.18.247.104
+access-list 10 permit 172.18.247.102
+access-list 10 permit 172.18.247.8
+access-list 10 permit 172.18.248.4
+access-list 10 permit 172.18.248.30
+access-list 10 remark Community Access
+access-list 10 permit 172.18.194.20
+access-list 10 permit 172.18.247.63
+access-list 10 permit 172.18.226.42
+access-list 10 permit 172.18.194.4
+access-list 10 permit 172.18.248.59
+access-list 10 permit 172.29.117.4
+access-list 10 permit 172.18.247.139
+access-list 10 permit 172.29.117.1
+access-list 10 permit 172.29.117.2
+access-list 10 permit 172.29.117.13
+access-list 10 permit 172.29.117.10
+access-list 10 permit 172.29.117.19
+access-list 10 permit 172.18.196.64 0.0.0.63
+access-list 20 remark VTY Access
+access-list 20 permit 172.18.52.0 0.0.1.255 log
+access-list 20 permit 172.18.158.0 0.0.0.255 log
+access-list 20 permit 172.18.194.0 0.0.0.255 log
+access-list 20 permit 172.18.196.64 0.0.0.63 log
+access-list 20 permit 172.18.216.0 0.0.0.255 log
+access-list 20 permit 172.18.246.192 0.0.0.63 log
+access-list 20 permit 172.18.248.0 0.0.0.255 log
+access-list 20 permit 172.28.48.32 0.0.0.15 log
+access-list 20 permit 172.28.48.48 0.0.0.15 log
+access-list 20 permit 172.29.118.0 0.0.1.255 log
+access-list 30 remark Extended VTY Access
+access-list 30 permit 172.18.216.0 0.0.0.255 log
+access-list 30 permit 172.18.246.192 0.0.0.63 log
+access-list 30 permit 172.28.48.32 0.0.0.15 log
+access-list 50 deny   65.197.254.5
+access-list 50 deny   63.108.175.0 0.0.0.255
+access-list 50 deny   192.168.195.0 0.0.0.255
+access-list 50 permit any
+!
+snmp-server engineID local 80000009030000152C828400
+snmp-server community <removed> RW 10
+snmp-server community <removed> RO 10
+snmp-server community <removed> RO 10
+snmp-server ifindex persist
+snmp-server trap timeout 10
+snmp-server trap-source Vlan1
+snmp-server location Woking Data Centre Rack
+snmp-server contact Network Integrity Team Parker House
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps chassis
+snmp-server enable traps module
+snmp-server enable traps config
+snmp-server enable traps event-manager
+snmp-server enable traps hsrp
+snmp-server enable traps ipsla
+snmp-server enable traps bridge newroot topologychange
+snmp-server enable traps syslog
+snmp-server enable traps entity
+snmp-server enable traps vtp
+snmp-server enable traps vlancreate
+snmp-server enable traps vlandelete
+snmp-server enable traps flash insertion removal
+snmp-server enable traps envmon fan shutdown supply temperature status
+snmp-server enable traps port-security
+snmp-server host 172.18.194.20 <removed> 
+snmp-server host 172.18.246.220 <removed> 
+snmp-server host 172.29.117.10 <removed> 
+snmp ifmib ifindex persist
+tacacs-server host 172.29.116.20
+tacacs-server host 172.18.247.78
+tacacs-server directed-request
+tacacs-server key 7 <removed>
+!
+radius-server host 172.18.247.111 auth-port 1812 acct-port 1813
+radius-server host 172.29.14.70 key 7 <removed>
+radius-server directed-request
+radius-server key 7 <removed>
+!
+!
+!
+ipv6 access-list acl-copp-match-mld
+ permit icmp any any mld-report
+ permit icmp any any mld-query
+ permit icmp any any mld-reduction
+ permit icmp any any 143
+!
+ipv6 access-list acl-copp-match-ndv6
+ permit icmp any any nd-na
+ permit icmp any any nd-ns
+ permit icmp any any router-advertisement
+ permit icmp any any router-solicitation
+ permit icmp any any redirect
+!
+ipv6 access-list acl-copp-match-ndv6hl
+ permit icmp any any nd-na hoplimit
+ permit icmp any any nd-ns hoplimit
+ permit icmp any any router-advertisement hoplimit
+ permit icmp any any router-solicitation hoplimit
+ permit icmp any any redirect hoplimit
+!
+ipv6 access-list acl-copp-match-pimv6-data
+ deny 103 any host FF02::D
+ permit 103 any any
+!
+control-plane
+ service-policy input policy-default-autocopp
+!
+!
+vstack
+banner login ^C
+
+
+
+   #########################################################################
+   #                                                                       #
+   #   WARNING                                                             #
+   #                                                                       #
+   #   This system is restricted to approved IT staff only, and then only  #
+   #   for approved work related activity.                                 #
+   #                                                                       #
+   #   Non-authorised users are expressly prohibited from accessing this   #
+   #   system, any such access may be punished to the fullest extent of    #
+   #   the law. Access attempts are logged and recorded and may be used    #
+   #   in conjunction with any relevant investigations.                    #
+   #                                                                       #
+   #   Authorised access to and activity on this system is logged and      #
+   #   may be reviewed at any time, you consent to this when you log on.   #
+   #                                                                       #
+   #                                                                       #
+   #                                                                       #
+   #########################################################################
+
+^C
+!
+line con 0
+ password 7 <removed>
+ logging synchronous
+line aux 0
+line vty 0 4
+ access-class 20 in
+ exec-timeout 30 0
+ password 7 <removed>
+ transport input telnet ssh
+line vty 5 6
+ access-class 30 in
+ exec-timeout 30 0
+ password 7 <removed>
+ transport input telnet ssh
+line vty 7 15
+ exec-timeout 0 0
+ transport input none
+!
+!
+monitor session 1 type local
+ description Local SPAN Session Woking WAN VSS Switch
+ source interface Te1/3/4
+ source interface Te2/3/4
+!
+!
+monitor session 2 type erspan-destination
+ description ERSPAN From REDDITCH_VSS  CORE
+ destination interface Gi1/2/16
+ source
+  erspan-id 2
+  ip address 10.18.124.30
+!
+!
+monitor session 3 type local
+ source vlan 208 - 209 , 801 - 803 , 811 - 814
+ destination interface Te1/3/1
+!
+!
+monitor session 10 type rspan-destination
+ description Remote SPAN session from Woking VSS CORE
+ source remote vlan 100
+ destination interface Te1/3/1
+!
+!
+ntp update-calendar
+ntp server 172.29.171.48
+ntp server 172.29.171.47
+diagnostic bootup level complete
+event manager environment email_server 172.18.247.147
+event manager environment email_from no-reply@parker.com
+event manager environment email_to eur_hem_nio@parker.com, infrastructure.oncall@parker.com
+no event manager policy Mandatory.go_switchbus.tcl type system
+event manager applet OnCall_Script
+ event timer cron cron-entry "0 8,20 * * *"
+ action 1.0 info type routername
+ action 1.1 cli command "enable"
+ action 2.0 cli command "delete /force bootdisk:on-call.txt"
+ action 2.1 cli command "show log | append bootdisk:on-call.txt"
+ action 2.2 cli command "show cdp nei | append bootdisk:on-call.txt"
+ action 2.3 cli command "show ntp status | append bootdisk:on-call.txt"
+ action 2.4 cli command "show module switch | append bootdisk:on-call.txt"
+ action 2.5 cli command "show spanning-tree sum | append bootdisk:on-call.txt"
+ action 2.6 cli command "show ip eigrp nei | append bootdisk:on-call.txt"
+ action 2.7 cli command "show switch virtual redundancy | append bootdisk:on-call.txt"
+ action 2.8 cli command "show etherchannel sum | append bootdisk:on-call.txt"
+ action 3.0 cli command "more bootdisk:on-call.txt"
+ action 3.1 mail server "$email_server" to "$email_to" from "$email_from" subject "On-call Checks - $_info_routername" body "$_cli_result"
+!
+!
+module provision switch 1
+ slot 1 slot-type 318 port-type 31 number 3 port-type 60 number 2  virtual-slot 17
+ slot 2 slot-type 156 port-type 31 number 24  virtual-slot 18
+ slot 3 slot-type 328 port-type 60 number 8  virtual-slot 19
+ !
+module provision switch 2
+ slot 1 slot-type 318 port-type 31 number 3 port-type 60 number 2  virtual-slot 33
+ slot 2 slot-type 156 port-type 31 number 24  virtual-slot 34
+ slot 3 slot-type 328 port-type 60 number 8  virtual-slot 35
+ 
+!
+
+end

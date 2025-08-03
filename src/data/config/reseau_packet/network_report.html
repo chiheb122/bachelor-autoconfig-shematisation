@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Analyse réseau</title>
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #sidebar {
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 10px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        #network-image {
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        li:hover {
+            background-color: #ddd;
+        }
+
+        .statut {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="sidebar">
+        <h3>Appareils</h3>
+        <ul>
+            
+            <li onclick="showDevice('R0')">R0</li>
+            
+            <li onclick="showDevice('R1')">R1</li>
+            
+            <li onclick="showDevice('R2')">R2</li>
+            
+            <li onclick="showDevice('Rospf')">Rospf</li>
+            
+            <li onclick="showDevice('Rstatic')">Rstatic</li>
+            
+            <li onclick="showDevice('Switch')">Switch</li>
+            
+        </ul>
+    </div>
+
+    <div id="content">
+        <img id="network-image" src="reseau_packet.png" alt="Topologie réseau">
+        <h2 id="device-title">Sélectionnez un appareil</h2>
+        <p id="device-statut"></p>
+        <div id="device-details"></div>
+    </div>
+
+    <script>
+        const data = [{"commandes": ["description Interface pour G0/2", "ip access-list extended VTY-ACL", "no shutdown"], "name": "R0", "networks": ["192.168.1.0/24", "192.168.10.0/24", "192.168.0.0/24", "192.168.3.0/24"], "problemes": ["Interface GigabitEthernet0/2 n\u0027a pas d\u0027adresse IP et est prot\u00e9g\u00e9e par une ACL sans description.", "Pas de description pour les interfaces.", "Pas de ACL pour les lignes VTY."], "recommandations": ["Ajouter des descriptions pour toutes les interfaces.", "Configurer une ACL pour les lignes VTY.", "V\u00e9rifier l\u0027\u00e9tat des interfaces."], "statut": "INCOMPLET"}, {"commandes": ["service password-encryption", "description Interface pour G0/2", "no shutdown"], "name": "R1", "networks": ["192.168.1.0/24", "192.168.2.0/24"], "problemes": ["Pas de chiffrement des mots de passe.", "Interface GigabitEthernet0/2 est d\u00e9sactiv\u00e9e sans raison.", "Pas de description pour les interfaces."], "recommandations": ["Activer le chiffrement des mots de passe.", "Ajouter des descriptions pour toutes les interfaces.", "V\u00e9rifier l\u0027\u00e9tat des interfaces."], "statut": "INCOMPLET"}, {"commandes": ["description Interface pour G0/2", "ip access-list extended VTY-ACL", "no shutdown"], "name": "R2", "networks": ["192.168.2.0/24", "192.168.12.0/24"], "problemes": ["Interface GigabitEthernet0/2 est d\u00e9sactiv\u00e9e sans raison.", "Pas de description pour les interfaces.", "Pas de ACL pour les lignes VTY."], "recommandations": ["Ajouter des descriptions pour toutes les interfaces.", "Configurer une ACL pour les lignes VTY.", "V\u00e9rifier l\u0027\u00e9tat des interfaces."], "statut": "INCOMPLET"}, {"commandes": ["description Interface pour G0/3.10"], "name": "Rospf", "networks": ["192.168.11.0/24", "192.168.12.0/24", "172.16.0.0/24", "192.168.3.0/24"], "problemes": ["Interface GigabitEthernet0/3.10 n\u0027a pas de description."], "recommandations": ["Ajouter une description pour l\u0027interface G0/3.10."], "statut": "OK"}, {"commandes": ["service password-encryption", "description Interface pour G0/2", "no shutdown"], "name": "Rstatic", "networks": ["192.168.10.0/24", "192.168.11.0/24"], "problemes": ["Pas de chiffrement des mots de passe.", "Interface GigabitEthernet0/2 est d\u00e9sactiv\u00e9e sans raison.", "Pas de description pour les interfaces."], "recommandations": ["Activer le chiffrement des mots de passe.", "Ajouter des descriptions pour toutes les interfaces.", "V\u00e9rifier l\u0027\u00e9tat des interfaces."], "statut": "INCOMPLET"}, {"commandes": ["service password-encryption", "description Interface pour F0/1", "shutdown"], "name": "Switch", "networks": [], "problemes": ["Pas de chiffrement des mots de passe.", "Pas de description pour les interfaces.", "Plusieurs ports sont inutilis\u00e9s sans shutdown."], "recommandations": ["Activer le chiffrement des mots de passe.", "Ajouter des descriptions pour toutes les interfaces.", "D\u00e9sactiver les ports inutilis\u00e9s."], "statut": "INCOMPLET"}];
+
+        function showDevice(name) {
+            const device = data.find(d => d.name === name);
+            if (!device) return;
+
+            document.getElementById("device-title").textContent = device.name;
+            document.getElementById("device-statut").textContent = "Statut : " + device.statut;
+
+            let html = '';
+
+            if (device.networks && device.networks.length > 0) {
+                html += '<h4>Réseaux :</h4><ul>' + device.networks.map(n => `<li>${n}</li>`).join('') + '</ul>';
+            }
+
+            if (device.problemes && device.problemes.length > 0) {
+                html += '<h4>Problèmes :</h4><ul>' + device.problemes.map(p => `<li>${p}</li>`).join('') + '</ul>';
+            }
+
+            if (device.recommandations && device.recommandations.length > 0) {
+                html += '<h4>Recommandations :</h4><ul>' + device.recommandations.map(r => `<li>${r}</li>`).join('') + '</ul>';
+            }
+
+            if (device.commandes && device.commandes.length > 0) {
+                html += '<h4>Commandes proposées :</h4><ul>' + device.commandes.map(c => `<li><code>${c}</code></li>`).join('') + '</ul>';
+            }
+
+            document.getElementById("device-details").innerHTML = html;
+        }
+    </script>
+
+</body>
+
+</html>

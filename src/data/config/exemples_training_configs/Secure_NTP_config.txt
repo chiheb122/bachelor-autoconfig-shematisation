@@ -1,0 +1,217 @@
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname SW10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+clock timezone EST -5 0
+clock summer-time EDT date Mar 8 2020 0:00 Nov 1 2020 0:00
+switch 1 provision ws-c3750x-48p
+system mtu routing 1500
+!         
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3240665088
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3240665088
+ revocation-check none
+ rsakeypair TP-self-signed-3240665088
+!
+!
+crypto pki certificate chain TP-self-signed-3240665088
+ certificate self-signed 01
+  3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 33323430 36363530 3838301E 170D3036 30313032 30303031 
+  34315A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D33 32343036 
+  36353038 3830819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  8100F50C E9B08EF1 DC2F6568 4A900A87 9589824C 7EF68A89 C386B804 47BB7588 
+  2DC5D7E2 C824B4B6 55AD5DDB 0E9309A1 AE9F9D0C E5C8BBD2 BB255182 D2B90774 
+  A3A54797 0A82A9BD D801D732 F6599329 53E07E4D 590F6219 851F246F 40B66F38 
+  CE16E7C6 C9981C92 5E8204C0 1DC15B9F C173C998 0FD414D5 AF39A9D6 7A264029 
+  35F10203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603 
+  551D2304 18301680 143F9FAF DD936F83 B8E93A3C 5339A446 27C331DE D9301D06 
+  03551D0E 04160414 3F9FAFDD 936F83B8 E93A3C53 39A44627 C331DED9 300D0609 
+  2A864886 F70D0101 05050003 8181002E 737A3805 F9A6A9E5 697308CA 6AAE60C2 
+  1174A7D1 E91C60DC E8B7B1D6 1A842C01 311747A0 11B950D4 2A45A376 3460EC89 
+  2F936F21 5072E385 EB1DF5E7 7361B95B 1CF2076A FE4E578D 121DF380 450502A7 
+  620EB985 7E533A70 ADCE6DDF 14AA5723 A9EC7B8A 70B6AD67 B41893C3 845CB89E 
+  CE12907A 92D69B8C 1DC3E181 E74A96
+        quit
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!         
+!
+!
+!
+vlan internal allocation policy ascending
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0
+ no ip address
+!
+interface GigabitEthernet1/0/1
+!
+interface GigabitEthernet1/0/2
+!         
+interface GigabitEthernet1/0/3
+!
+interface GigabitEthernet1/0/4
+!
+interface GigabitEthernet1/0/5
+!
+interface GigabitEthernet1/0/6
+!
+interface GigabitEthernet1/0/7
+!
+interface GigabitEthernet1/0/8
+!
+interface GigabitEthernet1/0/9
+!
+interface GigabitEthernet1/0/10
+!
+interface GigabitEthernet1/0/11
+!
+interface GigabitEthernet1/0/12
+!
+interface GigabitEthernet1/0/13
+!
+interface GigabitEthernet1/0/14
+!
+interface GigabitEthernet1/0/15
+!
+interface GigabitEthernet1/0/16
+!
+interface GigabitEthernet1/0/17
+!
+interface GigabitEthernet1/0/18
+!
+interface GigabitEthernet1/0/19
+!
+interface GigabitEthernet1/0/20
+!
+interface GigabitEthernet1/0/21
+!
+interface GigabitEthernet1/0/22
+!
+interface GigabitEthernet1/0/23
+!
+interface GigabitEthernet1/0/24
+!
+interface GigabitEthernet1/0/25
+!         
+interface GigabitEthernet1/0/26
+!
+interface GigabitEthernet1/0/27
+!
+interface GigabitEthernet1/0/28
+!
+interface GigabitEthernet1/0/29
+!
+interface GigabitEthernet1/0/30
+!
+interface GigabitEthernet1/0/31
+!
+interface GigabitEthernet1/0/32
+!
+interface GigabitEthernet1/0/33
+!
+interface GigabitEthernet1/0/34
+!
+interface GigabitEthernet1/0/35
+!
+interface GigabitEthernet1/0/36
+!
+interface GigabitEthernet1/0/37
+!
+interface GigabitEthernet1/0/38
+!
+interface GigabitEthernet1/0/39
+!
+interface GigabitEthernet1/0/40
+!
+interface GigabitEthernet1/0/41
+!
+interface GigabitEthernet1/0/42
+!
+interface GigabitEthernet1/0/43
+!
+interface GigabitEthernet1/0/44
+!
+interface GigabitEthernet1/0/45
+!
+interface GigabitEthernet1/0/46
+!
+interface GigabitEthernet1/0/47
+!
+interface GigabitEthernet1/0/48
+!         
+interface GigabitEthernet1/1/1
+!
+interface GigabitEthernet1/1/2
+!
+interface GigabitEthernet1/1/3
+!
+interface GigabitEthernet1/1/4
+!
+interface TenGigabitEthernet1/1/1
+!
+interface TenGigabitEthernet1/1/2
+!
+interface Vlan1
+ ip address 192.168.1.122 255.255.255.0
+ ntp broadcast client
+ ntp broadcast version 2
+!
+ip forward-protocol nd
+!
+ip http server
+ip http secure-server
+!
+!         
+!
+!
+line con 0
+ exec-timeout 0 0
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+ntp authentication-key 1 md5 080F787E223C3C 7
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.1.10 prefer source Vlan1 version 2
+!
+end

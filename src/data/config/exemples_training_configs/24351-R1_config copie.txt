@@ -1,0 +1,198 @@
+Building configuration...
+
+Current configuration : 4238 bytes
+!
+version 12.3
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname R1
+!
+boot-start-marker
+boot system flash c2800nm-advipservicesk9-mz.123-11.T10.bin
+boot system tftp c2800nm-advipservicesk9-mz.123-11.T10.bin 255.255.255.255
+boot-end-marker
+!
+logging buffered 51200 warnings
+
+!
+no aaa new-model
+ip subnet-zero
+!
+!
+ip cef
+ip dhcp excluded-address 192.168.1.200 192.168.1.253
+!
+!
+ip name-server 213.131.65.20
+ip name-server 213.131.66.246
+ip ips po max-events 100
+no ftp-server write-enable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+archive
+ log config
+  hidekeys
+!
+!
+!
+crypto isakmp policy 10
+ encr 3des
+ hash md5
+ authentication pre-share
+crypto isakmp key *********** address 64.x.x.177
+no crypto isakmp ccm
+!
+!
+crypto ipsec transform-set Transform1 esp-3des esp-md5-hmac
+!
+crypto map s-crypto 10 ipsec-isakmp
+ set peer 64.x.x.177
+ set transform-set Transform1
+ match address 100
+!
+bridge irb
+!
+!
+!
+interface FastEthernet0/0
+ description $ETH-LAN$$ETH-SW-LAUNCH$$INTF-INFO-FE 0/0$
+ ip address 64.x.x.161 255.255.255.240 secondary
+ ip address 192.168.1.253 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly
+ load-interval 30
+ duplex auto
+ speed auto
+ crypto map s-crypto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ no ip address
+ encapsulation frame-relay IETF
+ frame-relay lmi-type ansi
+!
+interface Serial0/0/0.20 point-to-point
+ frame-relay interface-dlci 20
+ bridge-group 20
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+ clockrate 2000000
+!
+interface BVI20
+ ip address 10.177.8.66 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.177.8.65
+!
+!
+no ip http server
+ip http access-class 23
+ip http authentication local
+no ip http secure-server
+ip http timeout-policy idle 60 life 86400 requests 10000
+ip nat pool net 64.x.x.162 64.x.x.162 netmask 255.255.255.240
+ip nat inside source list 1 pool net overload
+!
+access-list 1 permit 192.168.1.0 0.0.0.255
+access-list 100 permit ip 192.168.1.0 0.0.0.255 192.168.2.0 0.0.0.255
+!
+!
+!
+!
+control-plane
+!
+bridge 20 protocol ieee
+bridge 20 route ip
+!
+!
+!
+!
+!
+!
+!
+banner exec ^C
+% Password expiration warning.
+-----------------------------------------------------------------------
+
+Cisco Router and Security Device Manager (SDM) is installed on this device and
+it provides the default username "cisco" for  one-time use. If you have already
+used the username "cisco" to login to the router and your IOS image supports the
+
+"one-time" user option, then this username has already expired. You will not be
+able to login to the router with this username after you exit this session.
+
+It is strongly suggested that you create a new username with a privilege level
+of 15 using the following command.
+
+username <myuser> privilege 15 secret 0 <mypassword>
+
+Replace <myuser> and <mypassword> with the username and password you want to
+use.
+
+-----------------------------------------------------------------------
+^C
+banner login ^C
+-----------------------------------------------------------------------
+Cisco Router and Security Device Manager (SDM) is installed on this device.
+This feature requires the one-time use of the username "cisco"
+with the password "cisco". The default username and password have a privilege le
+vel of 15.
+
+Please change these publicly known initial credentials using SDM or the IOS CLI.
+
+Here are the Cisco IOS commands.
+
+username <myuser>  privilege 15 secret 0 <mypassword>
+no username cisco
+
+Replace <myuser> and <mypassword> with the username and password you want to use
+.
+
+For more information about SDM please follow the instructions in the QUICK START
+
+GUIDE for your router or go to http://www.cisco.com/go/sdm
+-----------------------------------------------------------------------
+^C
+!
+line con 0
+ login
+line aux 0
+line vty 0 4
+ access-class 23 in
+ privilege level 15
+ login
+ transport input telnet
+line vty 5 15
+ access-class 23 in
+ privilege level 15
+ login local
+ transport input telnet
+!
+scheduler allocate 20000 1000
+!
+end
+

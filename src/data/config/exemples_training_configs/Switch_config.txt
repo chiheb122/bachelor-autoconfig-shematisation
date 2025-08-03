@@ -1,0 +1,141 @@
+Using 2116 out of 524288 bytes
+!
+! Last configuration change at 01:38:42 UTC Mon Mar 1 1993
+!
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Switch
+!
+boot-start-marker
+boot-end-marker
+!
+logging console emergencies
+enable secret 5 $1$NCZT$q1k2IYAyUBH19uEavEnqH.
+enable password src
+!
+no aaa new-model
+system mtu routing 1500
+vtp mode transparent
+!
+!
+!
+!
+!
+ip routing
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2690007168
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2690007168
+ revocation-check none
+ rsakeypair TP-self-signed-2690007168
+!
+!
+crypto pki certificate chain TP-self-signed-2690007168
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+!
+alarm profile defaultPort
+ alarm not-operating
+ syslog not-operating
+ notifies not-operating
+!
+!
+vlan internal allocation policy ascending
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+ no switchport
+ ip address 192.168.254.10 255.255.255.0
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ ip address 192.168.101.1 255.255.255.192
+!
+interface Vlan2
+ no ip address
+ shutdown
+!
+ip default-gateway 192.168.254.10
+ip http server
+ip http secure-server
+ip forward-protocol nd
+ip route profile
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ password src
+ login
+line vty 0 4
+ password src
+ login
+line vty 5 15
+ password src
+ login
+!
+!
+end

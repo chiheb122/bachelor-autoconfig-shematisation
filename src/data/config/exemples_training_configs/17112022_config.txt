@@ -1,0 +1,1152 @@
+Building configuration...
+
+
+Current configuration : 22673 bytes
+!
+! Last configuration change at 15:10:08 GMT Thu Nov 17 2022
+! NVRAM config last updated at 13:15:26 GMT Thu Nov 17 2022
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname SES_RT
+!
+boot-start-marker
+boot system flash:exit
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+no aaa new-model
+clock timezone GMT 1 0
+clock summer-time GMT recurring
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip host CME 10.100.10.1
+ip host sip.ipnxtelecoms.com 41.184.56.164
+ip name-server 4.2.2.2
+
+ip dhcp excluded-address 10.100.10.1 10.100.10.20
+ip dhcp excluded-address 10.100.20.1 10.100.20.20
+!
+ip dhcp pool LAN
+ network 10.100.20.0 255.255.255.0
+ default-router 10.100.20.1
+ dns-server 8.8.8.8
+!
+ip dhcp pool Voice
+ network 10.100.10.0 255.255.255.0
+ default-router 10.100.10.1
+ dns-server 8.8.8.8
+ option 150 ip 10.100.10.1
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+template mon
+!
+!
+!
+!
+!
+!
+voice service voip
+ ip address trusted list
+  ipv4 41.184.230.143
+  ipv4 41.184.56.164
+  ipv4 0.0.0.0 0.0.0.0
+  ipv4 10.100.10.0 255.255.255.0
+  ipv4 10.100.20.0 255.255.255.0
+  ipv4 192.168.1.0 255.255.255.0
+  ipv4 62.173.32.12
+ no ip address trusted authenticate
+ ip address trusted call-block cause not-in-cug
+ gcid
+ clid substitute name
+ allow-connections h323 to h323
+ allow-connections h323 to sip
+ allow-connections sip to h323
+ allow-connections sip to sip
+ no supplementary-service sip moved-temporarily
+ no supplementary-service sip refer
+ fax protocol t38 version 0 ls-redundancy 0 hs-redundancy 0 fallback none
+ sip
+  bind control source-interface GigabitEthernet0/0/0.10
+  bind media source-interface GigabitEthernet0/0/0.10
+  registrar server
+  no call service stop
+!
+voice class codec 1
+ codec preference 1 g729r8
+ codec preference 2 g711ulaw
+ codec preference 3 g729br8
+ video codec h264
+!
+!
+voice class sip-profiles 1
+ request INVITE sip-header From modify "ipnxnigeria.net" "62.173.32.12"
+ request INVITE sip-header P-Asserted-Identity modify "ipnxnigeria.net" "62.173.32.12"
+!
+!
+!
+!
+voice register pool-type  8845
+ xml-config maxNumCalls 4
+ xml-config busyTrigger 4
+ description Cisco IP Phone 8845
+ reference-pooltype 9971
+!
+voice register global
+ mode cme
+ source-address 10.100.10.1 port 5060
+ max-dn 50
+ max-pool 50
+ load 8945 sip
+ timezone 22
+ date-format D/M/Y
+ voicemail 4220
+ url directory http://10.100.10.1/localdirectory
+ tftp-path flash:
+ file text
+ create profile sync 0003934320576978
+ camera
+ video
+!
+voice register dn  1
+ number 1001
+ call-forward b2bua busy 4220
+ call-forward b2bua noan 4220 timeout 20
+ name Taofeek Adedeji
+ huntstop channel 1
+ label Taofeek
+ mwi
+!
+voice register dn  2
+ number 1002
+ call-forward b2bua busy 4220
+ call-forward b2bua noan 4220 timeout 20
+ name Ademola Adedeji
+ huntstop channel 1
+ mwi
+!
+voice register dn  3
+ number 1101
+!
+voice register dn  10
+ number 1055
+!
+voice register pool  1
+ busy-trigger-per-button 2
+ fastdial 1 1603 name Vincent
+ fastdial 2 1201 name Abby
+ fastdial 3 1601 name Chi chi
+ fastdial 4 1102 name Abubakar
+ fastdial 5 1701 name Augustus
+ fastdial 6 1604 name Victoria
+ fastdial 7 1401 name Hilary
+ fastdial 8 1403 name Fejiro
+ fastdial 9 1101 name Stephen
+ fastdial 10 1202 name Bolu
+ fastdial 11 1402 name Adebayo
+ fastdial 12 1602 name Yinka
+ fastdial 13 1106 name Abdulmajeed
+ fastdial 14 1605 name Kolade
+ fastdial 15 1105 name Tunde
+ fastdial 16 1104 name Lydia
+ fastdial 17 1503 name Ifeoma
+ id mac 74AD.98CE.314E
+ type 8845
+ number 1 dn 1
+ dtmf-relay rtp-nte
+ voice-class codec 1
+ username Taofeek password cisco
+ no call-waiting
+ description Taofeek
+ no vad
+ speed-dial 1 1003 label "Frontdesk"
+ speed-dial 2 1101 label "Stephen"
+ speed-dial 3 1201 label "Abby"
+ speed-dial 4 1301 label "Emeka"
+ speed-dial 5 1601 label "Chi chi"
+ speed-dial 6 1603 label "Vincent"
+ speed-dial 7 1701 label "Augustus"
+ speed-dial 8 1501 label "Adewale"
+ camera
+ video
+!
+voice register pool  2
+ busy-trigger-per-button 2
+ fastdial 1 1101 name Stephen
+ fastdial 2 1201 name Abieyuwa
+ fastdial 3 1601 name Chinyemugo
+ fastdial 4 1102 name Abubakar
+ fastdial 5 1104 name Lydia
+ fastdial 6 1105 name Tunde
+ fastdial 7 1106 name Abdulmajeed
+ fastdial 8 1202 name Bolu
+ fastdial 9 1402 name Bayo
+ fastdial 10 1401 name Hilary
+ fastdial 11 1403 name Fejiro
+ fastdial 12 1503 name Ifeoma
+ fastdial 13 1602 name Yinka
+ fastdial 14 1603 name Vincent
+ fastdial 15 1604 name Victoria
+ fastdial 16 1605 name Kolade
+ fastdial 17 1701 name Augustus
+ fastdial 18 1004 name Tolulope
+ id mac 74AD.98CE.29D8
+ type 8845
+ number 1 dn 2
+ dtmf-relay rtp-nte
+ voice-class codec 1
+ username Ademola password cisco
+ no call-waiting
+ description Ademola
+ no vad
+ speed-dial 1 1003 label "Frontdesk"
+ speed-dial 2 1101 label "Stephen"
+ speed-dial 3 1201 label "Abby"
+ speed-dial 4 1301 label "Emeka"
+ speed-dial 5 1601 label "Chi chi"
+ camera
+ video
+!
+voice register pool  3
+ id device-id-name Stephen
+ type Jabber-Win
+ number 1 dn 3
+ dtmf-relay rtp-nte
+ username 1101 password cisco
+ codec g711ulaw
+ no vad
+!
+voice register pool  10
+ id device-id-name Wale
+ type Jabber-Win
+ number 1 dn 10
+ dtmf-relay rtp-nte
+ username 1055 password cisco
+ codec g711ulaw
+ no vad
+!
+!
+voice translation-rule 1
+ rule 1 /^\(.*\)/ /\1/
+!
+voice translation-rule 2
+ rule 1 /1104/ /016321586/
+!
+voice translation-rule 11
+ rule 1 /016321586/ /1104/
+!
+!
+voice translation-profile pstn-incoming-XXXX
+translate called 11
+!
+voice translation-profile pstn-outgoing-XXXX
+translate calling 2
+translate called 1
+!
+!
+!
+!
+application
+ service aa flash:app-b-acd
+  param number-of-hunt-grps 1
+  paramspace english index 1
+  param dial-by-extension-option 1
+  param handoff-string aa
+  paramspace english language en
+  param max-time-vm-retry 2
+  param aa-pilot 1050
+  paramspace english location flash:
+  param second-greeting-time 60
+  param welcome-prompt _bacd_welcome.au
+  param call-retry-timer 15
+  param max-time-call-retry 700
+  param service-name queue
+ !
+ service app-b-acd-aa
+  param aa-hunt1 1003
+  param queue-len 15
+ !
+ service app-b-acd
+  param aa-pilot 1050
+ !
+ service queue flash:app-b-acd-aa-3.0.0.5.tcl
+  param number-of-hunt-grps 1
+ !
+!
+!
+!
+voice-card 0/2
+ no watchdog
+!
+voice-card 0/4
+ no watchdog
+!
+license udi pid ISR4331/K9 sn FDO19171F3W
+!
+spanning-tree extend system-id
+!
+username Administrator password 0 Structured*2022
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+vlan internal allocation policy ascending
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ no ip address
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ ip nat inside
+ negotiation auto
+!
+interface GigabitEthernet0/0/0.1
+ encapsulation dot1Q 1 native
+ ip address 192.168.2.1 255.255.255.0
+!
+interface GigabitEthernet0/0/0.10
+ encapsulation dot1Q 10
+ ip address 10.100.10.1 255.255.255.0
+ ip nat inside
+!
+interface GigabitEthernet0/0/0.20
+ encapsulation dot1Q 20
+ ip address 10.100.20.1 255.255.255.0
+ ip nat inside
+!
+interface GigabitEthernet0/0/1
+ description ***Internet-WAN***
+ ip address 192.168.1.3 255.255.255.0
+ ip nat outside
+ negotiation auto
+!
+interface GigabitEthernet0/0/2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface Service-Engine0/2/0
+!
+interface Service-Engine0/4/0
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+ip nat inside source static 10.100.10.1 192.168.1.3 extendable
+ip nat inside source list 1 interface GigabitEthernet0/0/1 overload
+ip nat inside source list SES interface GigabitEthernet0/0/1 overload
+ip nat outside source static 41.184.56.164 41.184.230.143 extendable
+ip nat outside source static 192.168.1.3 41.184.230.143 extendable
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip http secure-port 8443
+ip http path flash:/gui
+ip tftp source-interface GigabitEthernet0/0/0
+ip dns server
+ip route 0.0.0.0 0.0.0.0 41.184.230.1
+ip route 0.0.0.0 0.0.0.0 192.168.1.1
+ip route 0.0.0.0 0.0.0.0 41.184.230.143
+ip route 41.184.230.143 255.255.255.255 41.184.230.1
+!
+!
+ip access-list extended SES
+ permit ip 10.100.10.0 0.0.0.255 any
+ permit ip 10.100.20.0 0.0.0.255 any
+ permit udp host 41.184.230.143 host 192.168.1.3 eq 5060
+ permit udp host 41.184.56.164 0.0.0.84 192.168.1.3 range 10000 65500
+!
+access-list 1 permit 10.100.20.0 0.0.0.255
+access-list 1 permit 192.168.1.0 0.0.0.255
+!
+!
+tftp-server fbi8845_65.BEV-01-006M.sbn
+tftp-server kern8845_65.11-3-6MPP0102-277.sbn
+tftp-server List.xml
+tftp-server rootfs8845_65.11-3-6MPP0102-277.sbn
+tftp-server sb28845_65.BEV-01-020M.sbn
+tftp-server SESSS800.png
+tftp-server SESSSbg.png
+tftp-server sip8845_65.11-3-6MPP0102-277.loads
+tftp-server flash:Desktops/320x212x12/SESSSbg.png
+tftp-server flash:Desktops/320x212x12/SESSSsm.png
+tftp-server flash:Desktops/800x480x24/SESSS800.png
+tftp-server flash:Desktops/320x216x16/SESSbg.png
+tftp-server flash:Desktops/320x216x16/SESSSbg.png
+tftp-server flash:Desktops/320x216x16/SESSSsm.png
+tftp-server flash:Desktops/320x216x16/List.xml
+tftp-server flash:Desktops/320x216x16/SESSS216.png
+tftp-server flash:/Desktops/800x480x24/List.xml
+tftp-server flash:/Desktops/800x480x24/SESSS139.png
+tftp-server flash:/Desktops/800x480x24/SESSS800.png
+tftp-server flash:Desktops/800x480x24
+tftp-server flash:Desktops/800x480x24/List.xml
+tftp-server flash:Desktops/800x480x24/SESSS139.png
+tftp-server flash:/Desktops/800x480x24/bdimage139.png
+tftp-server flash:/Desktops/800x480x24/bdimage2.png
+tftp-server flash:Desktops/800x480x24/bdimage139.png
+tftp-server flash:Desktops/800x480x24/bdimage2.png
+tftp-server flash:Desktops
+tftp-server flash:Desktops/800x480x24/bdimage800.png
+tftp-server flash:Desktops/800x480x24/SESSS1391.png
+!
+control-plane
+!
+!
+voice-port 0/2/0
+ signal groundStart
+ cptone NG
+ connection plar 1003
+ caller-id enable
+!
+voice-port 0/2/1
+ signal groundStart
+ cptone NG
+ connection plar 1003
+ caller-id enable
+ caller-id mode FSK
+!
+voice-port 0/2/2
+ cptone NG
+ connection plar 1003
+ caller-id enable
+!
+voice-port 0/2/3
+ cptone NG
+ connection plar 1003
+ caller-id enable
+ !
+ !
+ !
+ !
+!
+mgcp behavior rsip-range tgcp-only
+mgcp behavior comedia-role none
+mgcp behavior comedia-check-media-src disable
+mgcp behavior comedia-sdp-force disable
+!
+mgcp profile default
+!
+!
+!
+!
+telephony-service
+ max-ephones 50
+ max-dn 50
+ ip source-address 10.100.10.1 port 2000
+ service phone webacces 0
+ service phone pcport 1
+ system message WELCOME TO STRUCTURED
+ url directories http://10.100.10.1/localdirectory
+ cnf-file perphone
+ time-zone 22
+ date-format dd-mm-yy
+ voicemail 8888
+ max-conferences 8 gain 6
+ call-forward pattern .T
+ web admin system name admin password cisco
+ dn-webedit
+ time-webedit
+ transfer-system full-consult
+ transfer-pattern .T
+ secondary-dialtone 9
+ after-hours day Mon 00:00 16:00
+ after-hours day Tue 00:00 16:00
+ after-hours day Wed 00:00 16:00
+ after-hours day Thu 00:00 16:00
+ after-hours day Fri 00:00 16:00
+ directory entry 1 1003 name frontdesk
+ directory entry 2 1101 name Stephen Achi
+ directory entry 3 1102 name Abubakar Eliakwu
+ directory entry 4 1103 name Adetokun Ajomale
+ directory entry 5 1104 name Lydia Otuokwu
+ directory entry 6 1105 name Tunde Babatunde
+ directory entry 7 1106 name Abdulmajeed Bello
+ directory entry 8 1201 name Abieyuwa Enadeghe
+ directory entry 9 1202 name Boluwatife Akande
+ directory entry 10 1301 name Emeka Anthony
+ directory entry 11 1401 name Hilary Obalim
+ directory entry 12 1402 name Adebayo Adefisayo
+ directory entry 13 1403 name Fejiro Brakemi
+ directory entry 14 1501 name Adewale Aderinto
+ directory entry 15 1502 name Damilare Folarin
+ directory entry 16 1503 name Ifeoma Nwaorie
+ directory entry 17 1504 name Andrew Jokpeyibo
+ directory entry 18 1505 name David Bello
+ directory entry 19 1506 name Jimoh Muritala
+ directory entry 20 1507 name Kayode Faparusi
+ directory entry 21 1508 name Samuel Opayemi
+ directory entry 22 1509 name Simeon Adeogun
+ directory entry 23 1510 name Tayo Ekundayo
+ directory entry 24 1601 name Chinyemugo Odiaka
+ directory entry 25 1602 name Olayinka Abikoye
+ directory entry 26 1603 name Vincent Okoye
+ directory entry 27 1604 name Victoria Emmanuel
+ directory entry 28 1605 name Kolade Olaleye
+ directory entry 29 1606 name Oluwanifemi Adewolu
+ directory entry 30 1701 name Augustus Ovu
+ directory entry 32 1004 name Tolulope Obianwu
+ create cnf-files version-stamp Jan 01 2002 00:00:00
+!
+!
+dial-peer voice 100 voip
+ translation-profile incoming pstn-incoming-XXXX
+ session protocol sipv2
+ session target sip-server
+ incoming called-number .
+ voice-class codec 1
+ voice-class sip early-offer forced
+ dtmf-relay rtp-nte
+ no vad
+ authentication username 016321586 password 7 100D5B41372607015F3E7B3C2B7B realm ipnxnigeria.net
+!
+dial-peer voice 10 voip
+ description LANDLINE
+ destination-pattern 016321586
+ session protocol sipv2
+ session target sip-server
+ voice-class codec 1
+ voice-class sip early-offer forced
+ dtmf-relay rtp-nte
+ no vad
+ authentication username 016321586 password 7 0150545C693A130572761F1E1656 realm ipnxnigeria.net
+!
+dial-peer voice 20 voip
+ description ***OUTBOUND CALS***
+ translation-profile outgoing pstn-outgoing-XXXX
+ destination-pattern ...........
+ session protocol sipv2
+ session target sip-server
+ voice-class codec 1
+ voice-class sip early-offer forced
+ dtmf-relay rtp-nte
+ no vad
+ authentication username 016321586 password 7 0047415E366A1E0C5C1B1D59064A realm ipnxnigeria.net
+!
+dial-peer voice 2 voip
+ description ***INBOUND CALLS***
+ translation-profile incoming IN
+ session protocol sipv2
+ session target sip-server
+ incoming called-number .
+ voice-class codec 1
+ voice-class sip early-offer forced
+ dtmf-relay rtp-nte
+ no vad
+ authentication username 016321586 password 7 0047415E366A1E0C5C1B1D59064A realm sip.ipnxtelecoms.com
+!
+!
+sip-ua
+ credentials username 016321586 password 7 114A4B5D25231E0657107A332760 realm ipnxnigeria.net
+ authentication username 016321586 password 7 0245560339371A2B1F74580E0A44 realm ipnxnigeria.net
+ no remote-party-id
+ retry invite 2
+ retry register 2
+ retry options 1
+ timers connect 100
+ registrar 1 dns:sip.ipnxtelecoms.com expires 300
+ sip-server dns:sip.ipnxtelecoms.com:5060
+ host-registrar
+ presence enable
+!
+!
+ephone-dn  1  dual-line
+ number 1003
+ description +23416321586
+ huntstop channel
+!
+!
+ephone-dn  2  dual-line
+ number 1101
+ description Stephen Achi
+ name Stephen Achi
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  4  dual-line
+ number 1103
+ description Adetokun Ajomale
+ name Adetokun Ajomale
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  5  dual-line
+ number 1104
+ description Lydia Otuokwu
+ name Lydia Otuokwu
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+!
+!
+ephone-dn  6  dual-line
+ number 1105
+ description Tunde Babatunde
+ name Tunde Babatunde
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  7  dual-line
+ number 1106
+ description Abdulmajeed Bello
+ name Abdulmajeed Bello
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+!
+!
+ephone-dn  8  dual-line
+ number 1201
+ description Abieyuwa Enadeghe
+ name Abieyuwa Enadeghe
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  9  dual-line
+ number 1202
+ description Boluwatife Akande
+ name Boluwatife Akande
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+!
+!
+ephone-dn  10  dual-line
+ number 1301
+ description Emeka Anthony
+ name Emeka Anthony
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  11  dual-line
+ number 1401
+ description Hilary Obalim
+ name Hilary Obalim
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  12  dual-line
+ number 1402
+ description Adebayo Adefisayo
+ name Adebayo Adefisayo
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  13  dual-line
+ number 1403
+ description Fejiro Brakemi
+ name Fejiro Brakemi
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  14  dual-line
+ number 1501
+ description Adewale Aderinto
+ name Adewale Aderinto
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+!
+!
+ephone-dn  15  dual-line
+ number 1502
+ description Folarin Damilare
+ name Folarin Damilare
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+!
+!
+ephone-dn  16  dual-line
+ number 1503
+ description Ifeoma Nwaorie
+ name Ifeoma Nwaorie
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  24  dual-line
+ number 1601
+ description Chinyemugo Odiaka
+ name Chinyemugo Odiaka
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  25  dual-line
+ number 1602
+ description Olayinka Abikoye
+ name Olayinka Abikoye
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  26  dual-line
+ number 1603
+ description Vincent Okoye
+ name Vincent Okoye
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  27  dual-line
+ number 1604
+ description Victoria Emmanuel
+ name Victoria Emmanuel
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  28  dual-line
+ number 1605
+ description Kolade Olaleye
+ name Kolade Olaleye
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  29  dual-line
+ number 1606
+ description Oluwanifemi Adewolu
+ name Oluwanifemi Adewolu
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  30  dual-line
+ number 1701
+ description Augustus Ovu
+ name Augustus Ovu
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  32  dual-line
+ number 1004
+ label Tolulope Obianwu
+ name Tolulope Obianwu
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  34  dual-line
+ number 1203
+ description Hameed Owoyemi
+ name Hameed Owoyemi
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  35  dual-line
+ number 1050
+ name Wale Test
+!
+!
+ephone-dn  36  dual-line
+ number 1051
+ description Tesing
+ name Ade Test
+ call-forward busy 4220
+ call-forward noan 4220 timeout 20
+ huntstop channel
+!
+!
+ephone-dn  40  octo-line
+ number 8888
+!
+!
+ephone-dn  41
+ number 8888
+!
+!
+ephone-dn  43
+ number 8898
+ mwi off
+!
+!
+ephone-dn  44
+ number 8899
+ mwi on
+!
+!
+ephone  1
+ device-security-mode none
+ mac-address 64D9.89C3.0768
+ after-hours exempt
+ username "frontdesk" password cisco
+ type 7975
+ button  1:1
+ pin 1234
+!
+!
+!
+ephone  2
+ device-security-mode none
+ mac-address C0E4.3420.07EB
+ username "stephen" password cisco
+ type CIPC
+ button  1:2
+!
+!
+!
+ephone  3
+ device-security-mode none
+ mac-address 0250.4100.0001
+ username "Abubakar" password cisco
+ type CIPC
+!
+!
+!
+ephone  4
+ device-security-mode none
+ mac-address C8B2.9B28.A05F
+ username "Adetokun" password cisco
+ type CIPC
+ button  1:4
+!
+!
+!
+ephone  5
+ device-security-mode none
+ mac-address 646C.80A3.047A
+ username "Lydia" password cisco
+ type CIPC
+ button  1:5
+!
+!
+!
+ephone  6
+ device-security-mode none
+ mac-address 88A4.C23B.70F7
+ username "Tunde" password cisco
+ type CIPC
+ button  1:6
+!
+!
+!
+ephone  7
+ device-security-mode none
+ mac-address 00FF.60D8.6785
+ username "Abdulmajeed" password cisco
+ type CIPC
+ button  1:7
+!
+!
+!
+ephone  8
+ device-security-mode none
+ mac-address 4023.431E.0A7A
+ username "Abieyuwa" password cisco
+ type CIPC
+ button  1:8
+!
+!
+!
+ephone  9
+ device-security-mode none
+ mac-address 48E7.DA1E.E7C4
+ username "Boluwatife" password cisco
+ type CIPC
+ button  1:9
+!
+!
+!
+ephone  10
+ device-security-mode none
+ mac-address C0E4.341E.F4BD
+ username "Emeka" password cisco
+ type CIPC
+ button  1:10
+!
+!
+!
+ephone  11
+ device-security-mode none
+ mac-address C85A.CF3D.6B0D
+ username "Hilary" password cisco
+ type CIPC
+ button  1:11
+!
+!
+!
+ephone  12
+ device-security-mode none
+ mac-address E4E7.494F.6AD5
+ username "Adebayo" password cisco
+ type CIPC
+ button  1:12
+!
+!
+!
+ephone  13
+ device-security-mode none
+ mac-address 9C7B.EF6F.6604
+ username "Fejiro" password cisco
+ type CIPC
+ button  1:13
+!
+!
+!
+ephone  14
+ device-security-mode none
+ mac-address C8B2.9B27.296E
+ username "Adewale" password cisco
+ type CIPC
+ button  1:14
+!
+!
+!
+ephone  15
+ device-security-mode none
+ mac-address 00FF.03DC.541B
+ username "Folarin" password cisco
+ type CIPC
+ button  1:15
+!
+!
+!
+ephone  16
+ device-security-mode none
+ mac-address C8B2.9B28.9A06
+ username "Ifeoma" password cisco
+ type CIPC
+ button  1:16
+!
+!
+!
+ephone  24
+ device-security-mode none
+ mac-address E4E7.494F.6B2C
+ username "Chinyemugo" password cisco
+ type CIPC
+ button  1:24
+!
+!
+!
+ephone  25
+ device-security-mode none
+ mac-address 00FF.4789.1348
+ username "Olayinka" password cisco
+ type CIPC
+ button  1:25
+!
+!
+!
+ephone  26
+ device-security-mode none
+ mac-address C0E4.342B.3291
+ username "Vincent" password cisco
+ type CIPC
+ button  1:26
+!
+!
+!
+ephone  27
+ device-security-mode none
+ mac-address 00FF.D5FC.F0E4
+ username "Victoria" password cisco
+ type CIPC
+ button  1:27
+!
+!
+!
+ephone  28
+ device-security-mode none
+ mac-address 145A.FC58.940D
+ username "Kolade" password cisco
+ type CIPC
+ button  1:28
+!
+!
+!
+ephone  29
+ device-security-mode none
+ mac-address C0E4.341F.3299
+ username "Oluwanifemi" password cisco
+ type CIPC
+ button  1:29
+!
+!
+!
+ephone  30
+ device-security-mode none
+ mac-address 489E.BD0E.6C30
+ username "Augustus" password cisco
+ type CIPC
+ button  1:30
+!
+!
+!
+ephone  32
+ device-security-mode none
+ mac-address 00FF.8A10.B166
+ username "Tolulope" password cisco
+ type CIPC
+ button  1:32
+!
+!
+!
+ephone  33
+ device-security-mode none
+ username "Hameed" password cisco
+!
+!
+!
+ephone  34
+ device-security-mode none
+ mac-address 00FF.3720.9972
+ username "Owoyemi" password cisco
+ type CIPC
+ button  1:34
+!
+!
+!
+ephone  35
+ device-security-mode none
+ mac-address 0090.9E9D.52CE
+ username "wale" password cisco
+ type CIPC
+ button  1:35
+!
+!
+!
+ephone  36
+ device-security-mode none
+ mac-address B86B.239E.7981
+ username "Ade" password cisco
+ type CIPC
+ button  1:36
+!
+!
+!
+ephone  38
+ device-security-mode none
+!
+!
+!
+ephone  40
+ device-security-mode none
+ vm-device-id CME-VI1
+ button  1:40
+!
+!
+!
+ephone  41
+ device-security-mode none
+ vm-device-id CME-VI2
+ button  1:41
+!
+!
+!
+line con 0
+ password Structured*2022
+ login
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ password Structured*2022
+ login
+line vty 5 15
+ password Structured*2022
+ login
+!
+ntp master 1
+ntp server 10.100.20.1
+ntp server 192.168.1.1
+ntp server 41.184.224.1
+!
+end

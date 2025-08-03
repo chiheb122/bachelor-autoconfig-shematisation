@@ -1,0 +1,610 @@
+﻿C4400_VG1_Colo#show run
+Building configuration...
+
+
+Current configuration : 16677 bytes
+!
+! Last configuration change at 20:54:02 CST Mon Jan 11 2021 by eric.yang
+! NVRAM config last updated at 18:46:45 CST Mon Jan 11 2021 by eric.yang
+!
+version 16.12
+no service pad
+service timestamps debug datetime msec localtime
+service timestamps log datetime msec localtime
+service password-encryption
+service call-home
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname C4400_VG1_Colo
+!
+boot-start-marker
+boot system bootflash:/isr4400-universalk9.16.12.03.SPA.bin
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+logging buffered 100000
+no logging console
+!
+aaa new-model
+!
+!
+aaa group server tacacs+ aaa-admin-servers
+ server name ISE1
+ server name ISE2
+!
+aaa authentication banner ^CCCC Accessing AAA-Servers ^C
+aaa authentication fail-message ^CCCC AAA Authentication FAILED.^C
+aaa authentication login default group aaa-admin-servers local
+aaa authentication login CONSOLE group aaa-admin-servers local
+aaa authentication login VTY group aaa-admin-servers local
+aaa authentication enable default group aaa-admin-servers enable
+aaa authentication dot1x default group aaa-admin-servers
+aaa authorization console
+aaa authorization config-commands
+aaa authorization exec default group aaa-admin-servers local if-authenticated 
+aaa authorization exec VTY group aaa-admin-servers local if-authenticated 
+aaa authorization exec CONSOLE group aaa-admin-servers local if-authenticated 
+aaa authorization commands 15 default if-authenticated 
+aaa accounting send stop-record authentication failure
+aaa accounting delay-start
+aaa accounting suppress null-username
+aaa accounting nested
+aaa accounting update periodic 1440
+aaa accounting exec default start-stop group aaa-admin-servers
+aaa accounting commands 15 default start-stop group aaa-admin-servers
+aaa accounting network default start-stop group aaa-admin-servers
+aaa accounting connection default start-stop group aaa-admin-servers
+aaa accounting system default start-stop group aaa-admin-servers
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone CST -6 0
+call-home
+ contact-email-addr networkteam@fcl.crs
+ no http secure server-identity-check
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+  no destination transport-method email
+!
+ip host cucm8-pub.ad.crs 10.41.40.10
+ip host cucm8-sub.ad.crs 10.41.40.20
+ip host cucm8-sub1.ad.crs 10.121.121.7
+ip name-server 10.40.252.2 10.20.5.22
+ip domain name fcl.ad.crs
+!
+ip dhcp pool webuidhcp
+!
+!
+!
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+password encryption aes
+!
+!
+crypto pki trustpoint TP-self-signed-1488120655
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1488120655
+ revocation-check none
+ rsakeypair TP-self-signed-1488120655
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment terminal
+ revocation-check crl
+!
+!
+crypto pki certificate chain TP-self-signed-1488120655
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 31343838 31323036 3535301E 170D3139 31313132 31373432 
+  35365A17 0D333030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 34383831 
+  32303635 35308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 
+  0A028201 0100ABFE A06B6C97 ABD6099C C78FABA6 F2DDDFA0 0E3011C1 6EDB025F 
+  C8846857 A9090C55 227E4E1F 81804267 2C703018 15499689 8A35FB61 ED7D767E 
+  B013894F 6A71339A 24207027 F7EBEB70 14031420 024B0CBE 83C2D033 C75D4E44 
+  8665B3C7 C51CD17A AB6914A6 8658E225 CA5B8D1F 8E200D9F DAB49A92 27D10FA5 
+  473ACD80 C282E13B 76ACF078 DF7A7824 AF6EEF79 D2384B9D 4D37631E F7ACC663 
+  54A16A93 E6A5A368 BC7E7A80 843CA062 6406F2E0 2105888A 93E98C79 25F826C6 
+  6E72E3D2 A47496C8 672B8FB3 7CE6B155 439504D1 FED38F28 2C209F19 63566AE4 
+  E42D6F42 E8E70FD5 A9F366FC E32E476B D827247A 0424416B DF01F3CF C3B16288 
+  B171F27B 733B0203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 
+  301F0603 551D2304 18301680 142DFD5E 9B7F0843 8447AE9B 8369BE9A EB7F5678 
+  9B301D06 03551D0E 04160414 2DFD5E9B 7F084384 47AE9B83 69BE9AEB 7F56789B 
+  300D0609 2A864886 F70D0101 05050003 82010100 9CFA8AB3 8568C849 C34C11AB 
+  7BA46B91 19310F26 E3937DAB FDD62327 FEBC8C69 0BE8C82B A75372E4 A87F8DFF 
+  011C3A83 F953B904 42D7F867 5C40E1D9 C3D76C96 58520ADE D4814B62 EA1A0973 
+  ECFC10EA FF609ABA 3A8EA73E FBAD3E01 851598C2 801752E6 58A95DCF 42AE59D8 
+  672269EB 6A27240D BF80A024 CA9AF5E8 76A35140 EF7B18AE 1B1D7457 6A2C193A 
+  3C0A9D4A 3C03E323 B2563AC6 1197CD35 A2D77279 20173628 58BD94EE B30C0EEF 
+  3A3AF57D 1E1EA41A 0BA0102A 9CA03F36 025794CE B73CCB3F 3FC5541E 947BB856 
+  F6ABC6F1 EBF78F06 31566AA3 60D9A79D B1F58F2A B3B5E8FA D85F0A6B ED307A5D 
+  4BCCD4F4 F6D4C38B 9566D17B BF53B55F D4B014E2
+        quit
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+        quit
+!
+!
+!
+!
+voice service voip
+ ip address trusted list
+  ipv4 10.41.40.10 255.255.255.255
+  ipv4 10.41.40.20 255.255.255.255
+  ipv4 10.121.121.7 255.255.255.255
+  ipv4 208.68.17.52 255.255.255.255
+  ipv4 207.195.52.111 255.255.255.255
+  ipv4 10.38.0.99 255.255.255.255
+  ipv4 10.20.140.99 255.255.255.255
+ address-hiding
+ mode border-element license capacity 200
+ media anti-trombone
+ allow-connections sip to sip
+ redundancy-group 1
+ redirect ip2ip
+ fax protocol t38 version 0 ls-redundancy 0 hs-redundancy 0 fallback pass-through g711ulaw
+ modem passthrough nse codec g711ulaw
+ sip
+  rel1xx disable
+  header-passing
+  error-passthru
+  referto-passing
+  asserted-id pai
+  asymmetric payload dtmf
+  early-offer forced
+  midcall-signaling passthru
+  privacy-policy passthru
+  g729 annexb-all
+  pass-thru content sdp
+!
+!
+voice class uri 1 sip
+ host ipv4:10.41.40.20
+ host ipv4:10.121.121.7
+ host ipv4:10.41.40.10
+voice class codec 1
+ codec preference 1 g711ulaw
+!
+!
+!
+!
+voice class e164-pattern-map 1
+ description ***Global PSTN Route Patterns***
+  e164 +T
+  e164 0
+  e164 1[2-9]..[2-9]......
+  e164 [2-9]11
+  e164 [2-9]..[2-9]......
+ !
+!
+voice class e164-pattern-map 2
+  e164 306808....
+ !
+!
+voice class server-group 1
+ ipv4 10.41.40.20
+ ipv4 10.121.121.7 preference 1
+ ipv4 10.41.40.10 preference 2
+ description ***FCL CUCM Group***
+!
+voice class server-group 2
+ ipv4 208.68.17.52
+ description ThinkTel edm.trk.tprm.ca
+!
+voice class sip-options-keepalive 1
+ down-interval 10
+ up-interval 20
+ retry 3
+ transport tcp
+!
+voice class sip-options-keepalive 2
+ down-interval 10
+ up-interval 20
+ retry 3
+ transport udp
+!
+!
+!
+!
+!
+!
+voice translation-profile PSTN-CALLING-BLOCK
+ translate calling 666
+!
+!
+!
+!
+voice-card 0/4
+ dsp services dspfarm
+ no watchdog
+!
+license udi pid ISR4431/K9 sn FOC2323194J
+license smart transport callhome
+archive
+ log config
+  logging enable
+memory free low-watermark processor 67107
+!
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+!
+username NetServ privilege 15 secret 9 $14$JnhS$/8Upu9J6FNZkEU$Pe/U0fs3lII9aem.h4AKdnIFRuQeG4WmLUB6kdxwPYc
+!
+redundancy
+ mode none
+ application redundancy
+  group 1
+   name CUBE-HA
+   priority 150 failover threshold 75
+   timers delay 30 reload 60
+   control Port-channel1.3001 protocol 1
+   data Port-channel1.3001
+   track 1 shutdown
+   track 2 shutdown
+!
+!
+!
+track 1 interface Port-channel1.140 line-protocol
+!
+track 2 interface Port-channel1.105 line-protocol
+!
+!
+!
+!
+!
+!
+interface Port-channel1
+ description Uplink to 9504 Core
+ no ip address
+ no ip redirects
+ no ip proxy-arp
+ no negotiation auto
+!
+interface Port-channel1.105
+ description DMZ SIP inbound
+ encapsulation dot1Q 105
+ ip address 10.38.0.100 255.255.255.0
+ bfd interval 3000 min_rx 3000 multiplier 3
+ redundancy rii 2
+ redundancy group 1 ip 10.38.0.99 exclusive 
+!
+interface Port-channel1.140
+ description Uplink to 9504 Core
+ encapsulation dot1Q 140
+ ip address 10.20.140.100 255.255.255.0
+ bfd interval 3000 min_rx 3000 multiplier 3
+ redundancy rii 1
+ redundancy group 1 ip 10.20.140.99 exclusive 
+!
+interface Port-channel1.3001
+ description CUBE-HA Heartbeat
+ encapsulation dot1Q 3001
+ ip address 172.28.140.100 255.255.255.248
+!
+interface GigabitEthernet0/0/0
+ description Uplink to 9504 Core
+ no ip address
+ negotiation auto
+ channel-group 1 mode active
+!
+interface GigabitEthernet0/0/1
+ description Uplink to 9504 Core
+ no ip address
+ negotiation auto
+ channel-group 1 mode active
+!
+interface GigabitEthernet0/0/2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/0/3
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface Service-Engine0/4/0
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+!
+ip forward-protocol nd
+no ip http server
+ip http authentication local
+no ip http secure-server
+ip http client source-interface Port-channel1.140
+ip tftp source-interface Port-channel1.140
+ip rtcp report interval 9000 
+ip route 0.0.0.0 0.0.0.0 10.20.140.1
+ip route 10.38.0.0 255.255.0.0 10.38.0.1
+ip route 208.68.17.52 255.255.255.255 10.38.0.1 name ThinkTel_SIP
+ip tacacs source-interface Port-channel1.140 
+ip ssh version 2
+!
+!
+ip access-list standard SNMP_ACL_RO
+ 10 permit 10.40.0.0 0.0.255.255
+ 20 permit 10.20.0.0 0.0.255.255
+ip access-list standard SNMP_ACL_RW
+ 10 permit 10.40.0.0 0.0.255.255
+ 20 permit 10.20.0.0 0.0.255.255
+ip access-list standard SNMP_CBTS_ACL_RO
+ 10 permit 10.20.12.0 0.0.0.255
+!
+!
+logging trap notifications
+logging host 10.40.252.54
+logging host 10.20.1.10
+!
+!
+snmp-server group FCLNetmonGroupRO v3 priv read FCLNetmonViewRO access SNMP_ACL_RO
+snmp-server group FCLNetmonGroupRW v3 priv read FCLNetmonViewRW write FCLNetmonViewRW access SNMP_ACL_RW
+snmp-server group CBTSNetmonGroupRO v3 priv read CBTSNetmonViewRO access SNMP_CBTS_ACL_RO
+snmp-server view FCLNetmonViewRO iso included
+snmp-server view FCLNetmonViewRW iso included
+snmp-server view CBTSNetmonViewRO iso included
+snmp-server location Sasktel Colo
+snmp-server system-shutdown
+snmp-server enable traps config
+snmp-server host 10.40.252.54 FCLNetmonRO  config
+snmp-server host 10.20.1.10 FCLNetmonRW 
+!
+tacacs-server timeout 2
+tacacs-server directed-request
+tacacs server ISE1
+ address ipv4 10.41.110.5
+ key 6 UMWONVcTHcSVYVGNHiPQebXh]gBMSGfTNaFT
+tacacs server ISE2
+ address ipv4 10.20.1.5
+ key 6 U[]BGaKS_CAXRORXK`D\dAgAK^PHKBX`F\Qf
+!
+!
+!
+control-plane
+!
+!
+no mgcp package-capability res-package
+no mgcp timer receive-rtcp
+no mgcp fax-relay sg3-to-g3
+mgcp behavior rsip-range tgcp-only
+mgcp behavior comedia-role none
+mgcp behavior comedia-check-media-src disable
+mgcp behavior comedia-sdp-force disable
+!
+mgcp profile default
+!
+sccp local Port-channel1.140
+sccp ccm 10.41.40.20 identifier 1 version 7.0 
+sccp ccm 10.121.121.7 identifier 2 version 7.0 
+sccp ccm 10.41.40.10 identifier 3 version 7.0 
+sccp
+!
+sccp ccm group 1
+ bind interface Port-channel1.140
+ associate ccm 1 priority 1
+ associate ccm 2 priority 2
+ associate ccm 3 priority 3
+ associate profile 7 register VG1-COLO-MTP
+!
+!
+no ccm-manager fax protocol cisco
+!
+dspfarm profile 1 transcode universal  
+ codec g729abr8
+ codec g729ar8
+ codec g711alaw
+ codec g711ulaw
+ codec g729br8
+ codec g729r8
+ codec pass-through
+ maximum sessions 12
+ associate application CUBE
+!
+dspfarm profile 6 conference  
+ codec g729br8
+ codec g729r8
+ codec g729abr8
+ codec g729ar8
+ codec g711alaw
+ codec g711ulaw
+ codec g722-64
+ maximum conference-participants 16
+ maximum sessions 2
+ associate application CUBE
+!
+dspfarm profile 2 conference  
+ codec g729br8
+ codec g729r8
+ codec g729abr8
+ codec g729ar8
+ codec g711alaw
+ codec g711ulaw
+ codec g722-64
+ maximum conference-participants 16
+ maximum sessions 2
+ associate application CUBE
+!
+dspfarm profile 3 mtp  
+ codec g711ulaw
+ maximum sessions software 100
+ associate application CUBE
+!
+dspfarm profile 4 mtp  
+ codec g722-64
+ maximum sessions software 50
+ associate application CUBE
+!
+dspfarm profile 5 mtp  
+ codec g729r8
+ codec g729ar8
+ maximum sessions software 20
+ associate application CUBE
+!
+dspfarm profile 7 mtp  
+ codec g711ulaw
+ maximum sessions software 100
+ associate application SCCP
+!
+dial-peer voice 100 voip
+ description Incoming call from CUCM to CUBE
+ session protocol sipv2
+ incoming uri from 1
+ voice-class codec 1  
+ voice-class sip bind control source-interface Port-channel1.140
+ voice-class sip bind media source-interface Port-channel1.140
+ dtmf-relay rtp-nte
+ no vad
+!
+dial-peer voice 200 voip
+ description Incoming Calls from ThinkTel to CUBE
+ call-block translation-profile incoming PSTN-CALLING-BLOCK
+ call-block disconnect-cause incoming call-reject
+ session protocol sipv2
+ incoming called e164-pattern-map 2
+ voice-class codec 1  
+ voice-class sip bind control source-interface Port-channel1.105
+ voice-class sip bind media source-interface Port-channel1.105
+ dtmf-relay rtp-nte
+ no vad
+!
+dial-peer voice 101 voip
+ description Incoming Call from CUBE to CUCM
+ session protocol sipv2
+ session server-group 1
+ destination e164-pattern-map 2
+ voice-class codec 1  
+ voice-class sip bind control source-interface Port-channel1.140
+ voice-class sip bind media source-interface Port-channel1.140
+ dtmf-relay rtp-nte
+ no vad
+!
+dial-peer voice 201 voip
+ description Outgoing Call from CUBE to ThinkTel
+ session protocol sipv2
+ session server-group 2
+ destination e164-pattern-map 1
+ voice-class codec 1  
+ voice-class sip bind control source-interface Port-channel1.105
+ voice-class sip bind media source-interface Port-channel1.105
+ dtmf-relay rtp-nte
+ no vad
+!
+!
+gateway 
+ media-inactivity-criteria all
+ timer receive-rtcp 5
+ timer receive-rtp 1200
+!
+sip-ua 
+ authentication username 3068080270 password 6 cBHFeFMFhRV`WgULZbSYFUZHabb]fZQE]FbCgPT realm edm.trk.tprm.ca
+ disable-early-media 180
+ retry invite 2
+ retry response 3
+ retry register 4
+ retry options 4
+!
+banner login ^CCC
+FCL Technical Support Use Only.
+Unauthorized Access is Prohibited
+
+This router is located in Sasktel Colo!
+^C
+!
+line con 0
+ exec-timeout 15 0
+ privilege level 0
+ authorization commands 15 CONSOLE
+ authorization exec CONSOLE
+ logging synchronous
+ login authentication CONSOLE
+ notify
+ transport output ssh
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 15 0
+ privilege level 0
+ authorization commands 15 VTY
+ authorization exec VTY
+ logging synchronous
+ login authentication VTY
+ notify
+ transport input ssh
+line vty 5 15
+ exec-timeout 15 0
+ privilege level 0
+ authorization commands 15 VTY
+ authorization exec VTY
+ logging synchronous
+ login authentication VTY
+ no exec
+ notify
+ transport input ssh
+!
+ntp server 10.40.1.1
+!
+!
+!
+!
+!
+end
+

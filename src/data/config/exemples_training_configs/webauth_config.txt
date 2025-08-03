@@ -1,0 +1,298 @@
+Building configuration...
+
+Current configuration : 7700 bytes
+!
+! Last configuration change at 21:29:04 UTC Thu Aug 21 2014 by axtel
+! NVRAM config last updated at 20:46:41 UTC Thu Aug 21 2014 by axtel
+!
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname MS-C3560-1
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$g2ul$I8yODRQq8ZAZ61axIvxzC/
+!
+username axtel privilege 15 secret 5 $1$A3OJ$OFLIp/rGjP7EvnM0fpW5H1
+aaa new-model
+!
+!
+aaa authentication dot1x default group radius
+aaa authorization network default group radius 
+aaa authorization auth-proxy default group radius 
+aaa accounting update periodic 5
+aaa accounting auth-proxy default start-stop group radius
+aaa accounting dot1x default start-stop group radius
+!
+!
+!
+!
+!
+aaa server radius dynamic-author
+ client 172.24.105.20 server-key axtel
+!
+aaa session-id common
+system mtu routing 1500
+ip routing
+!
+ip dhcp pool vlan54
+ network 172.24.54.0 255.255.255.0
+ default-router 172.24.54.1 
+ dns-server 8.8.8.8 
+!
+!
+ip dhcp snooping
+no ip domain-lookup
+ip domain-name mastersecurity.loc
+ip device tracking probe auto-source override
+vtp mode transparent
+!
+!
+!
+!
+!
+authentication mac-move permit
+!
+!
+mka policy mka-policy
+ replay-protection window-size 5000
+!
+!
+crypto pki trustpoint TP-self-signed-9456256
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-9456256
+ revocation-check none
+ rsakeypair TP-self-signed-9456256
+!
+!
+crypto pki certificate chain TP-self-signed-9456256
+ certificate self-signed 01
+  3082024F 308201B8 A0030201 02020101 300D0609 2A864886 F70D0101 04050030 
+  2E312C30 2A060355 04031323 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 39343536 32353630 1E170D39 33303330 31303030 3035345A 
+  170D3230 30313031 30303030 30305A30 2E312C30 2A060355 04031323 494F532D 
+  53656C66 2D536967 6E65642D 43657274 69666963 6174652D 39343536 32353630 
+  819F300D 06092A86 4886F70D 01010105 0003818D 00308189 02818100 ABC4F407 
+  25046E36 D923CDEC 1C94AD18 F2F305FF 76E14EC2 A5BB4F00 55CEE67A A54D2CAF 
+  552DB62F A4F43C17 802F7CC1 BCB9D141 6751AE9C B7523ACB 4970F969 B08086B7 
+  1E028AD3 824C9605 351BF541 24CC325E C4833C85 8CEAC57E D8D0DDC4 385C8D55 
+  22739277 7866532A 943669ED B9564708 D0FEA784 3105B2C9 5336F969 02030100 
+  01A37D30 7B300F06 03551D13 0101FF04 05300301 01FF3028 0603551D 11042130 
+  1F821D4D 532D4333 3536302D 312E6D61 73746572 73656375 72697479 2E6C6F63 
+  301F0603 551D2304 18301680 14017057 F9265B02 D67D1A9D 7BC73C7F 77146F16 
+  BC301D06 03551D0E 04160414 017057F9 265B02D6 7D1A9D7B C73C7F77 146F16BC 
+  300D0609 2A864886 F70D0101 04050003 8181004A 563E830A 80854BBC 0FE9E14E 
+  3607C37D 1D7B9151 6343381D 64BCAE06 853B2CE7 A42747E2 48046014 3F3C1043 
+  04F4A063 19FC5CF8 73033589 EFC27E9E BA2ABE8B 6F3BACAC CE8B8CC3 3FA9EB28 
+  A3FFB384 C218EB05 91FC8EF1 8AB06D9B 0DB9519A A9610FC4 867FE116 B28B25CB 
+  E677DA17 60FBA288 A9B60046 2669321E F734E5
+        quit
+cts sxp enable
+cts sxp default source-ip 172.24.105.252 
+cts sxp default password t3l3v1s10n
+cts sxp retry period 10
+cts sxp connection peer 172.24.105.254 password default mode peer listener hold-time 0
+dot1x system-auth-control
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+!
+!
+vlan internal allocation policy ascending
+!
+vlan 50-58,100,105,151-155,451 
+!
+vlan 999
+ name ADMIN
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 51-53,55-58,105,151-155,451,999
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport access vlan 51
+ switchport mode access
+ ip access-group ACL-ALLOW in
+ macsec
+ authentication event fail action next-method
+ authentication event server alive action reinitialize 
+ authentication open
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ mka policy mka-policy
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ spanning-tree portfast
+!
+interface GigabitEthernet0/3
+ switchport access vlan 57
+ switchport mode access
+ switchport voice vlan 451
+ ip access-group ACL-ALLOW in
+ authentication event server alive action reinitialize 
+ authentication host-mode multi-domain
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ mab
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ spanning-tree portfast
+!
+interface GigabitEthernet0/4
+ switchport access vlan 51
+ switchport mode access
+ authentication event fail action next-method
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ mab
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ spanning-tree portfast
+!
+interface GigabitEthernet0/5
+ description WebAuthUser
+ switchport access vlan 52
+ switchport mode access
+ authentication order mab
+ authentication priority mab
+ authentication port-control auto
+ mab
+ spanning-tree portfast
+!
+interface GigabitEthernet0/6
+ description PRUEBA MACSEC WIRED - 
+ switchport access vlan 151
+ switchport mode access
+ ip access-group ACL-AD in
+ speed 1000
+ duplex full
+ macsec
+ authentication event fail action next-method
+ authentication event server alive action reinitialize 
+ authentication open
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ mka policy mka-policy
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ spanning-tree portfast
+!
+interface GigabitEthernet0/7
+ description PRUEBA DE WIRED DOT1X
+ switchport access vlan 52
+ switchport mode access
+ authentication port-control auto
+ spanning-tree portfast
+!
+interface GigabitEthernet0/8
+ switchport access vlan 105
+ switchport mode access
+!
+interface GigabitEthernet0/9
+!
+interface GigabitEthernet0/10
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 51-53,55-58,105,151-155,451,999
+ switchport mode trunk
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+interface Vlan51
+ ip address 172.24.51.200 255.255.255.0
+!
+interface Vlan52
+ ip address 172.24.52.253 255.255.255.0
+!
+interface Vlan53
+ no ip address
+!
+interface Vlan54
+ ip address 172.24.54.1 255.255.255.0
+!
+interface Vlan105
+ ip address 172.24.105.252 255.255.255.0
+!
+interface Vlan451
+ ip address 172.31.3.132 255.255.255.0
+!
+interface Vlan999
+ ip address 172.18.1.6 255.255.255.0
+!
+ip default-gateway 172.18.1.1
+ip forward-protocol nd
+ip http server
+ip http secure-server
+!
+ip route 172.18.0.0 255.255.0.0 172.18.1.1
+!
+ip access-list extended ACL-AD
+ permit ip 172.24.151.0 0.0.0.255 host 172.24.105.23
+ permit udp any eq bootpc any eq bootps
+ip access-list extended ACL-ALLOW
+ permit ip any any
+ip access-list extended ACL-WEBAUTH-REDIRECT
+ deny   ip any host 172.24.105.2
+ deny   ip any host 172.24.105.20
+ permit tcp any any eq www
+ permit tcp any any eq 443
+ip access-list extended webauth
+ permit ip any any
+!
+ip radius source-interface Vlan105 
+ip sla enable reaction-alerts
+logging origin-id ip
+logging source-interface Vlan105
+logging host 172.24.105.2 transport udp port 20514
+!
+snmp-server community axtelro RO
+snmp-server community public RO
+snmp-server trap-source Vlan105
+!
+radius-server attribute 6 on-for-login-auth
+radius-server attribute 8 include-in-access-req
+radius-server attribute 25 access-request include
+radius-server dead-criteria time 10 tries 3
+radius-server host 172.24.105.20 key axtel
+!
+!
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ logging synchronous
+line vty 5 15
+ logging synchronous
+!
+ntp server 172.18.1.1
+!
+end
+

@@ -1,0 +1,66 @@
+!
+version 15.1
+service password-encryption
+!
+hostname Rospf
+!
+ip domain-name heg.local
+ip cef
+no ipv6 cef
+!
+crypto key generate rsa modulus 1024
+ip ssh version 2
+!
+enable secret cisco
+!
+spanning-tree mode pvst
+!
+interface GigabitEthernet0/0
+ description vers LAN 1
+!
+interface GigabitEthernet0/1
+ description vers LAN 2
+!
+interface GigabitEthernet0/2
+ description vers RC
+!
+interface GigabitEthernet0/3.10
+ encapsulation dot1Q 30
+!
+interface Vlan1
+!
+router ospf 1
+ log-adjacency-changes
+ redistribute rip subnets
+ redistribute eigrp 65200 subnets
+ network 192.168.12.0 0.0.0.255 area 0
+ network 192.168.11.0 0.0.0.255 area 0
+ network 172.16.0.0 0.0.0.255 area 0
+!
+router rip
+ version 2
+ redistribute ospf 1 metric 1
+ network 192.168.2.0
+ network 192.168.12.0
+ no auto-summary
+!
+router eigrp 65200
+ redistribute ospf 1 metric 10000 100 255 1 1500
+ network 172.16.0.0 0.0.0.255
+!
+access-list 10 permit 192.168.11.0 0.0.0.255
+!
+line con 0
+ password cisco
+ login
+!
+line vty 0 4
+ password cisco
+ login
+ transport input ssh
+ access-class 10 in
+!
+ip classless
+ip flow-export version 9
+!
+end

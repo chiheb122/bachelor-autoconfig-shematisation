@@ -1,0 +1,239 @@
+version 16.12
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+service sequence-numbers
+service unsupported-transceiver
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+!
+hostname HQ_Router_4331
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+security authentication failure rate 3 log
+security passwords min-length 10
+logging buffered 1024000 informational
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local
+!
+!
+!
+!
+!
+!
+aaa session-id common
+aaa policy interface-config allow-subinterface
+no ip source-route
+!
+!
+!
+!
+!
+!
+!
+ip name-server 8.8.8.8
+ip domain name pri.HQ.local
+!
+!
+!
+login on-failure log
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no license feature hseck9
+license udi pid ISR4331/K9 sn FLMXXXXXXX
+license boot level appxk9
+memory free low-watermark processor 67089
+!
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+no cdp run
+!
+!
+!
+crypto logging session
+!
+!
+!
+!
+!
+crypto isakmp policy 10
+ encryption aes 256
+ authentication pre-share
+ group 14
+ lifetime 28800
+!
+!
+crypto isakmp key <PRESHARE KEY> address 10.170.241.238  no-xauth
+crypto isakmp keepalive 30 9 periodic
+crypto isakmp nat keepalive 20
+!
+crypto ipsec security-association lifetime seconds 28800
+!
+crypto ipsec transform-set ESP-AES-256_ESP-SHA-HMAC esp-aes 256 esp-sha-hmac
+ mode tunnel
+!
+!
+!
+crypto map TO_REMOTE1_VIA_INT_172.19.1.2 12 ipsec-isakmp
+ set peer 10.170.241.238
+ set transform-set ESP-AES-256_ESP-SHA-HMAC
+ set pfs group14
+ match address TO_REMOTE1
+ reverse-route static
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ description WAN
+ ip address 199.77.77.77 255.255.255.248
+ ip nat outside
+ negotiation auto
+ ip virtual-reassembly
+!
+interface GigabitEthernet0/0/1
+ description LAN
+ ip address 10.254.5.1 255.255.255.0
+ ip nat inside
+ ip tcp adjust-mss 1300
+ negotiation auto
+ ip virtual-reassembly
+!
+!
+interface GigabitEthernet0/0/2
+ ip address 172.19.1.2 255.255.255.0
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ ip access-group HQ_R2_INT_172.19.1.2_FIREWALL in
+ crypto map TO_REMOTE1_VIA_INT_172.19.1.2
+ ip virtual-reassembly
+!
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+ip dns server
+ip nat inside source static tcp 10.254.5.20 22 199.77.77.77 22222 extendable
+ip nat inside source static tcp 10.254.5.20 22 199.77.77.78 22 extendable
+ip nat inside source route-map NONAT_LAN interface GigabitEthernet0/0/0 overload
+ip route 0.0.0.0 0.0.0.0 199.77.77.76
+ip route 10.170.241.238 255.255.255.255 172.19.1.1 permanent
+ip ssh version 2
+!
+!
+ip access-list extended HQ_R2_INT_172.19.1.2_FIREWALL
+ 180 permit tcp host 10.170.241.238 eq 22 host 172.19.1.2
+ 190 permit udp host 10.170.241.238 host 172.19.1.2 eq isakmp
+ 200 permit udp host 10.170.241.238 host 172.19.1.2 eq non500-isakmp
+ 210 permit esp host 10.170.241.238 host 172.19.1.2
+ 220 permit icmp host 10.170.241.238 host 172.19.1.2
+ip access-list extended NAT
+ 395 deny   ip 10.254.5.0 0.0.0.255 10.39.0.0 0.0.0.255
+ 800 permit ip 10.254.5.0 0.0.0.255 any
+ip access-list extended TO_REMOTE1
+ 10 permit ip 10.254.5.0 0.0.0.255 10.39.0.0 0.0.0.255
+ip access-list extended 101
+ 10 permit ip any host 10.170.241.238
+ 20 permit ip host 10.170.241.238 any
+ 30 permit esp any host 10.170.241.238
+ 40 permit esp host 10.170.241.238 any
+!
+!
+route-map NONAT_LAN permit 1
+ match ip address NAT
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ access-class 23 in
+ privilege level 15
+ logging synchronous
+ transport input ssh
+ transport output ssh
+line vty 5 15
+ access-class 23 in
+ privilege level 15
+ logging synchronous
+ transport input ssh
+ transport output ssh
+!
+!
+!
+!
+!
+!
+end

@@ -1,0 +1,870 @@
+
+Current configuration : 25462 bytes
+!
+! No configuration change since last restart
+!
+version 15.4
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+no platform punt-keepalive disable-kernel-core
+!
+hostname Primary-Site-Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+security authentication failure rate 3 log
+security passwords min-length 16
+logging buffered 64000
+no logging console
+no logging monitor
+enable secret 5 <removed>
+!
+aaa new-model
+!
+!
+aaa group server tacacs+ SECURE
+ server 10.129.200.21
+ server 10.229.200.21
+ server-private 10.129.200.21 timeout 3 key 7 <removed>
+ server-private 10.229.200.21 timeout 3 key 7 <removed>
+ ip vrf forwarding Mgmt-intf
+ ip tacacs source-interface GigabitEthernet0
+!
+aaa authentication login default group SECURE local
+aaa authentication login CONSOLE local
+aaa authentication login SECURE group tacacs+ local
+aaa authentication enable default group tacacs+ enable
+aaa authorization console
+aaa authorization config-commands
+aaa authorization exec default group tacacs+ local 
+aaa authorization exec CONSOLE local 
+aaa authorization commands 15 ACM group SECURE local none 
+aaa accounting commands 15 default stop-only group tacacs+
+!
+!
+!
+!
+!
+aaa session-id common
+process cpu threshold type total rising 40 interval 180 falling 20 interval 180
+clock timezone UAE 4 0
+no ip source-route
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip bootp server
+no ip domain lookup
+ip domain name Emiratesnbd.com
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+flow record BRANCH_TRAFFIC
+ match ipv4 tos
+ match ipv4 protocol
+ match ipv4 source address
+ match ipv4 destination address
+ match transport source-port
+ match transport destination-port
+ match interface input
+ collect routing next-hop address ipv4
+ collect ipv4 dscp
+ collect ipv4 ttl minimum
+ collect ipv4 ttl maximum
+ collect transport tcp flags
+ collect interface output
+ collect counter bytes
+ collect counter packets
+ collect timestamp sys-uptime first
+ collect timestamp sys-uptime last
+ collect application name
+!
+!
+flow exporter MGMT-SVR
+ description Solarwinds for detail flow information
+ destination 10.129.200.16
+ source Loopback0
+ transport udp 2055
+!
+!
+flow monitor NETFLOW-MONITOR
+ exporter MGMT-SVR
+ cache timeout active 60
+ record BRANCH_TRAFFIC
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid ASR1001-X sn JAE191708BK
+object-group network AV-SCCM-LIST-OF-SERVERS-GROUP 
+ host 10.129.1.71
+ host 10.129.1.72
+ host 10.129.3.61
+ host 10.129.3.62
+ host 10.229.3.61
+ host 10.229.3.62
+ host 10.129.0.48
+ host 10.129.0.49
+ host 10.129.3.63
+ host 10.229.3.63
+ host 10.229.0.161
+ host 10.129.126.92
+ host 10.229.8.243
+!
+object-group network BR_BW_1MBPS 
+ 10.122.91.0 255.255.255.0
+ 10.124.1.0 255.255.255.0
+!
+object-group network BR_BW_2MBPS 
+ 172.16.220.0 255.255.255.0
+ 10.124.160.0 255.255.255.0
+ 10.124.158.0 255.255.255.0
+ 10.124.171.0 255.255.255.0
+ 10.124.26.0 255.255.255.0
+ 10.124.198.0 255.255.255.0
+ 172.16.174.0 255.255.255.0
+ 10.124.43.0 255.255.255.0
+ 10.124.21.0 255.255.255.0
+ 10.124.112.0 255.255.255.0
+ 172.31.209.0 255.255.255.0
+ 10.124.42.0 255.255.255.0
+!
+spanning-tree extend system-id
+!
+username dani privilege 15 secret 5 <removed>
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+ip tftp source-interface GigabitEthernet0
+ip ssh time-out 60
+ip ssh authentication-retries 2
+ip ssh version 2
+!
+class-map match-all BR-BW-2MBPS-CLASS
+ match access-group name BR_BW_2MBPS_LIST
+class-map match-all BR-BW-1MBPS-CLASS
+ match access-group name BR_BW_1MBPS_LIST
+class-map match-all LIMIT-CENFS-SRVR-CLASS
+ match access-group name CENFS-SRVR-LIST
+class-map match-all AV-SCCM-SERVER-CLASS
+ match access-group name AV-SCCM-SERVER-LIST
+!
+policy-map AV-SCCM-SERVER-LIMIT-POLICY
+ class AV-SCCM-SERVER-CLASS
+  police cir 10000000 bc 1875000 be 3750000
+   conform-action transmit 
+   exceed-action drop 
+   violate-action drop 
+ class LIMIT-CENFS-SRVR-CLASS
+  police cir 2000000 bc 375000 be 750000
+   conform-action transmit 
+   exceed-action drop 
+   violate-action drop 
+ class BR-BW-1MBPS-CLASS
+  police cir 384000 conform-action transmit  exceed-action drop  violate-action drop 
+ class BR-BW-2MBPS-CLASS
+  police cir 768000 conform-action transmit  exceed-action drop  violate-action drop 
+!
+!
+! 
+!
+!
+!
+!
+!
+crypto isakmp policy 10
+ encr 3des
+ authentication pre-share
+ group 2
+!
+crypto isakmp policy 20
+ encr 3des
+ hash md5
+ authentication pre-share
+ group 2
+crypto isakmp key <removed> address 0.0.0.0        
+crypto isakmp keepalive 10
+!
+crypto ipsec security-association replay disable
+!
+crypto ipsec transform-set FOR_ALL esp-3des esp-sha-hmac 
+ mode transport
+crypto ipsec transform-set FOR_ALL_2 esp-3des esp-md5-hmac 
+ mode transport
+!
+crypto ipsec profile FOR_ALL_BRANCHES
+ set security-association lifetime seconds 1800
+ set transform-set FOR_ALL 
+!
+crypto ipsec profile FOR_ALL_BRANCHES_2
+ set transform-set FOR_ALL_2 
+!
+!
+!
+crypto call admission limit ike in-negotiation-sa 60
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ description **** Management Interface ***
+ ip address 10.190.0.4 255.255.255.255
+!
+interface Loopback1
+ description ***Loopback For Cloud1 ****
+ ip address 10.191.8.75 255.255.255.255
+!
+interface Loopback2
+ description ***** Source Loopback of DMVPN For 2nd Block of 25 Branches*****
+ ip address 10.191.8.76 255.255.255.255
+!
+interface Loopback3
+ description ***** Source Loopback of DMVPN For 3rd Block of 25 Branches*****
+ ip address 10.191.8.77 255.255.255.255
+!
+interface Loopback200
+ description ***FR Link GRE Tunnel Loopback***
+ ip address 10.191.32.96 255.255.255.255
+!
+interface Loopback201
+ description **** Loopback for trace and ping to ENBD edge services ****
+ ip address 10.190.0.200 255.255.255.255
+!
+interface Tunnel1
+ description ***** DMVPN For 1st Block of 25 DU Branches *****
+ bandwidth 200000
+ ip address 10.191.15.1 255.255.255.192
+ no ip redirects
+ ip mtu 1400
+ ip nat outside
+ ip flow monitor NETFLOW-MONITOR input
+ ip flow monitor NETFLOW-MONITOR output
+ ip nhrp authentication DMV-CL-1
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 1
+ ip nhrp holdtime 300
+ ip ospf network point-to-multipoint
+ ip ospf cost 11
+ tunnel source Loopback1
+ tunnel mode gre multipoint
+ tunnel protection ipsec profile FOR_ALL_BRANCHES
+ ip virtual-reassembly
+!
+interface Tunnel2
+ description ***** DMVPN For 2st Block of 25 DU-Etisalat ENBD Branches *****
+ bandwidth 200000
+ ip address 10.191.15.65 255.255.255.192
+ no ip redirects
+ ip mtu 1400
+ ip flow monitor NETFLOW-MONITOR input
+ ip flow monitor NETFLOW-MONITOR output
+ ip nhrp authentication DMV-CL-2
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 2
+ ip nhrp holdtime 300
+ ip ospf network point-to-multipoint
+ ip ospf cost 11
+ tunnel source Loopback2
+ tunnel mode gre multipoint
+ tunnel protection ipsec profile FOR_ALL_BRANCHES_2
+ ip virtual-reassembly
+!
+interface Tunnel3
+ description ***** DMVPN For 3st Block of 25 DU-Etisalat ENBD-Offices *****
+ bandwidth 200000
+ ip address 10.191.15.129 255.255.255.192
+ no ip redirects
+ ip mtu 1400
+ ip flow monitor NETFLOW-MONITOR input
+ ip flow monitor NETFLOW-MONITOR output
+ ip nhrp authentication DMV-CL-3
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 3
+ ip nhrp holdtime 300
+ ip ospf network point-to-multipoint
+ ip ospf cost 11
+ tunnel source Loopback3
+ tunnel mode gre multipoint
+ tunnel protection ipsec profile FOR_ALL_BRANCHES_2
+ ip virtual-reassembly
+!
+interface Tunnel200
+ description ***Tunnel Connecting To EIB-QFS Via OFF-ATM RTR***
+ ip address 10.191.110.9 255.255.255.252
+ ip tcp adjust-mss 1200
+ ip ospf mtu-ignore
+ ip ospf cost 11
+ shutdown
+ tunnel source Loopback200
+ tunnel destination 10.191.32.98
+ tunnel protection ipsec profile FOR_ALL_BRANCHES
+!
+interface Tunnel201
+ description ***Tunnel Connecting To EBI-Booth1 Via OFF-ATM RTR***
+ ip address 10.191.110.13 255.255.255.252
+ ip ospf network point-to-point
+ ip ospf mtu-ignore
+ ip ospf cost 11
+ tunnel source Loopback200
+ tunnel destination 10.191.32.99
+ tunnel protection ipsec profile FOR_ALL_BRANCHES
+!
+interface Tunnel202
+ description ***Tunnel Connecting To EBI-Booth3 Via OFF-ATM RTR***
+ ip address 10.191.110.17 255.255.255.252
+ ip nat outside
+ ip tcp adjust-mss 1200
+ ip ospf mtu-ignore
+ ip ospf cost 11
+ shutdown
+ tunnel source Loopback200
+ tunnel destination 10.191.32.100
+ tunnel protection ipsec profile FOR_ALL_BRANCHES
+ ip virtual-reassembly
+!
+interface Tunnel204
+ description ***Tunnel Connecting To EBI-RML Via OFF-ATM RTR***
+ ip address 10.191.110.37 255.255.255.252
+ ip tcp adjust-mss 1200
+ ip ospf mtu-ignore
+ ip ospf cost 11
+ shutdown
+ tunnel source Loopback200
+ tunnel destination 10.191.32.102
+ tunnel protection ipsec profile FOR_ALL_BRANCHES
+!
+interface Tunnel205
+ description ***Tunnel Connecting To IB-WOMENS College Via OFF-ATM RTR***
+ ip address 10.191.110.41 255.255.255.252
+ ip tcp adjust-mss 1200
+ ip ospf mtu-ignore
+ ip ospf cost 10
+ shutdown
+ tunnel source Loopback200
+ tunnel destination 10.191.32.97
+ tunnel protection ipsec profile FOR_ALL_BRANCHES
+!
+interface TenGigabitEthernet0/0/0
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet0/0/1
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/0/0
+ description *** Primary-Site-Router PRI-400MB-MPLS CS ID: WO 1-43171015816 ACC-ID 5.32335 Cust-ID CONTR0056856217 ***
+ bandwidth 200000
+ ip address 10.191.0.137 255.255.255.252
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ load-interval 30
+ negotiation auto
+ no mop enabled
+!
+interface GigabitEthernet0/0/1
+ description **BACKUP-DU-MPLS-SEC-400MB-WO-1-43173309535-AC-ID-5.32335-Contract-CONTR0057063702***
+ bandwidth 400000
+ ip address 10.191.0.253 255.255.255.252
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ load-interval 30
+ negotiation auto
+!
+interface GigabitEthernet0/0/2
+ description ***Connecting to Core-A***
+ ip address 10.191.0.54 255.255.255.252
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ ip nat inside
+ ip ospf message-digest-key 1 md5 <removed>
+ ip ospf network point-to-point
+ ip ospf cost 10
+ load-interval 30
+ negotiation auto
+ ip virtual-reassembly
+!
+interface GigabitEthernet0/0/3
+ description ***Connecting to Core-B***
+ ip address 10.191.0.62 255.255.255.252
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ ip nat inside
+ ip ospf message-digest-key 1 md5 <removed>
+ ip ospf network point-to-point
+ ip ospf cost 11
+ load-interval 30
+ negotiation auto
+ service-policy input AV-SCCM-SERVER-LIMIT-POLICY
+ ip virtual-reassembly
+!
+interface GigabitEthernet0/0/4
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/0/5
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ ip address 172.28.8.215 255.255.255.0
+ no ip unreachables
+ no ip proxy-arp
+ negotiation auto
+!
+router ospf 1
+ router-id 10.191.8.75
+ ispf
+ auto-cost reference-bandwidth 10000
+ area 0 authentication message-digest
+ area 100 stub no-summary
+ area 103 stub no-summary
+ area 107 stub no-summary
+ area 120 nssa no-summary
+ area 201 nssa no-summary
+ area 205 stub no-summary
+ network 10.126.221.0 0.0.0.255 area 205
+ network 10.190.0.4 0.0.0.0 area 0
+ network 10.190.0.200 0.0.0.0 area 0
+ network 10.191.0.54 0.0.0.0 area 0
+ network 10.191.0.62 0.0.0.0 area 0
+ network 10.191.15.1 0.0.0.0 area 201
+ network 10.191.15.65 0.0.0.0 area 107
+ network 10.191.15.129 0.0.0.0 area 120
+ network 10.191.32.96 0.0.0.0 area 0
+ network 10.191.110.9 0.0.0.0 area 103
+ network 10.191.110.13 0.0.0.0 area 103
+ network 10.191.110.17 0.0.0.0 area 103
+ network 10.191.110.37 0.0.0.0 area 100
+ network 10.191.110.41 0.0.0.0 area 103
+!
+router bgp 65007
+ bgp log-neighbor-changes
+ bgp dampening route-map CRITICAL-SITES-MAP
+ network 10.191.8.75 mask 255.255.255.255
+ network 10.191.8.76 mask 255.255.255.255
+ network 10.191.8.77 mask 255.255.255.255
+ neighbor 10.191.0.138 remote-as 15802
+ neighbor 10.191.0.138 allowas-in
+ neighbor 10.191.0.138 route-map LF-200 in
+ neighbor 10.191.0.138 route-map MED-50 out
+ neighbor 10.191.0.254 remote-as 15802
+ neighbor 10.191.0.254 allowas-in
+ neighbor 10.191.0.254 route-map MED-100 out
+!
+ip nat inside source static udp 10.129.1.10 162 172.16.15.30 162 extendable
+no ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.28.8.1
+ip tacacs source-interface Loopback0
+!
+ip access-list standard MGMT
+ permit 10.229.200.16
+ permit 10.129.200.16
+ permit 172.28.13.51
+ permit 172.28.13.50
+ permit 172.28.113.20
+ permit 172.28.113.53
+ permit 172.20.2.48 0.0.0.15
+ permit 10.128.4.0 0.0.0.63
+ permit 10.122.2.0 0.0.0.31
+ permit 172.28.0.0 0.0.255.255
+!
+ip access-list extended AV-SCCM-SERVER-LIST
+ remark *** SERVER-wavapp  ***
+ permit ip host 10.129.1.71 any
+ remark *** SERVER-wavaps  ***
+ permit ip host 10.129.1.72 any
+ remark *** SERVER-wavsepp1 ***
+ permit ip host 10.129.3.61 any
+ remark *** SERVER-wavsepp2 ***
+ permit ip host 10.129.3.62 any
+ remark *** SERVER-wavsepb1 ***
+ permit ip host 10.229.3.61 any
+ remark *** SERVER-wavsepb1 ***
+ permit ip host 10.229.3.62 any
+ remark *** SERVER-WITNSCCMP1***
+ permit ip host 10.129.0.48 any
+ remark *** SERVER-WITNSCCMP2***
+ permit ip host 10.129.0.49 any
+ remark *** SERVER - ADBFSEBIL ***
+ permit ip host 172.16.198.20 any
+ remark *** SERVER - BOCFS ***
+ permit ip host 10.122.221.110 any
+ remark *** SERVER - EISFS ***
+ permit ip host 10.129.13.74 any
+ remark *** SERVER - MSDFSEBIL ***
+ permit ip host 10.122.77.39 any
+ remark *** SERVER - WAMJSCCMP ***
+ permit ip host 172.16.157.249 any
+ remark *** SERVER - WBABSCCMP ***
+ permit ip host 172.16.199.249 any
+ remark *** SERVER - WBTASCCMP ***
+ permit ip host 172.16.39.249 any
+ remark *** SERVER - WDFRSCCMP ***
+ permit ip host 172.16.41.249 any
+ remark *** SERVER - WDHCSCCMP ***
+ permit ip host 10.122.240.26 any
+ remark *** SERVER - WDIFDOC  ***
+ permit ip host 10.122.68.17 any
+ remark *** SERVER - WGALSCCMP ***
+ permit ip host 172.16.46.249 any
+ remark *** SERVER - WGHRSCCMP  ***
+ permit ip host 172.16.143.249 any
+ remark *** SERVER - WIBSCCMP ***
+ permit ip host 172.16.108.19 any
+ remark *** SERVER - WISTSMSP ***
+ permit ip host 10.229.0.161 any
+ remark *** SERVER - WITNSCCMP1  ***
+ remark *** SERVER - WITNSCCMP2 ***
+ remark *** SERVER - WJBWSCCMP ***
+ permit ip host 172.16.174.249 any
+ remark *** SERVER - WJUMSCCMP ***
+ permit ip host 10.124.164.249 any
+ remark *** SERVER - WMIZSCCMP  ***
+ permit ip host 172.16.176.249 any
+ remark *** SERVER - WMKHSCCMP ***
+ permit ip host 172.16.98.249 any
+ remark *** SERVER - WMZRSCCMP  ***
+ permit ip host 172.16.147.249 any
+ remark *** SERVER - WNAJSCCMP ***
+ permit ip host 172.16.138.249 any
+ remark *** SERVER - WNFRSCCMP ***
+ permit ip host 172.16.208.249 any
+ remark *** SERVER - WNIJSCCMP ***
+ permit ip host 172.18.21.249 any
+ remark *** SERVER - WNISSCCMP  ***
+ permit ip host 10.122.93.19 any
+ remark *** SERVER - WRIQSCCMP ***
+ permit ip host 172.16.55.249 any
+ remark *** SERVER - WRKESCCMP ***
+ permit ip host 172.16.134.249 any
+ remark *** SERVER - WROSSCCMP ***
+ permit ip host 172.16.57.249 any
+ remark *** SERVER - WSBASCCMP ***
+ permit ip host 172.16.60.249 any
+ remark *** SERVER - WSHNSCCMP ***
+ permit ip host 10.124.184.249 any
+ remark *** SERVER - WSZRSCCMP ***
+ permit ip host 172.16.183.249 any
+ remark *** SERVER - WTCASCCMP ***
+ permit ip host 172.16.195.249 any
+ip access-list extended BR_BW_1MBPS_LIST
+ permit ip object-group AV-SCCM-LIST-OF-SERVERS-GROUP object-group BR_BW_1MBPS time-range SUN2THR-6AM-To-11PM
+ip access-list extended BR_BW_2MBPS_LIST
+ permit ip object-group AV-SCCM-LIST-OF-SERVERS-GROUP object-group BR_BW_2MBPS time-range SUN2THR-6AM-To-11PM
+ip access-list extended CENFS-SRVR-LIST
+ deny   ip host 10.129.13.70 10.122.0.0 0.0.255.255
+ deny   ip host 10.129.13.70 10.132.0.0 0.0.255.255
+ permit ip host 10.129.13.70 any
+!
+!
+ip prefix-list DU-EXT-LOOPBACKS seq 1 permit 10.191.8.75/32
+ip prefix-list DU-EXT-LOOPBACKS seq 2 permit 10.191.8.76/32
+ip prefix-list DU-EXT-LOOPBACKS seq 3 permit 10.191.8.77/32
+!
+ip prefix-list SITE-LIST seq 1 permit 10.190.106.160/32
+ip prefix-list SITE-LIST seq 2 permit 10.190.106.161/32
+ip prefix-list SITE-LIST seq 3 permit 10.190.106.162/32
+ip prefix-list SITE-LIST seq 4 permit 10.190.108.85/32
+ip prefix-list SITE-LIST seq 5 permit 10.190.108.86/32
+ip prefix-list SITE-LIST seq 6 permit 10.190.108.87/32
+ip sla responder
+logging alarm informational
+logging trap debugging
+logging source-interface Loopback0
+logging host 10.129.200.16
+logging host 172.28.21.39
+logging host 10.229.200.16
+access-list 1 permit 10.229.200.46
+access-list 1 permit 10.229.200.16
+access-list 1 permit 10.229.200.26
+access-list 1 permit 10.229.200.25
+access-list 1 permit 10.129.200.16
+access-list 1 permit 10.129.200.26
+access-list 1 permit 10.129.200.25
+access-list 1 permit 10.129.200.46
+access-list 1 permit 10.128.4.26
+!
+route-map CRITICAL-SITES-MAP permit 10
+ match ip address prefix-list SITE-LIST
+ set dampening 15 1100 3000 60
+!
+route-map LF-200 permit 10
+ set local-preference 200
+!
+route-map MED-100 permit 10
+ match ip address prefix-list DU-EXT-LOOPBACKS
+ set metric 100
+!
+route-map MED-50 permit 10
+ match ip address prefix-list DU-EXT-LOOPBACKS
+ set metric 50
+!
+snmp-server group enbd v3 auth read enbd write enbd access 1
+snmp-server group 8$henb97o v3 auth 
+snmp-server view enbd iso included
+snmp-server trap-source Loopback0
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps vrrp
+snmp-server enable traps pfr
+snmp-server enable traps flowmon
+snmp-server enable traps ds1
+snmp-server enable traps call-home message-send-fail server-fail
+snmp-server enable traps tty
+snmp-server enable traps eigrp
+snmp-server enable traps ospf state-change
+snmp-server enable traps ospf errors
+snmp-server enable traps ospf retransmit
+snmp-server enable traps ospf lsa
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change
+snmp-server enable traps ospf cisco-specific state-change shamlink interface-old
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor
+snmp-server enable traps ospf cisco-specific errors
+snmp-server enable traps ospf cisco-specific retransmit
+snmp-server enable traps ospf cisco-specific lsa
+snmp-server enable traps casa
+snmp-server enable traps license
+snmp-server enable traps aaa_server
+snmp-server enable traps atm subif
+snmp-server enable traps bfd
+snmp-server enable traps bgp
+snmp-server enable traps bgp cbgp2
+snmp-server enable traps memory bufferpeak
+snmp-server enable traps config-copy
+snmp-server enable traps config
+snmp-server enable traps config-ctid
+snmp-server enable traps dhcp
+snmp-server enable traps dial
+snmp-server enable traps dlsw
+snmp-server enable traps dsp card-status
+snmp-server enable traps dsp oper-state
+snmp-server enable traps dsp video-usage
+snmp-server enable traps dsp video-out-of-resource
+snmp-server enable traps fru-ctrl
+snmp-server enable traps entity
+snmp-server enable traps event-manager
+snmp-server enable traps frame-relay multilink bundle-mismatch
+snmp-server enable traps frame-relay
+snmp-server enable traps frame-relay subif
+snmp-server enable traps hsrp
+snmp-server enable traps ipmulticast
+snmp-server enable traps msdp
+snmp-server enable traps mvpn
+snmp-server enable traps ospfv3 state-change
+snmp-server enable traps ospfv3 errors
+snmp-server enable traps pim neighbor-change rp-mapping-change invalid-pim-message
+snmp-server enable traps pppoe
+snmp-server enable traps cpu threshold
+snmp-server enable traps pw vc
+snmp-server enable traps rsvp
+snmp-server enable traps ipsla
+snmp-server enable traps syslog
+snmp-server enable traps l2tun session
+snmp-server enable traps l2tun pseudowire status
+snmp-server enable traps adslline
+snmp-server enable traps vdsl2line
+snmp-server enable traps ethernet evc status create delete
+snmp-server enable traps ether-oam
+snmp-server enable traps ethernet cfm cc mep-up mep-down cross-connect loop config
+snmp-server enable traps ethernet cfm crosscheck mep-missing mep-unknown service-up
+snmp-server enable traps entity-qfp mem-res-thresh
+snmp-server enable traps entity-state
+snmp-server enable traps trustsec-sxp conn-srcaddr-err msg-parse-err conn-config-err binding-err conn-up conn-down binding-expn-fail oper-nodeid-change binding-conflict
+snmp-server enable traps flash insertion removal
+snmp-server enable traps firewall serverstatus
+snmp-server enable traps netsync
+snmp-server enable traps sbc adj-status
+snmp-server enable traps sbc blacklist
+snmp-server enable traps sbc congestion-alarm
+snmp-server enable traps sbc h248-ctrlr-status
+snmp-server enable traps sbc media-source
+snmp-server enable traps sbc radius-conn-status
+snmp-server enable traps sbc sla-violation
+snmp-server enable traps sbc sla-violation-rev1
+snmp-server enable traps sbc svc-state
+snmp-server enable traps sbc qos-statistics
+snmp-server enable traps srp
+snmp-server enable traps isdn call-information
+snmp-server enable traps isdn layer2
+snmp-server enable traps isdn chan-not-avail
+snmp-server enable traps isdn ietf
+snmp-server enable traps cnpd
+snmp-server enable traps entity-diag boot-up-fail hm-test-recover hm-thresh-reached scheduled-test-fail
+snmp-server enable traps cef resource-failure peer-state-change peer-fib-state-change inconsistency
+snmp-server enable traps sonet
+snmp-server enable traps resource-policy
+snmp-server enable traps nhrp nhs
+snmp-server enable traps nhrp nhc
+snmp-server enable traps nhrp nhp
+snmp-server enable traps nhrp quota-exceeded
+snmp-server enable traps isis
+snmp-server enable traps ip local pool
+snmp-server enable traps mpls rfc ldp
+snmp-server enable traps mpls ldp
+snmp-server enable traps mpls rfc traffic-eng
+snmp-server enable traps mpls traffic-eng
+snmp-server enable traps mpls fast-reroute protected
+snmp-server enable traps ike policy add
+snmp-server enable traps ike policy delete
+snmp-server enable traps ike tunnel start
+snmp-server enable traps ike tunnel stop
+snmp-server enable traps ipsec cryptomap add
+snmp-server enable traps ipsec cryptomap delete
+snmp-server enable traps ipsec cryptomap attach
+snmp-server enable traps ipsec cryptomap detach
+snmp-server enable traps ipsec tunnel start
+snmp-server enable traps ipsec tunnel stop
+snmp-server enable traps ipsec too-many-sas
+snmp-server enable traps gdoi gm-start-registration
+snmp-server enable traps gdoi gm-registration-complete
+snmp-server enable traps gdoi gm-re-register
+snmp-server enable traps gdoi gm-rekey-rcvd
+snmp-server enable traps gdoi gm-rekey-fail
+snmp-server enable traps gdoi ks-rekey-pushed
+snmp-server enable traps gdoi gm-incomplete-cfg
+snmp-server enable traps gdoi ks-no-rsa-keys
+snmp-server enable traps gdoi ks-new-registration
+snmp-server enable traps gdoi ks-reg-complete
+snmp-server enable traps bulkstat collection transfer
+snmp-server enable traps alarms informational
+snmp-server enable traps voice
+snmp-server enable traps vrfmib vrf-up vrf-down vnet-trunk-up vnet-trunk-down
+snmp-server enable traps ethernet cfm alarm
+snmp-server enable traps rf
+snmp-server enable traps transceiver all
+snmp-server enable traps mpls vpn
+snmp-server enable traps mpls rfc vpn
+snmp-server host 10.129.200.16 version 3 auth <removed> 
+snmp-server host 10.229.200.16 version 3 auth <removed> 
+snmp-server host 10.129.200.16 version 3 auth <removed> 
+snmp-server host 10.229.200.16 version 3 auth <removed> 
+snmp ifmib ifindex persist
+!
+tacacs-server host 10.129.200.21 key 7 <removed>
+tacacs-server host 10.229.200.21 key 7 <removed>
+tacacs-server timeout 3
+tacacs-server directed-request
+!
+!
+!
+control-plane
+!
+ !
+ !
+ !
+ !
+!
+!
+!
+!
+banner login ^CC
+******************************************************************************** 
+***                                                                          *** 
+***                       W   A   R   N   I   N   G                          ***   
+***                                                                          *** 
+***     Access to this system and its network is restricted to authorized    *** 
+***     persons and programs for authorized purposes only. Unauthorized      *** 
+***     access is prohibited and is subject to prosecution. Evidence of      *** 
+***     criminal actions performed using these system facilities may be      *** 
+***     passed to law enforcement officials to support court cases.          *** 
+***     DO NOT proceed if you are not authorized.                            *** 
+***                                                                          ***
+********************************************************************************
+^C
+!
+line con 0
+ exec-timeout 5 0
+ authorization exec CONSOLE
+ login authentication CONSOLE
+ stopbits 1
+line aux 0
+ no exec
+ transport output none
+ stopbits 1
+line vty 0 4
+ access-class MGMT in vrf-also
+ exec-timeout 5 0
+ privilege level 15
+ authorization commands 15 ACM
+ login authentication SECURE
+ transport input ssh
+ transport output none
+line vty 5 15
+ access-class MGMT in vrf-also
+ exec-timeout 5 0
+ privilege level 15
+ authorization commands 15 ACM
+ login authentication SECURE
+ transport input ssh
+ transport output none
+!
+ntp authentication-key 1 md5 040805040B600857071A 7
+ntp authenticate
+ntp trusted-key 1
+ntp source Loopback0
+ntp server 10.190.0.1 key 1 prefer
+ntp server 10.224.0.1 key 1
+time-range SUN2THR-6AM-To-11PM
+ periodic Monday Tuesday Wednesday Thursday Saturday Sunday 6:00 to 23:00
+!
+!
+end

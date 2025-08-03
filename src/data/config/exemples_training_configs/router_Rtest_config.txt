@@ -1,0 +1,96 @@
+
+!
+version 15.7
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname Rtest
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$en9N$nmHqcyZRPNq6JjRlg1kmV.
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CISCO1921/K9 sn FCZ163190MQ
+!
+!
+!
+redundancy
+!
+!
+!
+!
+!
+!
+interface Embedded-Service-Engine0/0
+no ip address
+shutdown
+!
+interface GigabitEthernet0/0
+description box internet
+ip address dhcp
+duplex auto
+speed auto
+!
+interface GigabitEthernet0/1
+ip address 192.168.11.1 255.255.255.0
+duplex auto
+speed auto
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip route 0.0.0.0 0.0.0.0 192.168.11.2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+control-plane
+!
+!
+vstack
+!
+line con 0
+password 7 05080F1C2243
+login
+line aux 0
+line 2
+no activation-character
+no exec
+transport preferred none
+transport output pad telnet rlogin lapb-ta mop udptn v120 ssh
+stopbits 1
+line vty 0 4
+password 7 094F471A1A0A
+login
+transport input ssh
+!
+scheduler allocate 20000 1000
+!
+end

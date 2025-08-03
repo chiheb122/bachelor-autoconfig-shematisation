@@ -1,0 +1,76 @@
+Current configuration : 1103 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 $1$d51C$qZVGfyDQJHQZ/W4muxjo4/
+enable password chen
+!
+no aaa new-model
+!
+resource policy
+!
+no network-clock-participate wic 0
+ip subnet-zero
+!
+!
+ip cef
+!
+!
+!
+!
+!
+controller E1 0/0/0
+!
+!
+interface FastEthernet0/0
+ ip address 192.168.3.39 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1.1
+ encapsulation dot1Q 2
+ ip address 192.168.8.254 255.255.255.0
+ no snmp trap link-status
+!
+interface FastEthernet0/1.2
+ encapsulation dot1Q 3
+ ip address 192.168.9.254 255.255.255.0
+ no snmp trap link-status
+!
+router rip
+ network 192.168.3.0
+ network 192.168.8.0
+ network 192.168.9.0
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 192.168.3.1
+!
+no ip http server
+!
+snmp-server community public RO
+!
+control-plane
+!
+!
+line con 0
+line aux 0
+line vty 0 4
+ password 3655927
+ login
+!
+scheduler allocate 20000 1000
+!
+end
+

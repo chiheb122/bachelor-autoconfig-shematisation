@@ -1,0 +1,154 @@
+
+!
+! Last configuration change at 13:44:16 MDT Tue Jun 5 2007 by dharmacon
+! NVRAM config last updated at 16:23:33 MDT Wed May 16 2007 by dharmacon
+!
+version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log uptime
+service password-encryption
+service compress-config
+!
+hostname Cisco_4506
+!
+boot-start-marker
+boot system flash slot0:cat4000.122-25.EWA5.bin
+boot-end-marker
+!
+enable secret 5 $1$CUhR$0SZIOIW7FQWWAgZW/cKTY0
+!
+username Dharmacon password 7 0478045700334D4A59
+username bryan.lofland password 7 082C595D001A03161C535E
+aaa new-model
+aaa group server radius RADIUS
+ server 10.101.64.14 auth-port 1645 acct-port 1646
+!
+aaa authentication login default group radius local
+aaa authentication login dharmacon local
+aaa authentication login RADIUS group radius local
+aaa authentication dot1x default group radius
+aaa authorization config-commands
+aaa authorization exec default if-authenticated 
+aaa authorization network default group radius local 
+!
+aaa session-id common
+clock timezone MDT -7
+clock summer-time MDT recurring 2 Sun Mar 2:00 1 Sun Nov 2:00
+qos dbl exceed-action ecn
+qos dbl
+qos map dscp 24 25 26 27 28 29 30 31 to tx-queue 4
+qos map dscp 32 33 34 35 36 37 38 39 to tx-queue 4
+qos map cos 3 to dscp 26 
+qos map cos 5 to dscp 46 
+qos
+vtp file vtp_databse
+ip subnet-zero
+ip domain-name dharmaconlan.com
+ip name-server 10.101.64.10
+!
+ip ssh time-out 60
+!
+!
+!
+no file verify auto
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause unicast-flood
+errdisable recovery cause vmps
+errdisable recovery cause storm-control
+errdisable recovery cause arp-inspection
+errdisable recovery interval 60
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+spanning-tree vlan 64 priority 28672
+spanning-tree vlan 65,68,172,241 priority 24576
+!
+spanning-tree mst configuration
+ name Dharmacon1
+ revision 1
+ instance 1 vlan 65-68, 172, 192, 241
+ instance 2 vlan 64
+!
+spanning-tree mst 0-1 priority 24576
+spanning-tree mst 2 priority 28672
+power redundancy-mode redundant
+dot1x system-auth-control
+!
+!
+!
+vlan internal allocation policy ascending
+!
+policy-map autoqos-voip-policy
+  class class-default
+    dbl
+!
+!
+router eigrp 2
+ redistribute static
+ network 10.101.64.0 0.0.0.255
+ network 10.101.65.0 0.0.0.255
+ network 10.101.68.0 0.0.0.255
+ network 172.1.1.0 0.0.0.255
+ network 192.168.241.0
+ auto-summary
+!
+ip default-gateway 10.101.64.1
+ip route 0.0.0.0 0.0.0.0 10.101.64.1
+ip route 10.0.0.0 255.0.0.0 10.101.64.254 2
+ip route 10.101.67.0 255.255.255.0 10.101.67.252
+ip route 10.101.68.0 255.255.255.0 10.101.64.249
+ip route 198.199.151.0 255.255.255.0 10.101.64.254
+ip route 198.199.152.0 255.255.255.0 10.101.64.254
+no ip http server
+!
+!
+ip radius source-interface Vlan64 
+logging 10.101.64.19
+!
+!
+snmp-server community dharmacon RO
+snmp-server trap link ietf
+snmp-server packetsize 2048
+snmp-server location Lafayette, CO
+snmp-server contact Bryan.Lofland@Dharmacon.com
+snmp-server chassis-id Cisco 4506
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps tty
+snmp-server enable traps vtp
+snmp-server enable traps config
+snmp-server enable traps cpu threshold
+snmp-server enable traps copy-config
+snmp-server enable traps syslog
+snmp-server enable traps bridge
+snmp-server enable traps envmon
+snmp-server enable traps vlan-membership
+snmp-server host 10.101.64.19 dharmacon 
+radius-server attribute 6 on-for-login-auth
+radius-server host 10.101.64.14 auth-port 1645 acct-port 1646 key 7 1327470707080138
+radius-server source-ports 1645-1646
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ password 7 02250B0A04140E251C
+ login authentication RADIUS
+ transport input telnet ssh
+line vty 5 15
+ password 7 02250B0A04140E251C
+!
+ntp clock-period 17179404
+ntp update-calendar
+ntp server 10.101.64.10 source Vlan64 prefer
+!
+end

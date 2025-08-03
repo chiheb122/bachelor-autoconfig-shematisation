@@ -1,0 +1,329 @@
+Building configuration...
+Current configuration : 12314 bytes
+!
+! Last configuration change at 18:08:32 UTC Tue May 25 2021
+!
+version 17.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+service call-home
+no platform punt-keepalive disable-kernel-core
+no platform punt-keepalive settings
+platform console serial
+!
+hostname WLCA4B4.392B.E4D8
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 9 $9$3P5IbwgQ.2wwpk$2huADuuPLXTKZZrTFNekZUMF3aHfzof5COBEO/URBbw
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+!
+!
+!
+!
+!
+!
+aaa session-id common
+no fips authorization-key
+!
+!
+ip dhcp pool default-pool
+ network 192.168.1.0 255.255.255.0
+ default-router 192.168.1.1 
+ dns-server 192.168.1.1 
+!
+!
+!
+ip name-server 208.67.222.222 208.67.220.220
+ip domain timeout 1
+login on-success log
+!
+!
+!
+!
+!
+!
+flow exporter default-flow-exporter
+ destination local wlc
+!
+!
+flow monitor default-flow-monitor
+ exporter default-flow-exporter
+ record wireless avc basic
+!
+!
+!
+parameter-map type webauth day0_web_auth_"Guest"
+ type consent
+!
+access-session mac-move deny
+password encryption aes
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+!
+!
+!
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+  	quit
+!
+service-template webauth-global-inactive
+ inactivity-timer 3600 
+service-template DEFAULT_LINKSEC_POLICY_MUST_SECURE
+ linksec policy must-secure
+service-template DEFAULT_LINKSEC_POLICY_SHOULD_SECURE
+ linksec policy should-secure
+service-template DEFAULT_CRITICAL_VOICE_TEMPLATE
+ voice vlan
+service-template DEFAULT_CRITICAL_DATA_TEMPLATE
+memory free low-watermark processor 33061
+!
+license udi pid C9800-AP sn FGL2415L0ZW
+device classifier
+username admin privilege 15 secret 9 $9$iQylvrz0aLSoDU$SSqiSqJ5veitMw7zTiDCMsiG.k16O5cBvjZsz/axVUw
+!
+redundancy
+ mode sso
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0
+ mac-address 0000.5e00.0101
+ ip dhcp client client-id GigabitEthernet0
+ ip dhcp client broadcast-flag clear
+ ip address dhcp
+ no negotiation auto
+!
+ip http server
+ip http authentication local
+ip http secure-server
+ip http secure-trustpoint CISCO_IDEVID_SUDI
+ip http client source-interface GigabitEthernet0
+ip forward-protocol nd
+ip tftp blocksize 8192
+ip route 0.0.0.0 0.0.0.0 GigabitEthernet0 250
+ip dns server
+!
+!
+!
+!
+!
+!
+control-plane
+!
+banner exec ^C
+########################################################################################################
+#                                                                                                      #
+#      Welcome to the Cisco Catalyst 9800-AP Embedded Wireless Controller command line interface.      #
+#                                                                                                      #
+# Please see command reference guide for the complete list of supported commands for this release:     #
+# https://www.cisco.com/c/en/us/td/docs/wireless/embedded_wireless_controller_configuration_guide.html #
+#                                                                                                      #
+########################################################################################################
+^C
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ length 0
+ transport input ssh
+line vty 1 4
+ transport input ssh
+line vty 5 15
+ transport input ssh
+!
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+ntp server 0.ciscome.pool.ntp.org
+ntp server 2.ciscome.pool.ntp.org
+ntp server 1.ciscome.pool.ntp.org
+!
+!
+!
+!
+!
+wireless aaa policy default-aaa-policy
+wireless cts-sxp profile default-sxp-profile
+wireless management interface GigabitEthernet0
+wireless profile airtime-fairness default-atf-policy 0
+wireless profile flex default-flex-profile
+ description "default flex profile"
+wireless profile image-download default
+ description "default image download profile"
+ image-download-mode http
+wireless profile mesh default-mesh-profile
+ description "default mesh profile"
+wireless profile policy Guest
+ no central association
+ no central dhcp
+ no central switching
+ http-tlv-caching
+ ipv4 flow monitor default-flow-monitor input
+ ipv4 flow monitor default-flow-monitor output
+ no shutdown
+wireless profile policy "Panic! at the Cisco"
+ no central association
+ no central dhcp
+ no central switching
+ http-tlv-caching
+ ipv4 flow monitor default-flow-monitor input
+ ipv4 flow monitor default-flow-monitor output
+ session-timeout 86400
+ no shutdown
+wireless profile policy default-policy-profile
+ no central association
+ no central dhcp
+ no central switching
+ description "default policy profile"
+ dhcp-tlv-caching
+ http-tlv-caching
+ ipv4 flow monitor default-flow-monitor input
+ ipv4 flow monitor default-flow-monitor output
+ no shutdown
+wireless tag site default-site-tag
+ description "default site tag"
+ no local-site
+wireless tag policy default-policy-tag
+ description "default policy-tag"
+ wlan Guest policy Guest
+ wlan "Panic! at the Cisco" policy "Panic! at the Cisco"
+wireless tag rf default-rf-tag
+ description "default RF tag"
+wlan Guest 2 Guest
+ no security wpa
+ no security wpa wpa2
+ no security wpa wpa2 ciphers aes
+ no security wpa akm dot1x
+ security web-auth
+ security web-auth authentication-list authentication_login_day0
+ security web-auth parameter-map day0_web_auth_\"Guest\"
+ no shutdown
+wlan "Panic! at the Cisco" 1 "Panic! at the Cisco"
+ security wpa psk set-key ascii 8 UE`EhdGie]_FIEMO_CPHNdBMTYJX\bAAB
+ no security wpa akm dot1x
+ security wpa akm psk
+ no shutdown
+ap dot11 24ghz rf-profile Low_Client_Density_rf_24gh
+ coverage data rssi threshold -90
+ coverage level 2
+ coverage voice rssi threshold -90
+ description "pre configured Low Client Density rfprofile for 2.4gh radio"
+ high-density rx-sop threshold low
+ rate RATE_12M supported
+ rate RATE_24M supported
+ rate RATE_6M supported
+ tx-power v1 threshold -65
+ no shutdown
+ap dot11 24ghz rf-profile High_Client_Density_rf_24gh
+ description "pre configured High Client Density rfprofile for 2.4gh radio"
+ high-density rx-sop threshold medium
+ rate RATE_11M disable
+ rate RATE_12M mandatory
+ rate RATE_1M disable
+ rate RATE_24M supported
+ rate RATE_2M disable
+ rate RATE_5_5M disable
+ rate RATE_6M disable
+ tx-power min 7
+ no shutdown
+ap dot11 24ghz rf-profile Typical_Client_Density_rf_24gh
+ description "pre configured Typical Client Density rfprofile for 2.4gh radio"
+ rate RATE_11M disable
+ rate RATE_12M mandatory
+ rate RATE_1M disable
+ rate RATE_24M supported
+ rate RATE_2M disable
+ rate RATE_5_5M disable
+ rate RATE_6M disable
+ no shutdown
+ap dot11 24ghz shutdown
+ap dot11 24ghz rate RATE_12M supported
+ap dot11 24ghz rate RATE_24M supported
+ap dot11 24ghz rate RATE_6M supported
+ap dot11 5ghz rf-profile Low_Client_Density_rf_5gh
+ coverage data rssi threshold -90
+ coverage level 2
+ coverage voice rssi threshold -90
+ description "pre configured Low Client Density rfprofile for 5gh radio"
+ high-density rx-sop threshold low
+ rate RATE_12M mandatory
+ rate RATE_24M mandatory
+ rate RATE_6M mandatory
+ tx-power v1 threshold -60
+ no shutdown
+ap dot11 5ghz rf-profile High_Client_Density_rf_5gh
+ description "pre configured High Client Density rfprofile for 5gh radio"
+ high-density rx-sop threshold medium
+ rate RATE_12M mandatory
+ rate RATE_24M mandatory
+ rate RATE_6M disable
+ rate RATE_9M disable
+ tx-power min 7
+ tx-power v1 threshold -65
+ no shutdown
+ap dot11 5ghz rf-profile Typical_Client_Density_rf_5gh
+ description "pre configured Typical Density rfprofile for 5gh radio"
+ rate RATE_12M mandatory
+ rate RATE_24M mandatory
+ rate RATE_6M mandatory
+ no shutdown
+ap dot11 5ghz rate RATE_12M mandatory
+ap dot11 5ghz rate RATE_24M mandatory
+ap dot11 5ghz rate RATE_6M mandatory
+ap country ID
+ap tri-radio
+ap tag-source-priority 2 source filter
+ap tag-source-priority 3 source ap
+ap location name Default_Location
+ description Default_Location
+ap profile default-ap-profile
+ description "default ap profile"
+ mgmtuser username admin password 8 NVVMZEaEXR`]ILeYgVV\FdibLiFPXOgPT secret 8 J]DT\fPgLVC^\MQUThUQhegfeeU]KKcXP
+end

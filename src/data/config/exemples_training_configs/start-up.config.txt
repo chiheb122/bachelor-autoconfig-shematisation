@@ -1,0 +1,555 @@
+Building configuration...
+
+Current configuration : 16955 bytes
+!
+! Last configuration change at 10:07:04 GMT Tue Jun 28 2022 by admin
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname actyer-router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging buffered 51200 warnings
+!
+aaa new-model
+!
+!
+aaa authentication login local_access local
+!
+!
+!
+!
+!
+aaa session-id common
+ethernet lmi ce
+clock timezone GMT 9 0
+!
+crypto pki trustpoint TP-self-signed-1667957855
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1667957855
+ revocation-check none
+ rsakeypair TP-self-signed-1667957855
+!
+!
+crypto pki certificate chain TP-self-signed-1667957855
+ certificate self-signed 01
+  3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 31363637 39353738 3535301E 170D3139 30333032 31333432 
+  35325A17 0D323030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D31 36363739 
+  35373835 3530819F 300D0609 2A864886 F70D0101 01050003 818D0030 81890281 
+  8100A8FA E978A3B4 873AA035 EF31C27A 88FAB94A AA2CEC70 90967753 99593459 
+  EE85183D 3555B76D D06A795C D044FADB D97E39E9 A21A08ED B072F9F6 58AB8615 
+  4276C9DD 5B9F6535 3BFEA624 9E943F8B 865C4E37 F580C955 E09AC08A 0CBF1820 
+  0C8A59B0 7BE33232 8336AAFA 4C489B2E 1ABFFC9B 3D070C15 D36A075B 7197B546 
+  ABA10203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603 
+  551D2304 18301680 147F2B5D 57B27612 9381F565 2F8FA935 889DF385 DC301D06 
+  03551D0E 04160414 7F2B5D57 B2761293 81F5652F 8FA93588 9DF385DC 300D0609 
+  2A864886 F70D0101 05050003 8181005C 4BF8B53B A7E9B462 523130F1 16358108 
+  F6EF8FAA 35633320 CD097EC5 0DEB525C 4D027CAE 652B25E0 957C2525 6F3A770E 
+  CF5D9533 D1B5267F 146BCCF0 3F9DB96B 242718AF BD875F6E D0F01F5C 7038ACBC 
+  1CB0CDAD FBB51010 EEEF0B3B CA5DD82E 7113A6C0 C8A2B114 522AA973 A0078AAD 
+  2AD1A6F5 EEC227D9 D8C4DDF9 7215A2
+  	quit
+!
+!
+!
+ip nbar http-services
+!
+!
+ip dhcp excluded-address 192.168.1.1
+!
+ip dhcp pool ccp-pool
+ import all
+ network 192.168.1.0 255.255.255.0
+ default-router 192.168.1.1 
+ dns-server 192.168.1.1 
+ lease 0 2
+!
+!
+!
+ip domain name toaru.com
+ip name-server 118.238.201.33
+ip name-server 152.165.245.17
+ip ddns update method myupdate
+ HTTP
+  add http://www.mydns.jp/directip.html?MID=mydns011710&PWD=uZXouxxaQCe&IPV4ADDR=<a>
+ interval maximum 0 1 0 0
+!
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+!
+flow record nbar-appmon
+ match ipv4 source address
+ match ipv4 destination address
+ match application name
+ collect interface output
+ collect counter bytes
+ collect counter packets
+ collect timestamp absolute first
+ collect timestamp absolute last
+!
+!
+flow monitor application-mon
+ cache timeout active 60
+ record nbar-appmon
+!
+parameter-map type inspect global
+ max-incomplete low 18000
+ max-incomplete high 20000
+ nbar-classify
+!
+license udi pid C841M-4X-JSEC/K9 sn FGL2239122V
+!
+!
+object-group service INTERNAL_UTM_SERVICE 
+!
+object-group network Others_dst_net 
+ any
+!
+object-group network Others_src_net 
+ any
+!
+object-group service Others_svc 
+ ip
+!
+object-group network Web_dst_net 
+ any
+!
+object-group network Web_src_net 
+ any
+!
+object-group service Web_svc 
+ ip
+!
+object-group network all-out_dst_net 
+ any
+!
+object-group network all-out_src_net 
+ any
+!
+object-group service all-out_svc 
+ ip
+!
+object-group network ark_dst_net 
+ host 192.168.1.220
+!
+object-group network ark_src_net 
+ any
+!
+object-group service ark_svc 
+ udp range 27015 27019
+ udp range 7777 7784
+!
+object-group network days_dst_net 
+ host 192.168.1.220
+!
+object-group network days_src_net 
+ any
+!
+object-group service days_svc 
+ tcp eq 26900
+ udp range 26900 26903
+!
+object-group network emby_dst_net 
+ host 192.168.1.220
+!
+object-group network emby_src_net 
+ any
+!
+object-group service emby_svc 
+ tcp eq 8920
+!
+object-group network ftp_dst_net 
+ host 192.168.1.220
+!
+object-group network ftp_src_net 
+ any
+!
+object-group service ftp_svc 
+ tcp eq ftp
+ tcp range 20000 20010
+!
+object-group network grafana_dst_net 
+ host 192.168.1.220
+!
+object-group network grafana_src_net 
+ any
+!
+object-group service grafana_svc 
+ tcp eq 3000
+!
+object-group network jpsonic_dst_net 
+ host 192.168.1.220
+!
+object-group network jpsonic_src_net 
+ any
+!
+object-group service jpsonic_svc 
+ tcp eq 8097
+!
+object-group network local_cws_net 
+!
+object-group network local_lan_subnets 
+ 192.168.1.0 255.255.255.0
+!
+object-group network ssh-disable_dst_net 
+ any
+!
+object-group network ssh-disable_src_net 
+ any
+!
+object-group service ssh-disable_svc 
+ ip
+!
+object-group network ssh_dst_net 
+ host 192.168.1.220
+!
+object-group network ssh_src_net 
+ any
+!
+object-group service ssh_svc 
+ ip
+!
+object-group network valheim_dst_net 
+ host 192.168.1.220
+!
+object-group network valheim_src_net 
+ any
+!
+object-group service valheim_svc 
+ tcp eq 2456
+ tcp eq 2457
+ tcp eq 2458
+ udp eq 2456
+ udp eq 2457
+ udp eq 2458
+!
+object-group network vpn_remote_subnets 
+ any
+!
+username admin privilege 15 secret 5 $1$9djG$uzC1pNfNdc6KakjvwC31H0
+!
+redundancy
+!
+!
+!
+!
+no cdp run
+!
+!
+class-map type inspect match-any INTERNAL_DOMAIN_FILTER
+ match protocol msnmsgr
+ match protocol ymsgr
+class-map type inspect match-any Others_app
+ match protocol https
+ match protocol smtp
+ match protocol pop3
+ match protocol imap
+ match protocol sip
+ match protocol ftp
+ match protocol dns
+ match protocol icmp
+class-map type inspect match-any ssh-disable_app
+ match protocol ssh
+class-map type inspect match-all days
+ match access-group name days_acl
+class-map type inspect match-all emby
+ match access-group name emby_acl
+class-map type inspect match-all all-out
+ match access-group name all-out_acl
+class-map type inspect match-any ssh_app
+ match protocol ssh
+class-map type inspect match-all ftp
+ match access-group name ftp_acl
+class-map type inspect match-all jpsonic
+ match access-group name jpsonic_acl
+class-map type inspect match-any Web_app
+ match protocol http
+class-map type inspect match-all valheim
+ match access-group name valheim_acl
+class-map type inspect match-all ark
+ match access-group name ark_acl
+class-map type inspect match-all grafana
+ match access-group name grafana_acl
+class-map type inspect match-all ssh-disable
+ match access-group name ssh-disable_acl
+ match class-map ssh-disable_app
+class-map type inspect match-all Others
+ match class-map Others_app
+ match access-group name Others_acl
+class-map type inspect match-all Web
+ match class-map Web_app
+ match access-group name Web_acl
+class-map type inspect match-all ssh
+ match access-group name ssh_acl
+ match class-map ssh_app
+!
+policy-map type inspect LAN-WAN-POLICY
+ class type inspect all-out
+  inspect 
+ class type inspect ssh-disable
+  drop log
+ class type inspect Web
+  inspect 
+ class type inspect Others
+  inspect 
+ class type inspect INTERNAL_DOMAIN_FILTER
+  inspect 
+ class class-default
+  drop log
+policy-map type inspect WAN-LAN-POLICY
+ class type inspect valheim
+  inspect 
+ class type inspect ark
+  inspect 
+ class type inspect grafana
+  inspect 
+ class type inspect days
+  inspect 
+ class type inspect jpsonic
+  inspect 
+ class type inspect ftp
+  inspect 
+ class type inspect ssh
+  inspect 
+ class type inspect emby
+  inspect 
+ class type inspect INTERNAL_DOMAIN_FILTER
+  inspect 
+ class class-default
+  drop log
+!
+zone security LAN
+zone security WAN
+zone security VPN
+zone security DMZ
+zone-pair security LAN-WAN source LAN destination WAN
+ service-policy type inspect LAN-WAN-POLICY
+zone-pair security WAN-LAN source WAN destination LAN
+ service-policy type inspect WAN-LAN-POLICY
+! 
+!
+crypto isakmp policy 1
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+!
+interface GigabitEthernet0/1
+ no ip address
+!
+interface GigabitEthernet0/2
+ no ip address
+!
+interface GigabitEthernet0/3
+ no ip address
+!
+interface GigabitEthernet0/4
+ description PrimaryWANDesc_
+ ip address 192.168.0.15 255.255.255.0
+ ip nat outside
+ no ip virtual-reassembly in
+ ip tcp adjust-mss 1412
+ duplex auto
+ speed auto
+ ipv6 address autoconfig
+ ipv6 enable
+!
+interface GigabitEthernet0/5
+ no ip address
+ ip tcp adjust-mss 1412
+ shutdown
+ duplex auto
+ speed auto
+ bridge-group 1
+ bridge-group 1 input-type-list 200
+!
+interface Vlan1
+ description $ETH_LAN$
+ ip address 192.168.1.1 255.255.255.0
+ ip nbar protocol-discovery
+ ip flow monitor application-mon input
+ ip flow ingress
+ ip flow egress
+ ip nat inside
+ ip virtual-reassembly in
+ zone-member security LAN
+ ip tcp adjust-mss 1412
+ load-interval 30
+!
+ip forward-protocol nd
+ip http server
+ip http upload enable path flash:
+ip http upload overwrite
+ip http access-class 23
+ip http authentication local
+ip http secure-server
+ip http timeout-policy idle 60 life 86400 requests 10000
+!
+!
+ip dns server
+ip nat inside source static tcp 192.168.1.220 21 interface Dialer1 21
+ip nat inside source static tcp 192.168.1.140 32407 interface Dialer1 32407
+ip nat inside source static tcp 192.168.1.220 22 interface Dialer1 22
+ip nat inside source static tcp 192.168.1.125 7745 interface Dialer1 7745
+ip nat inside source static tcp 192.168.1.220 20 interface Dialer1 20
+ip nat inside source static tcp 192.168.1.220 20000 interface Dialer1 20000
+ip nat inside source static tcp 192.168.1.220 20002 interface Dialer1 20002
+ip nat inside source static tcp 192.168.1.220 20003 interface Dialer1 20003
+ip nat inside source static tcp 192.168.1.220 20004 interface Dialer1 20004
+ip nat inside source static tcp 192.168.1.220 20005 interface Dialer1 20005
+ip nat inside source static tcp 192.168.1.220 20006 interface Dialer1 20006
+ip nat inside source static tcp 192.168.1.220 20007 interface Dialer1 20007
+ip nat inside source static tcp 192.168.1.220 20008 interface Dialer1 20008
+ip nat inside source static tcp 192.168.1.220 20009 interface Dialer1 20009
+ip nat inside source static tcp 192.168.1.220 20010 interface Dialer1 20010
+ip nat inside source static tcp 192.168.1.100 26454 interface Dialer1 26454
+ip nat inside source static tcp 192.168.1.220 8097 interface Dialer1 8097
+ip nat inside source static tcp 192.168.1.220 3000 interface Dialer1 3000
+ip nat inside source static udp 192.168.1.220 27015 interface Dialer1 27015
+ip nat inside source static udp 192.168.1.220 7777 interface Dialer1 7777
+ip nat inside source static udp 192.168.1.220 7778 interface Dialer1 7778
+ip nat inside source static udp 192.168.1.220 27016 interface Dialer1 27016
+ip nat inside source static udp 192.168.1.220 7779 interface Dialer1 7779
+ip nat inside source static udp 192.168.1.220 26900 interface Dialer1 26900
+ip nat inside source static tcp 192.168.1.220 26900 interface Dialer1 26900
+ip nat inside source static udp 192.168.1.220 26901 interface Dialer1 26901
+ip nat inside source static udp 192.168.1.220 26902 interface Dialer1 26902
+ip nat inside source static udp 192.168.1.220 27017 interface Dialer1 27017
+ip nat inside source static udp 192.168.1.220 7780 interface Dialer1 7780
+ip nat inside source static udp 192.168.1.220 2457 interface Dialer1 2457
+ip nat inside source static tcp 192.168.1.220 2456 interface Dialer1 2456
+ip nat inside source static tcp 192.168.1.220 2457 interface Dialer1 2457
+ip nat inside source static tcp 192.168.1.220 2458 interface Dialer1 2458
+ip nat inside source static udp 192.168.1.220 2456 interface Dialer1 2456
+ip nat inside source static udp 192.168.1.220 2458 interface Dialer1 2458
+ip nat inside source static udp 192.168.1.220 7781 interface Dialer1 7781
+ip nat inside source static udp 192.168.1.220 7782 interface Dialer1 7782
+ip nat inside source static udp 192.168.1.220 7784 interface Dialer1 7784
+ip nat inside source static udp 192.168.1.220 27019 interface Dialer1 27019
+ip nat inside source static tcp 192.168.1.220 8920 interface Dialer1 8920
+ip nat inside source list 23 interface GigabitEthernet0/4 overload
+ip route 0.0.0.0 0.0.0.0 192.168.0.1
+!
+ip access-list extended Others_acl
+ permit object-group Others_svc object-group Others_src_net object-group Others_dst_net
+ip access-list extended Web_acl
+ permit object-group Web_svc object-group Web_src_net object-group Web_dst_net
+ip access-list extended all-out_acl
+ permit object-group all-out_svc object-group all-out_src_net object-group all-out_dst_net
+ip access-list extended ark_acl
+ permit object-group ark_svc object-group ark_src_net object-group ark_dst_net
+ip access-list extended days_acl
+ permit object-group days_svc object-group days_src_net object-group days_dst_net
+ip access-list extended emby_acl
+ permit object-group emby_svc object-group emby_src_net object-group emby_dst_net
+ip access-list extended ftp_acl
+ permit object-group ftp_svc object-group ftp_src_net object-group ftp_dst_net
+ip access-list extended grafana_acl
+ permit object-group grafana_svc object-group grafana_src_net object-group grafana_dst_net
+ip access-list extended jpsonic_acl
+ permit object-group jpsonic_svc object-group jpsonic_src_net object-group jpsonic_dst_net
+ip access-list extended nat-list
+ permit ip object-group local_lan_subnets any
+ deny   ip any any
+ip access-list extended ssh-disable_acl
+ permit object-group ssh-disable_svc object-group ssh-disable_src_net object-group ssh-disable_dst_net
+ip access-list extended ssh_acl
+ permit object-group ssh_svc object-group ssh_src_net object-group ssh_dst_net
+ip access-list extended valheim_acl
+ permit object-group valheim_svc object-group valheim_src_net object-group valheim_dst_net
+!
+dialer-list 1 protocol ip permit
+dialer-list 2 protocol ip permit
+ipv6 route ::/0 GigabitEthernet0/4
+!
+!
+access-list 23 permit 192.168.1.0 0.0.0.255
+access-list 200 permit 0x86DD 0x0000
+access-list 200 permit 0x0800 0x0000
+access-list 200 permit 0x0806 0x0000
+!
+!
+bridge 1 protocol ieee
+!
+banner exec ^C
+% Password expiration warning.
+-----------------------------------------------------------------------
+ 
+Cisco Configuration Professional (Cisco CP) is installed on this device
+and it provides the default username "cisco" for  one-time use. If you have 
+already used the username "cisco" to login to the router and your IOS image 
+supports the "one-time" user option, then this username has already expired. 
+You will not be able to login to the router with this username after you exit 
+this session.
+ 
+It is strongly suggested that you create a new username with a privilege level 
+of 15 using the following command.
+ 
+username <myuser> privilege 15 secret 0 <mypassword>
+ 
+Replace <myuser> and <mypassword> with the username and password you 
+want to use.
+ 
+-----------------------------------------------------------------------
+^C
+banner login ^C
+-----------------------------------------------------------------------
+Cisco Configuration Professional (Cisco CP) is installed on this device.
+This feature requires the one-time use of the username "cisco" with the 
+password "cisco". These default credentials have a privilege level of 15.
+ 
+YOU MUST USE CISCO CP or the CISCO IOS CLI TO CHANGE THESE
+PUBLICLY-KNOWN CREDENTIALS
+
+Here are the Cisco IOS commands.
+
+username <myuser>  privilege 15 secret 0 <mypassword>
+no username cisco
+
+Replace <myuser> and <mypassword> with the username and password you want 
+to use. 
+
+IF YOU DO NOT CHANGE THE PUBLICLY-KNOWN CREDENTIALS, YOU WILL 
+NOT BE ABLE TO LOG INTO THE DEVICE AGAIN AFTER YOU HAVE LOGGED OFF.
+ 
+For more information about Cisco CP please follow the instructions in the
+QUICK START GUIDE for your router or go to http://www.cisco.com/go/ciscocp 
+-----------------------------------------------------------------------
+^C
+!
+line con 0
+ login authentication local_access
+ no modem enable
+line vty 0 4
+ access-class 23 in
+ privilege level 15
+ login authentication local_access
+ transport input telnet ssh
+line vty 5 15
+ access-class 23 in
+ privilege level 15
+ transport input telnet ssh
+!
+scheduler allocate 20000 1000
+ntp master
+ntp server asia.pool.ntp.org
+!
+end

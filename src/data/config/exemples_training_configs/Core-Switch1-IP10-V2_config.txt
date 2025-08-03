@@ -1,0 +1,360 @@
+Building configuration...
+
+Current configuration : 9247 bytes
+!
+! Last configuration change at 09:14:50 UTC Wed Dec 27 2000
+!
+version 15.1
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service counters max age 5
+!
+hostname CORE-SWTCH1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+platform ip cef load-sharing ip-only
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+spanning-tree vlan 1,10,20,30,40,50,60,80,90,100 priority 4096
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+diagnostic bootup level minimal
+!
+redundancy
+ main-cpu
+  auto-sync running-config
+ mode sso
+!
+vlan internal allocation policy ascending
+vlan access-log ratelimit 2000
+!
+!
+track 1 interface TenGigabitEthernet3/10 line-protocol
+!
+class-map match-any class-copp-icmp-redirect-unreachable
+class-map match-all class-copp-glean
+class-map match-all class-copp-receive
+class-map match-all class-copp-options
+class-map match-all class-copp-broadcast
+class-map match-all class-copp-mcast-acl-bridged
+class-map match-all class-copp-slb
+class-map match-all class-copp-mtu-fail
+class-map match-all class-copp-ttl-fail
+class-map match-all class-copp-arp-snooping
+class-map match-any class-copp-mcast-copy
+class-map match-any class-copp-ip-connected
+class-map match-any class-copp-match-igmp
+  match access-group name acl-copp-match-igmp
+class-map match-all class-copp-unknown-protocol
+class-map match-any class-copp-vacl-log
+class-map match-all class-copp-mcast-ipv6-control
+class-map match-any class-copp-match-pimv6-data
+  match access-group name acl-copp-match-pimv6-data
+class-map match-any class-copp-mcast-punt
+class-map match-all class-copp-unsupp-rewrite
+class-map match-all class-copp-ucast-egress-acl-bridged
+class-map match-all class-copp-ip-admission
+class-map match-all class-copp-service-insertion
+class-map match-all class-copp-mac-pbf
+class-map match-any class-copp-match-mld
+  match access-group name acl-copp-match-mld
+class-map match-all class-copp-ucast-ingress-acl-bridged
+class-map match-all class-copp-dhcp-snooping
+class-map match-all class-copp-wccp
+class-map match-all class-copp-nd
+class-map match-any class-copp-ipv6-connected
+class-map match-all class-copp-mcast-rpf-fail
+class-map match-any class-copp-ucast-rpf-fail
+class-map match-all class-copp-mcast-ip-control
+class-map match-any class-copp-match-pim-data
+  match access-group name acl-copp-match-pim-data
+class-map match-any class-copp-match-ndv6
+  match access-group name acl-copp-match-ndv6
+class-map match-any class-copp-mcast-v4-data-on-routedPort
+class-map match-any class-copp-mcast-v6-data-on-routedPort
+!
+!
+policy-map policy-default-autocopp
+  class class-copp-mcast-v4-data-on-routedPort
+   police rate 10 pps burst 1 packets    conform-action drop     exceed-action drop 
+  class class-copp-mcast-v6-data-on-routedPort
+   police rate 10 pps burst 1 packets    conform-action drop     exceed-action drop 
+  class class-copp-match-mld
+   police rate 10000 pps burst 10000 packets    conform-action set-discard-class-transmit 48    exceed-action transmit 
+  class class-copp-match-igmp
+   police rate 10000 pps burst 10000 packets    conform-action set-discard-class-transmit 48    exceed-action transmit 
+  class class-copp-icmp-redirect-unreachable
+   police rate 100 pps burst 10 packets    conform-action transmit     exceed-action drop 
+  class class-copp-ucast-rpf-fail
+   police rate 100 pps burst 10 packets    conform-action transmit     exceed-action drop 
+  class class-copp-vacl-log
+   police rate 2000 pps burst 1 packets    conform-action transmit     exceed-action drop 
+  class class-copp-mcast-punt
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+  class class-copp-mcast-copy
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+  class class-copp-ip-connected
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+  class class-copp-ipv6-connected
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+  class class-copp-match-pim-data
+   police rate 1000 pps burst 1000 packets    conform-action transmit     exceed-action drop 
+  class class-copp-match-pimv6-data
+   police rate 1000 pps burst 1000 packets    conform-action transmit     exceed-action drop 
+  class class-copp-match-ndv6
+   police rate 1000 pps burst 1000 packets    conform-action set-discard-class-transmit 48    exceed-action drop 
+!
+!
+!
+!
+!
+interface GigabitEthernet2/1
+ no ip address
+ shutdown
+!
+interface GigabitEthernet2/2
+ no ip address
+ shutdown
+!
+interface GigabitEthernet2/3
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/4
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet3/1
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/2
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90,100
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/3
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/4
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/5
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/6
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/7
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/8
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/9
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/10
+ switchport
+ switchport trunk allowed vlan 1,10,20,30,40,50,60,80,90,100
+ switchport mode trunk
+!
+interface TenGigabitEthernet3/11
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet3/12
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet3/13
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet3/14
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet3/15
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet3/16
+ no ip address
+ shutdown
+!
+interface Vlan1
+ ip address 10.100.70.10 255.255.255.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.70.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan10
+ ip address 10.100.10.10 255.255.255.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.10.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan20
+ ip address 10.100.20.10 255.255.255.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.20.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan30
+ ip address 10.100.30.10 255.255.255.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.30.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan40
+ ip address 10.100.40.10 255.255.255.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.40.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan50
+ ip address 10.100.50.10 255.255.255.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.50.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan60
+ ip address 10.100.60.10 255.255.255.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.60.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan80
+ ip address 10.100.80.10 255.255.254.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.80.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan90
+ ip address 10.100.90.10 255.255.255.0
+ ip pim sparse-dense-mode
+ standby 1 ip 10.100.90.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+interface Vlan100
+ ip address 10.100.100.10 255.255.255.0
+ standby 1 ip 10.100.100.12
+ standby 1 priority 120
+ standby 1 preempt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+ip route 0.0.0.0 0.0.0.0 Vlan100 10.100.100.15
+!
+!
+ip access-list extended acl-copp-match-igmp
+ permit igmp any any
+ip access-list extended acl-copp-match-pim-data
+ deny   pim any host 224.0.0.13
+ permit pim any any
+!
+!
+!
+!
+ipv6 access-list acl-copp-match-mld
+ permit icmp any any mld-report
+ permit icmp any any mld-query
+ permit icmp any any mld-reduction
+ permit icmp any any 143
+!
+ipv6 access-list acl-copp-match-ndv6
+ permit icmp any any nd-na
+ permit icmp any any nd-ns
+ permit icmp any any router-advertisement
+ permit icmp any any router-solicitation
+ permit icmp any any redirect
+!
+ipv6 access-list acl-copp-match-pimv6-data
+ deny 103 any host FF02::D
+ permit 103 any any
+!
+control-plane
+ service-policy input policy-default-autocopp
+!
+!
+!
+line con 0
+ password ********
+ login
+line aux 0
+line vty 0 4
+ password ********
+ logging synchronous
+ login
+ transport input all
+!
+!
+end

@@ -1,0 +1,2812 @@
+Building configuration...
+
+Current configuration : 67474 bytes
+!
+! Last configuration change at 10:33:30 CET Mon Sep 11 2017 by bergonzoni.marco
+! NVRAM config last updated at 10:33:29 CET Mon Sep 11 2017 by bergonzoni.marco
+!
+version 15.2
+service timestamps debug datetime localtime show-timezone
+service timestamps log datetime localtime show-timezone
+service password-encryption
+service sequence-numbers
+service counters max age 5
+!
+hostname 6880-LENO
+!
+boot-start-marker
+boot system bootdisk:/c6880x-ipservicesk9-mz.SPA.152-1.SY4.bin
+boot-end-marker
+!
+!
+logging buffered 256000
+enable secret 5 <removed>
+!
+username admin privilege 15 secret 5 <removed>
+aaa new-model
+!
+!
+aaa group server radius radius-ise-group
+ server 172.16.1.114
+!
+aaa authentication login default none
+aaa authentication login VTY_authen group radius-ise-group local
+aaa authentication login CONSOLE enable
+aaa authorization exec default none 
+aaa authorization exec VTY_author group radius-ise-group local 
+aaa accounting exec default start-stop group radius
+!
+!
+!
+!
+!
+aaa session-id common
+platform ip cef load-sharing ip-only
+clock timezone CET 1 0
+clock summer-time CET recurring last Sun Mar 2:00 last Sun Oct 3:00
+!
+ip vrf management
+!
+ip dhcp excluded-address 10.100.0.1 10.100.0.100
+ip dhcp excluded-address 10.100.3.250 10.100.3.254
+!
+ip dhcp pool voip-uc
+   network 10.100.0.0 255.255.252.0
+   domain-name cobogroup.intra
+   default-router 10.100.3.254 
+   dns-server 172.16.1.9 172.16.1.11 
+   option 150 ip 10.100.43.1 10.100.43.2 
+!
+no ip domain-lookup
+ip domain-name cobogroup.intra
+ip name-server 172.16.1.11
+ip name-server 172.16.1.9
+udld enable
+
+!
+!
+!
+!
+!
+fex 101
+  description FEX-B1
+fex 102
+  description FEX-L1
+!
+switch virtual domain 10
+ switch mode virtual
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-212501
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-212501
+ revocation-check none
+ rsakeypair TP-self-signed-212501
+!
+!
+crypto pki certificate chain TP-self-signed-212501
+ certificate self-signed 01
+  30820223 3082018C A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  2D312B30 29060355 04031322 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 32313235 3031301E 170D3137 30383137 30303237 35355A17 
+  0D323030 31303130 30303030 305A302D 312B3029 06035504 03132249 4F532D53 
+  656C662D 5369676E 65642D43 65727469 66696361 74652D32 31323530 3130819F 
+  300D0609 2A864886 F70D0101 01050003 818D0030 81890281 8100BB33 E0B7C902 
+  25CA2F70 03EFD84F E0077E44 8C5E2353 7082A736 CF3E5E24 5246559D 398D9BDD 
+  F5B35B78 FFB61A90 A630FAC9 E0BA16F0 6BB97769 27490681 5ADBFA4B E1D22D49 
+  B5EDBCE6 E15605AE 328C7CFF C09352C9 2C9A98F1 64960193 3CCD0314 C23AAF72 
+  FE4BC85A 7A3B3DEE 8B044524 635B3E32 B9060D11 EFD5D5F8 005F0203 010001A3 
+  53305130 0F060355 1D130101 FF040530 030101FF 301F0603 551D2304 18301680 
+  14618329 2D6F1BD0 8B941601 DAC95380 CA4C2E09 09301D06 03551D0E 04160414 
+  6183292D 6F1BD08B 941601DA C95380CA 4C2E0909 300D0609 2A864886 F70D0101 
+  05050003 818100A7 53870971 D638E1A4 D4E44F53 F8F5C39A CD1FEA4C 53C2E9D1 
+  218E703A 87983923 4457F45E E8EAA7F6 B2DFF961 51924ABA 419C3A2E 546CBDF5 
+  07C1C5F1 1A8CD65B B9AE75C5 B67C63CB 0079A114 36A0735B C84928B2 40F4FE4B 
+  AE003252 032A9BE9 4E6F6E41 597F91DC 2EE8AA79 7B5C37DC 4CA6D155 4B0F5546 
+  6511ECF4 F5F7A9
+        quit
+!
+!
+archive
+ log config
+  logging enable
+ path tftp://172.16.1.15/$h-config
+ write-memory
+ time-period 21600
+!
+spanning-tree mode rapid-pvst
+spanning-tree extend system-id
+spanning-tree vlan 1-500 priority 4096
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+redundancy
+ main-cpu
+  auto-sync running-config
+ mode sso
+!
+vlan internal allocation policy ascending
+vlan access-log ratelimit 2000
+!
+!
+class-map match-any class-copp-icmp-redirect-unreachable
+class-map match-all class-copp-glean
+class-map match-all class-copp-receive
+class-map match-all class-copp-options
+class-map match-all class-copp-broadcast
+class-map match-all class-copp-mcast-acl-bridged
+class-map match-all class-copp-slb
+class-map match-all class-copp-mtu-fail
+class-map match-all class-copp-ttl-fail
+class-map match-all class-copp-arp-snooping
+class-map match-any class-copp-mcast-copy
+class-map match-any class-copp-ip-connected
+class-map match-any class-copp-match-igmp
+ match access-group name acl-copp-match-igmp
+class-map match-all class-copp-unknown-protocol
+class-map match-any class-copp-vacl-log
+class-map match-all class-copp-mcast-ipv6-control
+class-map match-any class-copp-match-pimv6-data
+ match access-group name acl-copp-match-pimv6-data
+class-map match-any class-copp-mcast-punt
+class-map match-all class-copp-unsupp-rewrite
+class-map match-all class-copp-ucast-egress-acl-bridged
+class-map match-all class-copp-ip-admission
+class-map match-any class-copp-dpss-divert
+class-map match-all class-copp-service-insertion
+class-map type lan-queuing match-any voice-uc
+ match dscp ef 
+class-map match-all class-copp-mac-pbf
+class-map match-any class-copp-match-mld
+ match access-group name acl-copp-match-mld
+class-map match-all class-copp-ucast-ingress-acl-bridged
+class-map match-all class-copp-dhcp-snooping
+class-map match-all class-copp-wccp
+class-map match-all class-copp-nd
+class-map match-any class-copp-ipv6-connected
+class-map match-all class-copp-mcast-rpf-fail
+class-map match-any class-copp-match-ndv6hl
+ match access-group name acl-copp-match-ndv6hl
+class-map match-any class-copp-ucast-rpf-fail
+class-map match-all class-copp-mcast-ip-control
+class-map match-any class-copp-match-pim-data
+ match access-group name acl-copp-match-pim-data
+class-map match-any class-copp-match-ndv6
+ match access-group name acl-copp-match-ndv6
+class-map match-any class-copp-mcast-v4-data-on-routedPort
+class-map match-any class-copp-mcast-v6-data-on-routedPort
+!
+policy-map policy-default-autocopp
+ class class-copp-mcast-v4-data-on-routedPort
+   police rate 10 pps burst 1 packets    conform-action drop     exceed-action drop 
+ class class-copp-mcast-v6-data-on-routedPort
+   police rate 10 pps burst 1 packets    conform-action drop     exceed-action drop 
+ class class-copp-match-mld
+   police rate 10000 pps burst 10000 packets    conform-action set-discard-class-transmit 48    exceed-action transmit 
+ class class-copp-match-igmp
+   police rate 10000 pps burst 10000 packets    conform-action set-discard-class-transmit 48    exceed-action transmit 
+ class class-copp-icmp-redirect-unreachable
+   police rate 100 pps burst 10 packets    conform-action transmit     exceed-action drop 
+ class class-copp-ucast-rpf-fail
+   police rate 100 pps burst 10 packets    conform-action transmit     exceed-action drop 
+ class class-copp-vacl-log
+   police rate 2000 pps burst 1 packets    conform-action transmit     exceed-action drop 
+ class class-copp-mcast-punt
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+ class class-copp-mcast-copy
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+ class class-copp-ip-connected
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+ class class-copp-ipv6-connected
+   police rate 1000 pps burst 256 packets    conform-action transmit     exceed-action drop 
+ class class-copp-match-pim-data
+   police rate 1000 pps burst 1000 packets    conform-action transmit     exceed-action drop 
+ class class-copp-match-pimv6-data
+   police rate 1000 pps burst 1000 packets    conform-action transmit     exceed-action drop 
+ class class-copp-match-ndv6hl
+   police rate 10 pps burst 1 packets    conform-action drop     exceed-action drop 
+ class class-copp-match-ndv6
+   police rate 1000 pps burst 1000 packets    conform-action set-discard-class-transmit 48    exceed-action drop 
+policy-map type lan-queuing Qos
+ class type lan-queuing voice-uc
+    priority level 1 percent 10
+!
+!
+!
+!
+!
+interface Port-channel10
+ description VSL LINK 40GB
+ no switchport
+ no ip address
+ no platform qos channel-consistency
+ switch virtual link 1
+!
+interface Port-channel20
+ description VSL LINK 40GB
+ no switchport
+ no ip address
+ no platform qos channel-consistency
+ switch virtual link 2
+!
+interface Port-channel21
+ description Backup Tivoli CBSP
+ switchport
+!
+interface Port-channel22
+ description Backup Tivoli CBSP
+ switchport
+ switchport mode access
+!
+interface Port-channel101
+ description FEX101
+ switchport
+ switchport mode fex-fabric
+ fex associate 101
+!
+interface Port-channel102
+ description FEX102
+ switchport
+ switchport mode fex-fabric
+ fex associate 102
+!
+interface Port-channel201
+ description 2960-L1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+!
+interface TenGigabitEthernet1/1/1
+ description 3560-F1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/1/2
+ description 3650-D3
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/1/3
+ description 2960-E1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/1/4
+ description 3560-H1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/1/5
+ description 3560-M3
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/1/6
+ description 3560-B3
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/1/7
+ description 2960-L1 PO201
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ channel-protocol lacp
+ channel-group 201 mode active
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/1/8
+ description CBESX01M5 - port 1
+ switchport
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface TenGigabitEthernet1/1/9
+ description CBESX02M5 - port 1
+ switchport
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface TenGigabitEthernet1/1/10
+ description CBSP - port 1
+ switchport
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface TenGigabitEthernet1/1/11
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet1/1/12
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet1/1/13
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet1/1/14
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet1/1/15
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet1/1/16
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet1/5/1
+ description 3560-A2
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/5/2
+ description 3560-C1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/5/3
+ description 2960-E1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/5/4
+ description 3560-H1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/5/5
+ description 2960-P1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/5/6
+ description 3560-B1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet1/5/7
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet1/5/8
+ description CBESX01M5 - port 2
+ switchport
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface TenGigabitEthernet1/5/9
+ description CBESX02M5 - port 2
+ switchport
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface TenGigabitEthernet1/5/10
+ description CBSP - port 2
+ switchport
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface TenGigabitEthernet1/5/11
+ description FEX101
+ switchport
+ switchport mode fex-fabric
+ channel-group 101 mode on
+!
+interface TenGigabitEthernet1/5/12
+ description FEX102
+ switchport
+ switchport mode fex-fabric
+ channel-group 102 mode on
+!
+interface TenGigabitEthernet1/5/13
+ description VSL
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 10 mode on
+!
+interface TenGigabitEthernet1/5/14
+ description VSL
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 10 mode on
+!
+interface TenGigabitEthernet1/5/15
+ description VSL
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 10 mode on
+!
+interface TenGigabitEthernet1/5/16
+ description VSL
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 10 mode on
+!
+interface TenGigabitEthernet2/5/1
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5/2
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5/3
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5/4
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5/5
+ description 3560-M1
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ spanning-tree link-type point-to-point
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet2/5/6
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5/7
+ description 2960-L1 PO201
+ switchport
+ switchport mode trunk
+ switchport nonegotiate
+ storm-control broadcast level 10.00
+ storm-control action shutdown
+ channel-protocol lacp
+ channel-group 201 mode active
+ service-policy type lan-queuing output Qos
+!
+interface TenGigabitEthernet2/5/8
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5/9
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5/10
+ no switchport
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet2/5/11
+ description FEX101
+ switchport
+ switchport mode fex-fabric
+ channel-group 101 mode on
+!
+interface TenGigabitEthernet2/5/12
+ description FEX102
+ switchport
+ switchport mode fex-fabric
+ channel-group 102 mode on
+!
+interface TenGigabitEthernet2/5/13
+ description VSL
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 20 mode on
+!
+interface TenGigabitEthernet2/5/14
+ description VSL
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 20 mode on
+!
+interface TenGigabitEthernet2/5/15
+ description VSL
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 20 mode on
+!
+interface TenGigabitEthernet2/5/16
+ description VSL
+ no switchport
+ no ip address
+ no cdp enable
+ channel-group 20 mode on
+!
+interface mgmt0
+ ip address 172.16.3.11 255.255.0.0
+!
+interface GigabitEthernet101/1/0/1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/2
+ description CBESX03-Vnic2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/3
+ description CBESX02-Vnic2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/4
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/5
+ description CBESX02-Vnic0
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/6
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/7
+ description VMOTION
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 70
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/8
+ description VMOTION
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 70
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/9
+ description VMOTION
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 70
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/10
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/11
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/12
+ description Fastweb
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/13
+ description NAS3400-BMC-A
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/14
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/15
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/16
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/17
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/18
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/19
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/20
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/21
+ description CBESX01-Vnic2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/22
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/23
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/24
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/25
+ description CBESX01-Vnic0
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/26
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/27
+ description Riverbed Primary - Management
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/28
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/29
+ description ISCSI1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/30
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/31
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/32
+ description "SH-VPN"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 110
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/33
+ description ISCSI1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/34
+ description ISCSI1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/35
+ description ISCSI1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/36
+ description ISCSI1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/37
+ description Inside-ASA-Primario
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 11
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/38
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+!
+interface GigabitEthernet101/1/0/39
+ description Outside-ASA-Primario
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+!
+interface GigabitEthernet101/1/0/40
+ description TRUNK verso DMZ ASA
+ switchport
+ switchport trunk allowed vlan 10,25,90,100,150,160,170,200
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/1/0/41
+ description CBESX02-Wi-Fi Magazzino
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/42
+ description CBESX01-Wi-Fi Magazzino
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/43
+ description USB Anywhere to Ethernet to CBAIMEXSYS
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/44
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/45
+ description USB Anywhere to Ethernet to CBSGSYS
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/46
+ description DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/47
+ description DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/1/0/48
+ description CBESX01-DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/1
+ description Virtual WLC CBESXTMP
+ switchport
+ switchport trunk allowed vlan 25,140,150,160,190,200
+ switchport trunk native vlan 140
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/2/0/2
+ description CBESX01-IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/3
+ description CBESX02-IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/4
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/5
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/6
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/7
+ description "VG VOIP"
+ switchport
+ switchport trunk allowed vlan 1,500
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/2/0/8
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/9
+ description "VG VOIP"
+ switchport
+ switchport trunk allowed vlan 1,500
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/2/0/10
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/11
+ description "VOIP"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 500
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/12
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/13
+ description NAS3400-BMC-B
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/14
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/15
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/16
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/17
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/18
+ description CBESX03-IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/19
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/20
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/21
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/22
+ description PAN-MGT
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/23
+ description PAN-E1/1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 310
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/24
+ description ROUTER-INFRACOM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 310
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/25
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/26
+ description APC1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/27
+ description Virtual WLC
+ switchport
+ switchport trunk allowed vlan 25,140,150,160,190,200
+ switchport trunk native vlan 140
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/2/0/28
+ description In_path3_0 CB_SH01
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 300
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/29
+ description Virtual WLC
+ switchport
+ switchport trunk allowed vlan 25,140,150,160,190,200
+ switchport trunk native vlan 140
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/2/0/30
+ description CBESX03-Vnic0
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/31
+ description Virtual WLC
+ switchport
+ switchport trunk allowed vlan 25,140,150,160,190,200
+ switchport trunk native vlan 140
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/2/0/32
+ description ISCSI2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/33
+ description ISCSI2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/34
+ description ISCSI2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/35
+ description ISCSI2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/36
+ description ISCSI2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/37
+ description CBSP Management
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/38
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ channel-protocol lacp
+ channel-group 21 mode active
+!
+interface GigabitEthernet101/2/0/39
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ channel-protocol lacp
+ channel-group 21 mode active
+!
+interface GigabitEthernet101/2/0/40
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/41
+ description CBESX03-Wi-Fi Magazzino
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/42
+ description wifi-magazzino
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/43
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/44
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/45
+ description DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/46
+ description CBESX03-DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/47
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/2/0/48
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/1
+ description CBSRV06
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+!
+interface GigabitEthernet101/3/0/2
+ description CBESXTMP-DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/3
+ description "VG VOIP"
+ switchport
+ switchport trunk allowed vlan 1,500
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/3/0/4
+ description CBESXTMP-IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/5
+ description "VG VOIP"
+ switchport
+ switchport trunk allowed vlan 1,500
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/3/0/6
+ description VMOTION CBESXTMP
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 70
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/7
+ description "VOIP"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 500
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/8
+ description ISCSI1 CBESXTMP
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/9
+ description Hearbeat-ASA-Primario
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 30
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/10
+ description EX - Hearbeat-Barracuda-Primario
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 40
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/11
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/12
+ description TS3200-UNITA-NASTRO
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/13
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/14
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/15
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/16
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/17
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/18
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/19
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/20
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/21
+ description PAN-E1/2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/22
+ description PAN-E1/3
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 300
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/23
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/24
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/25
+ description PAN-E1/4
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/26
+ description APC2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/27
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/28
+ description PAN-E1/5
+ switchport
+ switchport trunk allowed vlan 11,90,190,200
+ switchport trunk native vlan 190
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet101/3/0/29
+ description PAN-E1/6
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/30
+ description PAN-E1/7
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 160
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/31
+ description "VOIP"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 500
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/32
+ description "VOIP"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 500
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/33
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/34
+ description "VOIP"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 500
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/35
+ description CBSVN
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/36
+ description CBSVN - IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/37
+ description HMC Console Power 8
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/38
+ description TS3100 Power 8
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/39
+ description USA P8 ETH1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/40
+ description USA P8 - Eth2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/41
+ description ITA P8 ETH1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/42
+ description ITA P8 - Eth2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/43
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/44
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/45
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/46
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/47
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet101/3/0/48
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/1
+ description Trunk DMZ-ASA-Secondario
+ switchport
+ switchport trunk allowed vlan 10,25,90,100,150,160,170,200
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet102/1/0/2
+ description Hearbeat-ASA-Secondario
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 30
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/3
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/4
+ description Inside-ASA-Secondario
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 11
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/5
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/6
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/7
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/8
+ description Outside-ASA-Secondario
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/9
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/10
+ description In_path3_1 CB_SH01
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 300
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/11
+ description PA-MGT
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/12
+ description PAN-E1/7
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 160
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/13
+ description CBESXDR01-IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/14
+ description CBESXDR01-VMnic0
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/15
+ description CBESXDR01-DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/16
+ description CBESXDR01-VMnic2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/17
+ description CBESXDR01-VMOTION
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 70
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/18
+ description CBESXDR01-wifi-magazzino
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/19
+ description CBESXDR01-ISCSI1 vlan 50
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/20
+ description CBESXDR01-ISCSI2 vlan 60
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/21
+ description Virtual WLC
+ switchport
+ switchport trunk allowed vlan 25,140,150,160,190,200
+ switchport trunk native vlan 140
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet102/1/0/22
+ description "SH-VPN"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 110
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/23
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/24
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/25
+ description CBESXDR03-IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/26
+ description CBESXDR03-VMnic0
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/27
+ description CBESXDR03-DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/28
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/29
+ description CBESXDR03-VMOTION
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 70
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/30
+ description CBESXDR03-wifi-magazzino
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/31
+ description CBESXDR03-ISCSI1 vlan 50
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/32
+ description CBESXDR03-ISCSI2 vlan 60
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/33
+ description Virtual WLC
+ switchport
+ switchport trunk allowed vlan 25,140,150,160,190,200
+ switchport trunk native vlan 140
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet102/1/0/34
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/35
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/36
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/37
+ description ITA P8 eth1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/38
+ description ITA P8 Eth2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/39
+ description Pureflex-CMM1-B
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/40
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/41
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/42
+ description "VOIP"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 500
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/43
+ description "VOIP"
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 500
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/44
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/45
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ channel-protocol lacp
+ channel-group 22 mode active
+!
+interface GigabitEthernet102/1/0/46
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ channel-protocol lacp
+ channel-group 22 mode active
+!
+interface GigabitEthernet102/1/0/47
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/1/0/48
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/1
+ description PAN-E1/1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 310
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/2
+ description ROUTER-INFRACOM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 310
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/3
+ description PAN-E1/4
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/4
+ description PAN-E1/5
+ switchport
+ switchport trunk allowed vlan 11,90,190,200
+ switchport trunk native vlan 190
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet102/2/0/5
+ description PAN-E1/2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+!
+interface GigabitEthernet102/2/0/6
+ description PAN-E1/3
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 300
+ switchport nonegotiate
+!
+interface GigabitEthernet102/2/0/7
+ description PAN-E1/6
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/8
+ description CBESXLAB01 - RSA
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/9
+ switchport
+ switchport trunk allowed vlan 1,50,60
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet102/2/0/10
+ switchport
+ switchport trunk allowed vlan 1,50,60
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet102/2/0/11
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/12
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/13
+ description CBESXDR02-IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/14
+ description CBESXDR02-VMnic0
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/15
+ description CBESXDR02-DMZ
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 10
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/16
+ description CBESXDR02-VMnic2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/17
+ description CBESXDR02-VMOTION
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 70
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/18
+ description CBESXDR02-wifi-magazzino
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/19
+ description CBESXDR02-ISCSI1 vlan 50
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/20
+ description CBESXDR02-ISCSI2 vlan 60
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/21
+ description Virtual WLC
+ switchport
+ switchport trunk allowed vlan 25,140,150,160,190,200
+ switchport trunk native vlan 140
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet102/2/0/22
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/23
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/24
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/25
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/26
+ description CBESXDRTMP-IMM
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/27
+ description CBESXDRTMP-ISCSI2 vlan 60
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 60
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/28
+ description Virtual WLC CBESXDRTMP
+ switchport
+ switchport trunk allowed vlan 25,140,150,160,190,200
+ switchport trunk native vlan 140
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast edge trunk
+!
+interface GigabitEthernet102/2/0/29
+ description CBESXDRTMP-VMnic2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/30
+ description CBESXDRTMP-VMOTION
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 70
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/31
+ description CBESXDRTMP-wifi-magazzino
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 150
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/32
+ description CBESXDRTMP-ISCSI1 vlan 50
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 50
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/33
+ description CBESXDRTMP-VMnic0
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/34
+ description UPS - Datacenter 2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/35
+ description STORAGE NETAPP - Controller A
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/36
+ description STORAGE NETAPP - Controller B
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/37
+ description USA P8 Eth1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/38
+ description USA P8 Eth2
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/39
+ description TS7620-VTL
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/40
+ description V7000 C2Dn1
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/41
+ description CBCAD02
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/42
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/43
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/44
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/45
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/46
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/47
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface GigabitEthernet102/2/0/48
+ switchport
+ switchport trunk allowed vlan 1
+ switchport mode access
+ switchport access vlan 20
+ switchport nonegotiate
+ spanning-tree portfast edge
+!
+interface Vlan1
+ ip address 172.16.3.254 255.255.0.0
+ no ip redirects
+!
+interface Vlan20
+ ip address 10.10.10.254 255.255.255.128
+ no ip redirects
+!
+interface Vlan80
+ description PowerHA
+ ip address 10.10.10.62 255.255.255.224
+ no ip redirects
+!
+interface Vlan100
+ description VOICE
+ ip address 172.17.0.1 255.255.248.0
+ no ip redirects
+!
+interface Vlan110
+ ip address 10.10.4.254 255.255.255.0
+ no ip redirects
+!
+interface Vlan140
+ description Cisco-Wlc-Management
+ ip address 10.10.50.126 255.255.255.128
+ no ip redirects
+!
+interface Vlan220
+ description TIMBRAT
+ ip address 10.10.70.254 255.255.255.0
+ no ip redirects
+!
+interface Vlan500
+ description VOIP-UC
+ ip address 10.100.3.254 255.255.252.0
+ no ip redirects
+!
+ip forward-protocol nd
+!
+ip ftp source-interface mgmt0
+ip http server
+ip http authentication aaa login-authentication VTY_authen
+ip http authentication aaa exec-authorization VTY_author
+ip http secure-server
+ip route 0.0.0.0 0.0.0.0 172.16.3.7 name PALOALTO
+ip route 1.2.3.4 255.255.255.255 172.16.1.16
+ip route 192.168.10.0 255.255.255.0 10.10.4.251 name LAN-ROMANIA
+ip route 192.168.30.0 255.255.255.0 10.10.4.251 name LAN-USA
+ip route 192.168.150.0 255.255.255.0 10.10.4.251 name LAN-JOI
+ip route 192.168.160.0 255.255.255.0 10.10.4.251 name LAN-GUANGZHOU
+ip route 192.168.170.0 255.255.255.0 10.10.4.251 name LAN-HONGKONG
+ip route vrf management 0.0.0.0 0.0.0.0 172.16.3.254
+ip ssh version 2
+!
+ip access-list extended acl-copp-match-igmp
+ permit igmp any any
+ip access-list extended acl-copp-match-pim-data
+ deny   pim any host 224.0.0.13
+ permit pim any any
+!
+ip radius source-interface Vlan1 
+logging trap critical
+logging facility local2
+logging host 172.16.1.15
+access-list 5 deny   172.20.200.0 0.0.0.255
+access-list 5 deny   172.20.201.0 0.0.0.255
+access-list 5 permit 172.16.0.0 0.0.255.255
+access-list 5 permit 192.168.250.0 0.0.0.255
+access-list 5 permit 151.8.12.192 0.0.0.31
+access-list 5 permit 192.168.1.0 0.0.0.255
+access-list 10 permit 172.16.1.15
+!
+snmp-server community <removed> RW 10
+snmp-server enable traps tty
+snmp-server host 172.16.1.15 <removed> 
+!
+radius-server host 172.16.1.114 key 7 <removed>
+!
+!
+!
+ipv6 access-list acl-copp-match-mld
+ permit icmp any any mld-report
+ permit icmp any any mld-query
+ permit icmp any any mld-reduction
+ permit icmp any any 143
+!
+ipv6 access-list acl-copp-match-ndv6
+ permit icmp any any nd-na
+ permit icmp any any nd-ns
+ permit icmp any any router-advertisement
+ permit icmp any any router-solicitation
+ permit icmp any any redirect
+!
+ipv6 access-list acl-copp-match-ndv6hl
+ permit icmp any any nd-na hoplimit
+ permit icmp any any nd-ns hoplimit
+ permit icmp any any router-advertisement hoplimit
+ permit icmp any any router-solicitation hoplimit
+ permit icmp any any redirect hoplimit
+!
+ipv6 access-list acl-copp-match-pimv6-data
+ deny 103 any host FF02::D
+ permit 103 any any
+!
+control-plane
+ service-policy input policy-default-autocopp
+!
+!
+banner motd ^C                         ~\\|//~
+                         -(o o)-
+ -------------------oOOO---(_)---OOOo--------------------
+ -                                                      -
+ -                RETE C.O.B.O. S.p.A.                  -
+ -                    Sede di Leno                      -
+ -               ......................                 -
+ -                                                      -
+ -                                                      -
+ -                                                      -
+ -                                                      -
+ -      Ogni accesso non autorizzato e' proibito        -
+ -                                                      -
+ -          Only authorized users can access            -
+ -                                                      -
+ -                    .oooO   Oooo.                     -
+ ---------------------(   )---(   )----------------------
+                       \ (     ) /
+                        \_)   (_/
+^C
+!
+line con 0
+line aux 0
+line vty 0 4
+ session-timeout 5 
+ password 7 <removed>
+ authorization exec VTY_author
+ login authentication VTY_authen
+ transport input ssh
+line vty 5 15
+ session-timeout 5 
+ password 7 <removed>
+ authorization exec VTY_author
+ login authentication VTY_authen
+ transport input ssh
+!
+ntp server 172.16.1.9
+diagnostic bootup level minimal
+no event manager policy Mandatory.go_switchbus.tcl type system
+!
+!
+module provision switch 1
+ slot 1 slot-type 364 port-type 60 number 16 port-type 113 number 4  virtual-slot 17
+ slot 5 slot-type 363 port-type 60 number 16 port-type 113 number 4  virtual-slot 21
+ !
+module provision switch 2
+ slot 5 slot-type 363 port-type 60 number 16 port-type 113 number 4  virtual-slot 37
+ !
+module provision fex 101
+ slot 1 slot-type 354 port-type 61 number 48  virtual-slot 50
+ slot 2 slot-type 354 port-type 61 number 48  virtual-slot 51
+ slot 3 slot-type 354 port-type 61 number 48  virtual-slot 52
+ !
+module provision fex 102
+ slot 1 slot-type 354 port-type 61 number 48  virtual-slot 53
+ slot 2 slot-type 354 port-type 61 number 48  virtual-slot 54
+ 
+!
+
+end

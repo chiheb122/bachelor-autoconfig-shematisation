@@ -1,0 +1,6 @@
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone
+Device ID    Local Intrfce   Holdtme    Capability   Platform    Port ID
+SwitchRC     Gig 0/2          162            S       2960        Fas 0/1
+R2           Gig 0/1          162            R       C2900       Gig 0/1
+Rstatic      Gig 0/0          162            R       C2900       Gig 0/1

@@ -1,0 +1,131 @@
+!
+! Last configuration change at 15:55:01 UTC Tue Jul 11 2023
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname Router
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!         
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3278892595
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3278892595
+ revocation-check none
+ rsakeypair TP-self-signed-3278892595
+!
+!
+crypto pki certificate chain TP-self-signed-3278892595
+!
+!         
+!
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+redundancy
+ mode none
+!
+!
+vlan internal allocation policy ascending
+!
+bridge irb
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ no ip address
+ media-type rj45
+ negotiation auto
+ service instance 10 ethernet
+  encapsulation untagged
+  bridge-domain 10
+ !
+!
+interface GigabitEthernet0/0/1
+ no ip address
+ negotiation auto
+!
+interface GigabitEthernet0/1/0
+ switchport mode access
+ spanning-tree portfast
+!
+interface GigabitEthernet0/1/1
+!
+interface GigabitEthernet0/1/2
+!
+interface GigabitEthernet0/1/3
+!
+interface GigabitEthernet0/1/4
+!
+interface GigabitEthernet0/1/5
+!         
+interface GigabitEthernet0/1/6
+!
+interface GigabitEthernet0/1/7
+!
+interface Vlan1
+ no ip address
+ service instance 10 ethernet
+  encapsulation untagged
+  bridge-domain 10
+ !
+!
+interface BDI10
+ ip address 172.16.1.50 255.255.255.0
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!         
+bridge 10 protocol vlan-bridge
+bridge 10 domain 10
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+ transport input none
+ stopbits 1
+line vty 0 4
+ login
+!
+!
+!
+!
+!
+!
+end

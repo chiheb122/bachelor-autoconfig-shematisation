@@ -1,0 +1,58 @@
+
+version 12.4ia 95134-170
+service config              
+service timestamps debug uptimeware, C1700 Software (C1700-Y-M
+service timestamps log uptimeOFTWA                        
+no service password-encryption                         
+RE (
+!2
+hostname Routercal Support: ht
+!:
+boot-start-markerchsupport        
+boot-end-marker               
+! 
+enable secret 5 $1$FmiH$En5S2qi16jogMXup6HQsO1ems, Inc.                                     
+enable password                
+no ip routing             
+! 
+! 
+no ip dhcp use vrf connectedlassified packets is not tur
+!d
+!n
+no ip cef         
+! 
+! 
+! 
+! 
+interface FastEthernet0    
+Cisco 1721 (MPC860
+ ip address 10.6.6.253 255.255.255.0152K/16384K bytes of memo           
+ no ip route-cache                  
+ speed auto           
+ half-duplex   
+Processo
+ no cdp enable9171T0T (12645
+!1
+interface Serial0 revision 0000   
+ ip address 10.6.0.94 255.255.255.252                               
+MPC86
+ encapsulation pppnumber 5, mask 2  
+ no ip route-cache                  
+ shutdownhernet in
+ no fair-queue              
+ service-module t1 timeslots 1-24     
+WIC T1-DSU          
+32K by
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+line aux 0
+line vty 0 4
+ password 
+ login
+!
+end

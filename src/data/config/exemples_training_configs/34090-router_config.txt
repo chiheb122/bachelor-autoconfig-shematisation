@@ -1,0 +1,198 @@
+Building configuration...
+
+Current configuration : 3676 bytes
+!
+! Last configuration change at 10:45:13 CST Fri Jan 11 2008 by 
+! NVRAM config last updated at 10:21:55 CST Fri Jan 11 2008 by 
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router1
+!
+boot-start-marker
+boot system flash c2801-ipvoicek9-mz.124-15.T1.bin
+boot-end-marker
+!
+logging buffered 10000000
+!
+no aaa new-model
+clock timezone CST -6
+ip cef
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+voice-card 0
+!
+!
+voice call debug full-guid
+!
+voice service voip
+ allow-connections h323 to h323
+ allow-connections h323 to sip
+ allow-connections sip to h323
+ allow-connections sip to sip
+ fax protocol t38 ls-redundancy 5 hs-redundancy 2 fallback none
+ sip
+!
+!
+voice class codec 1
+ codec preference 1 g729r8
+ codec preference 2 g711ulaw
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+voice translation-rule 1
+!
+!
+!
+!
+!
+!
+username XXXXX privilege 15 secret 5 $1$faLR$Qg.aCrMtGoTLZqRnkOlk0/
+username XXXXX privilege 15 secret 5 $1$coZE$aCsKoOFsVdocf6ub/yDNR0
+archive
+ log config
+  hidekeys
+!
+!
+!
+class-map match-all SIP
+ match ip dscp af31
+class-map match-all RTP
+ match ip dscp ef
+!
+!
+translation-rule 1
+ Rule 1 ^9901% 1
+ Rule 2 ^9902% 1
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ description outside interface
+ ip address XXXXX 255.255.255.0
+ speed 100
+ full-duplex
+!
+interface FastEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+!
+ip route 0.0.0.0 0.0.0.0 XXXXXX
+ip route 0.0.0.0 0.0.0.0 XXXXXX
+!
+!
+ip http server
+ip http access-class 23
+ip http authentication local
+no ip http secure-server
+ip http timeout-policy idle 60 life 86400 requests 10000
+!
+access-list 23 permit 10.10.10.0 0.0.0.7
+access-list 23 permit XXXXXXXXXX 0.0.0.7
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+dial-peer voice 2 voip
+ destination-pattern .
+ voice-class codec 1
+ session protocol sipv2
+ session target ipv4:XXXXXX
+ dtmf-relay rtp-nte digit-drop
+ fax-relay ecm disable
+!
+dial-peer voice 100 voip
+ description Starvox .246 SIP Trunk
+ destination-pattern 9901
+ translate-outgoing called 1
+ session protocol sipv2
+ session target ipv4:XXXXXX
+ incoming called-number .
+ codec g711ulaw
+!
+dial-peer voice 101 voip
+ description Teknation SIP XXXXXX SIP Trunk
+ session protocol sipv2
+ session target ipv4:XXXXXX
+ dtmf-relay rtp-nte digit-drop
+ fax-relay ecm disable
+!
+dial-peer voice 102 voip
+ description Grande XXXXXX SIP Trunk
+ destination-pattern 9902
+ translate-outgoing called 1
+ voice-class codec 1
+ session protocol sipv2
+ session target ipv4:72.48.84.60
+ dtmf-relay rtp-nte digit-drop
+ fax-relay ecm disable
+!
+dial-peer voice 300 voip
+ session protocol sipv2
+ session target ipv4:XXXXXX
+ session transport udp
+ incoming called-number .
+ tech-prefix 9901
+ dtmf-relay h245-signal
+ codec g711ulaw
+ fax-relay ecm disable
+ fax rate 14400
+ fax protocol t38 ls-redundancy 5 hs-redundancy 2 fallback none
+ no vad
+!
+dial-peer voice 301 voip
+ session protocol sipv2
+ session target ipv4:XXXXXX
+ session transport udp
+ incoming called-number .
+ tech-prefix 9901
+ dtmf-relay h245-signal
+ codec g711ulaw
+ fax-relay ecm disable
+ fax rate 14400
+ fax protocol t38 ls-redundancy 5 hs-redundancy 2 fallback none
+ no vad
+!
+!
+banner login ^CC
+
+!
+line con 0
+ login local
+line aux 0
+line vty 0 4
+ privilege level 15
+ login local
+line vty 5 15
+ access-class 23 in
+ privilege level 15
+ login local
+!
+scheduler allocate 20000 1000
+end

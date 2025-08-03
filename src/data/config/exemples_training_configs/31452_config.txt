@@ -1,0 +1,380 @@
+Building configuration...
+
+Current configuration : 25940 bytes
+!
+! Last configuration change at 15:43:23 EDT Thu Jul 17 2008 by admin
+! NVRAM config last updated at 13:06:55 EDT Fri Jul 18 2008
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname 2821
+!
+boot-start-marker
+boot-end-marker
+!
+card type t1 0 0
+card type t3 1
+logging buffered 32768
+logging rate-limit all 10
+no logging console
+enable secret 5 xxxxxxxxxxxxxxxx
+enable password 7 xxxxxxxxxxxxxx
+!
+aaa new-model
+!
+!
+aaa authentication attempts login 5
+aaa authentication login default group radius local
+aaa authentication enable default enable
+aaa accounting exec default start-stop group tacacs+
+aaa accounting commands 0 default start-stop group tacacs+
+aaa accounting commands 1 default start-stop group tacacs+
+aaa accounting commands 15 default start-stop group tacacs+
+aaa accounting system default start-stop group tacacs++
+!
+!
+aaa session-id common
+clock timezone EDT -5
+clock summer-time EDT recurring
+network-clock-participate wic 0 
+network-clock-select 1 T1 0/0/0
+!
+!
+!
+ip cef
+no ip dhcp use vrf connected
+ip dhcp excluded-address 10.1.1.1 10.1.1.20
+ip dhcp excluded-address 192.168.109.0 192.168.109.40
+!
+ip dhcp pool PHONES
+   network 10.1.1.0 255.255.255.0
+   default-router 10.1.1.240 
+   option 150 ip 10.1.1.10 
+!
+!
+no ip domain lookup
+multilink bundle-name authenticated
+!
+isdn switch-type primary-ni
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+voice translation-rule 1
+ rule 1 /.*\(....\)$/ /\1/
+!
+voice translation-rule 2
+ rule 1 /^\(0...\)$/ /646278\1/
+!         
+voice translation-rule 3
+ rule 1 /\(^0...$\)/ /646390\1/
+!
+voice translation-rule 4
+ rule 1 /\*\(....\)/ /\1/
+!
+voice translation-rule 5
+ rule 1 /\(.+\)/ /91\1/
+!
+!
+voice translation-profile 5
+ translate calling 5
+!
+voice translation-profile incomingcalls
+ translate called 1
+!
+voice translation-profile outgoing646278
+ translate calling 2
+!
+voice translation-profile outgoing646390
+ translate calling 3
+!
+!
+voice-card 0
+ no dspfarm
+!
+!         
+!
+!
+!
+username admin secret 5 xxxxxxxx
+archive
+ log config
+  hidekeys
+!
+!
+controller T1 0/0/0
+ framing esf
+ linecode b8zs
+ pri-group timeslots 1-24
+!
+controller T3 1/0
+ cablelength 20
+!
+ip ssh source-interface Serial1/0
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ ip address 10.1.1.10 255.255.255.0
+ duplex full
+ speed 1000
+!         
+interface Service-Engine0/1
+ ip unnumbered GigabitEthernet0/0
+ service-module ip address 10.1.1.11 255.255.255.0
+ service-module ip default-gateway 10.1.1.240
+!
+interface GigabitEthernet0/1
+ ip address 192.168.109.249 255.255.255.0
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0:23
+ no ip address
+ encapsulation hdlc
+ isdn switch-type primary-ni
+ isdn incoming-voice voice
+ no isdn outgoing ie redirecting-number 
+ no cdp enable
+!
+interface Serial1/0
+ description Connection to vpn
+ bandwidth 10000
+ ip address 10.100.200.26 255.255.255.248
+ delay 2000
+ tx-ring-limit 160
+ tx-queue-limit 160
+ dsu bandwidth 10000
+!         
+ip route 10.1.1.11 255.255.255.255 Service-Engine0/1
+!
+!
+ip http server
+ip http authentication local
+no ip http secure-server
+ip http path flash:
+ip tacacs source-interface Serial1/0
+!
+!
+logging trap notifications
+snmp-server view GNCVIEW mib-2 included
+snmp-server view GNCVIEW cisco included
+snmp-server community Ragga0ck3rd0M RO 65
+snmp-server community Raggawall0p3R RW 65
+snmp-server ifindex persist
+snmp-server trap-source GigabitEthernet0/1
+snmp-server enable traps envmon fan shutdown supply temperature
+snmp-server enable traps config-copy
+snmp-server enable traps config
+snmp-server enable traps cpu threshold
+snmp-server host 203.8.5.74 version 2c Ragga0ck3rd0M 
+route-map conn-to-bgp permit 10
+ match ip address prefix-list conn-to-bgp
+!
+!
+!
+tftp-server flash:apps42.8-3-1-22.sbn
+tftp-server flash:cnu42.8-3-1-22.sbn
+tftp-server flash:cvm42sccp.8-3-1-22.sbn
+tftp-server flash:dsp42.8-3-1-22.sbn
+tftp-server flash:jar42sccp.8-3-1-22.sbn
+tftp-server flash:SCCP42.8-3-2S.loads
+tftp-server flash:term42.default.loads
+tftp-server flash:term62.default.loads
+tftp-server flash:g3-tones.xml alias United_States/g3-tones.xml
+tftp-server flash:mk-sccp.jar alias English_United_States/mk-sccp.jar
+tftp-server flash:tc-sccp.jar
+tftp-server flash:td-sccp.jar
+tftp-server flash:Analog1.raw
+tftp-server flash:Analog2.raw
+tftp-server flash:AreYouThere.raw
+tftp-server flash:AreYouThereF.raw
+tftp-server flash:Bass.raw
+tftp-server flash:CallBack.raw
+tftp-server flash:Chime.raw
+tftp-server flash:Classic1.raw
+tftp-server flash:Classic2.raw
+tftp-server flash:ClockShop.raw
+tftp-server flash:DistinctiveRingList.xml
+tftp-server flash:Drums1.raw
+tftp-server flash:Drums2.raw
+tftp-server flash:FilmScore.raw
+tftp-server flash:HarpSynth.raw
+tftp-server flash:Jamaica.raw
+tftp-server flash:KotoEffect.raw
+tftp-server flash:MusicBox.raw
+tftp-server flash:Piano1.raw
+tftp-server flash:Piano2.raw
+tftp-server flash:Pop.raw
+tftp-server flash:Pulse1.raw
+tftp-server flash:Ring1.raw
+tftp-server flash:Ring2.raw
+tftp-server flash:Ring3.raw
+tftp-server flash:Ring4.raw
+tftp-server flash:Ring5.raw
+tftp-server flash:Ring6.raw
+tftp-server flash:Ring7.raw
+tftp-server flash:RingList.xml
+tftp-server flash:Sax1.raw
+tftp-server flash:Sax2.raw
+tftp-server flash:Vibe.raw
+tftp-server flash:P00405000700.bin
+tftp-server flash:P00405000700.sbn
+tftp-server flash:P00503010100.bin
+tftp-server flash:S00103020003.bin
+tftp-server S00103020003.sbn
+tftp-server S00103020002.bin
+tftp-server S00105000200.sbn
+tacacs-server host 172.17.48.149
+tacacs-server directed-request
+tacacs-server key 7 14041A0A1E0527
+radius-server host 10.1.1.12 auth-port 1812 acct-port 1813 key 7 110D0C07111B1909
+!
+control-plane
+!
+!
+!
+voice-port 0/0/0:23
+!
+voice-port 0/1/0
+ description TRANSUNION FAX LINE
+!
+voice-port 0/1/1
+!         
+voice-port 0/1/2
+!
+voice-port 0/1/3
+!
+!
+!
+!
+dial-peer cor custom
+ name 646278
+ name 646390
+!
+!
+dial-peer cor list 646278
+ member 646278
+!
+dial-peer cor list 646390
+ member 646390
+!
+!
+dial-peer voice 6000 voip
+ destination-pattern 0089
+ session protocol sipv2
+ session target ipv4:10.1.1.11
+ dtmf-relay sip-notify
+ codec g711ulaw
+ no vad
+!         
+dial-peer voice 1 pots
+ description incoming dialpeer
+ translation-profile incoming 5
+ incoming called-number .
+ direct-inward-dial
+ port 0/0/0:23
+!
+dial-peer voice 10 pots
+ corlist outgoing 646278
+ translation-profile outgoing outgoing646278
+ destination-pattern 91..........
+ port 0/0/0:23
+ prefix 1
+!
+dial-peer voice 11 pots
+ corlist outgoing 646278
+ translation-profile outgoing outgoing646278
+ destination-pattern 9011T
+ port 0/0/0:23
+ prefix 011
+!
+dial-peer voice 12 pots
+ corlist outgoing 646278
+ translation-profile outgoing outgoing646278
+ destination-pattern 9911
+ prefix 911
+!         
+dial-peer voice 20 pots
+ corlist outgoing 646390
+ translation-profile outgoing outgoing646390
+ destination-pattern 91..........
+ port 0/0/0:23
+ prefix 1
+!
+dial-peer voice 21 pots
+ corlist outgoing 646390
+ translation-profile outgoing outgoing646278
+ destination-pattern 9011T
+ port 0/0/0:23
+ prefix 011
+!
+dial-peer voice 22 pots
+ corlist outgoing 646390
+ translation-profile outgoing outgoing646390
+ destination-pattern 9911
+ prefix 911
+!
+dial-peer voice 30 pots
+ description FAX Line
+ destination-pattern 0839
+ port 0/1/0
+!
+!
+!         
+telephony-service
+ load 7914 S00105000200
+ load 7941GE SCCP41.8-2-2SR1S
+ load 7942 SCCP42.8-3-2S
+ max-ephones 52
+ max-dn 192
+ ip source-address 10.1.1.10 port 2000
+ system message Welcome
+ cnf-file perphone
+ time-zone 12
+ voicemail 0089
+ max-conferences 8 gain -6
+ call-forward pattern .T
+ call-forward pattern 91..........
+ call-forward system redirecting-expanded
+ web admin system name admin password xxxxxx
+ dn-webedit 
+ time-webedit 
+ transfer-system full-consult
+ transfer-pattern 91..........
+ transfer-pattern 0089
+ create cnf-files version-stamp 7960 May 08 2008 19:31:40
+!
+!
+ephone-template  1
+!
+!         
+ephone-dn  1  dual-line
+ number 0867
+ call-forward busy 0089
+ call-forward noan 0089 timeout 10
+ corlist incoming 646278
+!
+
+!
+ephone  1 
+ mac-address 001E.4A92.1C26
+ username "xxxxx" password null
+ type 7942
+ button  1:1
+!
+end

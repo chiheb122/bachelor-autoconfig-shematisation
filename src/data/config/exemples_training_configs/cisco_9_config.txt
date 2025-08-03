@@ -1,0 +1,591 @@
+Building configuration...
+
+Current configuration : 11087 bytes
+!
+upgrade fpd auto
+version 12.2
+service timestamps debug uptime
+service timestamps log uptime
+no service password-encryption
+service counters max age 5
+no service dhcp
+!
+hostname Cisco6503
+!
+boot-start-marker
+boot-end-marker
+!
+enable secret 5 <removed>
+enable password <removed>
+!
+no aaa new-model
+call-home
+  alert-group configuration
+  alert-group diagnostic
+  alert-group environment
+  alert-group inventory
+  alert-group syslog
+ profile "CiscoTAC-1"
+   no active
+   no destination transport-method http
+   destination transport-method email
+   destination address email callhome@cisco.com
+   destination address http https://tools.cisco.com/its/service/oddce/services/DDCEService
+   subscribe-to-alert-group diagnostic severity minor 
+   subscribe-to-alert-group environment severity minor 
+   subscribe-to-alert-group syslog severity major pattern ".*"
+   subscribe-to-alert-group configuration periodic monthly 1 13:55
+   subscribe-to-alert-group inventory periodic monthly 1 13:40
+ip subnet-zero
+!
+!
+!
+ip dhcp snooping vlan 1
+ip dhcp snooping
+no ip domain-lookup
+vtp domain sag-mex
+vtp mode transparent
+mls netflow interface
+no mls flow ip
+mls cef error action reset
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+redundancy
+ keepalive-enable
+ mode sso
+ main-cpu
+  auto-sync running-config
+spanning-tree mode pvst
+spanning-tree extend system-id
+system flowcontrol bus auto
+diagnostic cns publish cisco.cns.device.diag_results
+diagnostic cns subscribe cisco.cns.device.diag_commands
+!
+vlan internal allocation policy ascending
+vlan access-log ratelimit 2000
+!
+vlan 96
+ name 192.168.96.0/24-client-vlan
+!
+vlan 97
+ name 192.168.97.0/24-client-vlan
+!
+vlan 120
+ name client-vlan120
+!
+vlan 157
+ name client-vlan157
+!
+vlan 158
+ name client-vlan158
+!
+vlan 166
+ name 198.155.166.0-client-vlan
+!
+vlan 703
+ name Voice-Data-96-Users
+!
+vlan 704
+ name Voice-Data-97-Users
+!
+vlan 706
+ name Voice-VLAN-users-vlan166
+!
+vlan 999
+ name RSPAN
+ remote-span
+!
+!
+!
+interface Port-channel1
+ switchport
+ switchport mode access
+ mtu 9216
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/1
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/2
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/3
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/4
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/5
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/6
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/7
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/8
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet1/9
+ switchport
+ switchport mode access
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/1
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ channel-group 1 mode on
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/2
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/3
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/4
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/5
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/6
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/7
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/8
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/9
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ channel-group 1 mode on
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/10
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/11
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/12
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/13
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/14
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/15
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/16
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/17
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ channel-group 1 mode on
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/18
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/19
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/20
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/21
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/22
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/23
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/24
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/25
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ channel-group 1 mode on
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/26
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/27
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/28
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/29
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/30
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/31
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/32
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/33
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/34
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/35
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/36
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/37
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/38
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/39
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/40
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/41
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/42
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/43
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/44
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/45
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/46
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/47
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface GigabitEthernet2/48
+ switchport
+ switchport mode access
+ mtu 9216
+ flowcontrol receive desired
+ spanning-tree portfast
+ ip dhcp snooping trust
+!
+interface Vlan1
+ ip address 192.168.2.200 255.255.255.0
+ ip helper-address 192.168.2.1
+!
+ip default-gateway 192.168.2.254
+ip classless
+!
+!
+ip http server
+no ip http secure-server
+!
+!
+!
+control-plane
+!
+!
+dial-peer cor custom
+!
+!
+!
+alias exec s show ip int br
+alias exec sr show run
+!
+line con 0
+ logging synchronous
+line vty 0 4
+ password <removed>
+ login
+ transport input lat pad udptn telnet rlogin ssh
+line vty 5 15
+ password <removed>
+ login
+ transport input lat pad udptn telnet rlogin ssh
+!
+!
+end

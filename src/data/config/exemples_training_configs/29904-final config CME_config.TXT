@@ -1,0 +1,169 @@
+Current configuration : 2514 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Router
+!
+boot-start-marker
+boot system tftp c2430-is-mz.124-11.T.bin 10.150.1.49
+boot-end-marker
+!
+!card type command needed for slot 1
+!
+no aaa new-model
+!
+!
+ip host voip.meditel.ma 10.150.1.4
+ip name-server 84.16.31.5
+ip name-server 84.16.31.6
+!
+!
+multilink bundle-name authenticated
+!
+voice-card 0
+!
+!
+!
+voice service voip 
+ allow-connections h323 to h323
+ allow-connections h323 to sip
+ allow-connections sip to h323
+ allow-connections sip to sip
+ supplementary-service h450.12
+ redirect ip2ip
+ sip
+  registrar server expires max 600 min 60
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+voice register global
+ mode cme
+ source-address 10.150.1.52 port 5060
+ max-dn 48
+ max-pool 24
+ load 7960-7940 P0030702T023
+ authenticate all
+ timezone 21
+ time-format 24
+ date-format D/M/Y
+ tftp-path flash:
+
+
+!
+voice register dn  2
+ number 20209003
+ name test2
+ preference 1
+!
+
+!
+voice register pool  2
+ id mac 000E.08DB.D9F0
+ number 2 dn 2
+ username 20209003 password 1234
+ codec g711ulaw
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 10.150.1.52 255.255.255.128
+ duplex auto
+ speed auto
+!
+ip http server
+ip http path flash:
+!
+ip route 0.0.0.0 0.0.0.0 10.150.1.1
+!
+!
+no cdp advertise-v2
+!
+tftp-server flash:P0030702T023.bin
+!
+!
+control-plane
+!
+!
+!
+voice-port 2/0
+!
+voice-port 2/1
+!
+voice-port 2/2
+!
+voice-port 2/3
+!
+voice-port 2/4
+!
+voice-port 2/5
+!
+voice-port 2/6
+!
+voice-port 2/7
+!
+!
+!
+!
+dial-peer voice 20209003 pots
+ answer-address 20209003
+ destination-pattern .T
+ forward-digits all
+
+
+!
+dial-peer voice 1 voip
+ destination-pattern .T
+ session protocol sipv2
+ session target dns:voip.meditel.ma:5060
+ codec g711ulaw
+!
+!
+
+
+sip-ua 
+ authentication username 20209003@voip.meditel.ma password ABCDE realm voip.meditel.ma
+ no remote-party-id
+ retry invite 3
+ retry notify 3
+ retry options 0
+ timers notify 100
+ registrar dns:voip.meditel.ma:5060 expires 3600
+!
+!
+
+telephony-service
+ load 7960-7940 P0030702T023
+ max-ephones 24
+ max-dn 40
+ ip source-address 10.150.1.52 port 2000
+ time-zone 21
+ time-format 24
+ date-format dd-mm-yy
+ max-conferences 4 gain -6
+ transfer-system full-consult
+!
+!
+
+!
+!
+!
+line con 0
+line aux 0
+line vty 0 4
+ login
+!
+end

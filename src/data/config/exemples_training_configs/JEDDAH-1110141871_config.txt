@@ -1,0 +1,226 @@
+Building configuration...
+
+
+Current configuration : 4382 bytes
+!
+! Last configuration change at 15:13:11 GMT Mon Oct 23 2023
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname IPT
+!
+boot-start-marker
+boot system bootflash:isr4300-universalk9.16.06.04.SPA.bin
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+logging buffered 15728640
+!
+no aaa new-model
+clock timezone GMT 3 0
+!
+!
+ip nbar http-services
+!
+no ip domain lookup
+ip domain name fmc.stc.com.sa
+!
+!
+!
+subscriber templating
+!
+!
+multilink bundle-name authenticated
+vpdn enable
+!
+!
+!
+voice service voip
+ ip address trusted list
+  ipv4 0.0.0.0 0.0.0.0
+ media disable-detailed-stats
+ allow-connections h323 to h323
+ allow-connections h323 to sip
+ allow-connections sip to h323
+ allow-connections sip to sip
+ no supplementary-service sip handle-replaces
+ fax protocol t38 version 0 ls-redundancy 0 hs-redundancy 0 fallback none
+ sip
+  registrar server expires max 3600 min 3600
+  transport switch udp tcp
+  outbound-proxy ipv4:10.154.15.25:5060
+  no update-callerid
+  early-offer forced
+!
+!
+voice class uri 6500 sip
+ host ipv4:172.28.98.46
+voice class codec 1
+ codec preference 1 g711alaw
+ codec preference 2 g711ulaw
+ codec preference 3 g729r8
+ codec preference 4 g729br8
+ codec preference 5 g723ar53
+!
+!
+voice class sip-profiles 1000
+ request INVITE sip-header Remote-Party-ID add "STCETN"
+ response ANY sip-header Remote-Party-ID add "STCETN"
+!
+!
+!
+!
+!
+!
+voice translation-profile Add_Prefix
+ translate calling 1
+!
+voice translation-profile EXT
+ translate called 2
+!
+!
+!
+!
+!
+!
+voice-card 0/1
+ no watchdog
+!
+voice-card 0/2
+ no watchdog
+!
+voice-card 0/4
+ no watchdog
+!
+license udi pid ISR4331/K9 sn FDO23411824
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0/0
+ description **Cisco IPT - Cisco Core**
+ ip address 172.16.5.200 255.255.255.0
+ ip nat inside
+ negotiation auto
+!
+interface GigabitEthernet0/0/1
+ description JEDDAH-JEDDAH SIP11939
+ bandwidth 1024
+ ip address 172.28.98.46 255.255.255.252
+ ip nat outside
+ negotiation auto
+!
+interface GigabitEthernet0/0/2
+ no ip address
+ negotiation auto
+!
+interface Service-Engine0/1/0
+!
+interface Service-Engine0/2/0
+!
+interface Service-Engine0/4/0
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ negotiation auto
+!
+router bgp 65272
+ bgp log-neighbor-changes
+ redistribute connected
+ neighbor 172.28.98.45 remote-as 65000
+!
+ip nat inside source static udp 172.28.98.46 5060 10.154.15.25 5060 extendable
+ip nat inside source static udp 172.28.98.46 5060 10.154.15.26 5060 extendable
+ip nat inside source list 10 interface GigabitEthernet0/0/0 overload
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route 0.0.0.0 0.0.0.0 172.28.98.45
+!
+ip ssh version 2
+!
+access-list 10 permit 172.16.5.0 0.0.0.255
+access-list 10 permit 172.16.12.0 0.0.0.255
+!
+!
+!
+!
+control-plane
+!
+!
+voice-port 0/1/0
+!
+voice-port 0/1/1
+!
+voice-port 0/1/2
+!
+voice-port 0/1/3
+!
+voice-port 0/2/0
+!
+voice-port 0/2/1
+!
+voice-port 0/2/2
+!
+voice-port 0/2/3
+!
+mgcp behavior rsip-range tgcp-only
+mgcp behavior comedia-role none
+mgcp behavior comedia-check-media-src disable
+mgcp behavior comedia-sdp-force disable
+!
+mgcp profile default
+!
+!
+!
+!
+dial-peer voice 100 voip
+ description SIP Trunk to STC
+ destination-pattern 1110141871
+ session protocol sipv2
+ session target sip-server
+ dtmf-relay rtp-nte
+ codec g711alaw
+!
+dial-peer voice 1 voip
+ codec g711alaw bytes 240
+!
+!
+!
+!
+wsma agent exec
+!
+wsma agent config
+!
+wsma agent filesys
+!
+wsma agent notify
+!
+!
+end

@@ -1,0 +1,117 @@
+
+!
+version 15.0
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname swchiheb
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+system mtu routing 1500
+no ip domain-lookup
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-481861248
+enrollment selfsigned
+subject-name cn=IOS-Self-Signed-Certificate-481861248
+revocation-check none
+rsakeypair TP-self-signed-481861248
+!
+!
+crypto pki certificate chain TP-self-signed-481861248
+certificate self-signed 01
+30820229 30820192 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274
+69666963 6174652D 34383138 36313234 38301E17 0D393330 33303130 30303131
+335A170D 32303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F
+532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3438 31383631
+32343830 819F300D 06092A86 4886F70D 01010105 0003818D 00308189 02818100
+DA718958 6BBF7F92 E4C04A54 28667756 4635B098 B68C2C81 50BB6840 25B87744
+A4C54747 B872F399 59F522B7 F9520479 E77CBCC3 2B5F8D15 82EB77F3 D66DF71E
+EB007E67 A82AC981 A9CC90EB 3CF0A67E 0528E921 5B2A5ECF 6BEDFC6D 521AE81D
+0F748F82 BBE32D29 EEDD86F1 0A30D9D8 E721F44E 22B6E55E 60096001 5B8542A3
+02030100 01A35330 51300F06 03551D13 0101FF04 05300301 01FF301F 0603551D
+23041830 16801498 1F139708 B0B5F835 4578D645 D755D942 B1F90B30 1D060355
+1D0E0416 0414981F 139708B0 B5F83545 78D645D7 55D942B1 F90B300D 06092A86
+4886F70D 01010505 00038181 001835BD 2066BBC8 8B596A92 6813DD7D 7EFE03CA
+43BD7388 B489FBBA AA47CF78 12423993 144838BB 6033332F 052F843A 338B2D7F
+3C8EAABD 0B59EDE9 2B9F7E1E 2600C46F 1EC2B7D4 237AA272 64EF577D 7BF9E55C
+0CE81394 895B5378 D88414D2 7283A0DE 02B87471 234CD8A3 2E6F44B8 E7052A84
+AF09D68A AB751911 0E694860 3B
+quit
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/1
+switchport mode access
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface GigabitEthernet0/1
+!
+interface Vlan1
+ip address 192.168.10.10 255.255.255.0
+!
+ip default-gateway 192.168.10.1
+ip http server
+ip http secure-server
+!
+!
+!
+!
+!
+vstack
+!
+line con 0
+password cisco
+login
+line vty 0 4
+password cisco
+login
+line vty 5 15
+login
+!
+end

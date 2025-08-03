@@ -1,0 +1,555 @@
+Building configuration...
+
+
+Current configuration : 17028 bytes
+!
+! Last configuration change at 14:35:48 CST Thu Jan 25 2024 by s001719
+! NVRAM config last updated at 14:39:28 CST Thu Jan 25 2024 by s001719
+!
+version 16.6
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+!
+hostname rlrl01pagert02
+!
+boot-start-marker
+boot system flash bootflash:isr4300-universalk9.16.06.07.SPA.bin
+boot system flash bootflash:isr4300-universalk9.03.16.04b.S.155-3.S4b-ext.SPA.bin
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no logging console
+enable secret 5 $1$OAlQ$AQf.2NzhtzURajC.Wi9fP1
+!
+aaa new-model
+!
+!
+aaa group server tacacs+ ISE-TACACS
+ server name EU-TACACS
+ server name RO-TACACS
+ server name JA-TACACS
+!
+aaa authentication login default group tacacs+ local
+aaa authentication enable default group tacacs+ enable
+aaa authorization config-commands
+aaa authorization exec default group tacacs+ none 
+aaa authorization commands 15 default group tacacs+ if-authenticated 
+aaa accounting update newinfo periodic 2880
+aaa accounting exec default start-stop group tacacs+
+aaa accounting commands 15 default start-stop group tacacs+
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone CST -6 0
+clock summer-time CDT recurring
+!
+ip name-server 198.190.251.189 10.146.165.26
+ip domain lookup source-interface Loopback0
+ip domain name mayo.edu
+!
+!
+!
+no login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+!
+!
+multilink bundle-name authenticated
+!
+flow record ios-router
+ match ipv4 tos
+ match ipv4 protocol
+ match ipv4 source address
+ match ipv4 destination address
+ match transport source-port
+ match transport destination-port
+ match interface input
+ collect interface output
+ collect counter bytes long
+ collect counter packets long
+ collect timestamp sys-uptime first
+ collect timestamp sys-uptime last
+ collect application name
+!
+!
+flow exporter lancope
+ destination 10.146.150.14
+ transport udp 9999
+!
+!
+flow monitor ipv4
+ exporter lancope
+ cache timeout active 60
+ record ios-router
+!
+!
+!
+!
+!
+!
+!
+cts logging verbose
+license udi pid ISR4331/K9 sn FDO21051186
+license boot level securityk9
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username networks secret 5 $1$/fRo$fI9MlzPIjcfGkUthh7ClX.
+!
+redundancy
+ mode none
+!
+crypto ikev2 proposal aes256-sha256 
+ encryption aes-cbc-256
+ integrity sha256
+ group 24 21 20 19 14
+!
+crypto ikev2 policy 10 
+ proposal aes256-sha256
+!
+crypto ikev2 keyring rlrl01pagert02
+ peer mayo
+  address 129.176.60.120
+  pre-shared-key ***
+ !
+!
+!
+crypto ikev2 profile mayo-vpl
+ match identity remote address 129.176.60.120 255.255.255.255 
+ identity local address 63.45.114.46
+ authentication remote pre-share
+ authentication local pre-share
+ keyring local rlrl01pagert02
+!
+!
+!
+!
+no cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+crypto ipsec transform-set aes-cbc256-sha256 esp-aes 256 esp-sha256-hmac 
+ mode tunnel
+crypto ipsec transform-set aes256-sha256 esp-aes 256 esp-sha256-hmac 
+ mode tunnel
+!
+!
+!
+crypto map rlrl01pagert02 1 ipsec-isakmp 
+ set peer 129.176.60.120
+ set transform-set aes256-sha256 
+ set ikev2-profile mayo-vpl
+ match address mayo-vpl
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description rlrl01pagert02
+ ip address 10.101.255.195 255.255.255.255
+!
+interface GigabitEthernet0/0/0
+ description Outside Public Connection to Verizon
+ no ip dhcp client request tftp-server-address
+ ip address 63.45.114.46 255.255.255.0
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ ip nat outside
+ ip access-group 101 in
+ media-type rj45
+ negotiation auto
+ crypto map rlrl01pagert02
+!
+interface GigabitEthernet0/0/1
+ no ip address
+ negotiation auto
+!
+interface GigabitEthernet0/0/1.101
+ description Inside Private Network
+ encapsulation dot1Q 101 native
+ ip address 10.101.253.49 255.255.255.248
+ ip helper-address 198.190.251.189
+ ip access-group 102 in
+!
+interface GigabitEthernet0/0/2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ no ip address
+ shutdown
+ negotiation auto
+ spanning-tree portfast
+!
+ip nat inside source list 1 interface GigabitEthernet0/0/0 overload
+ip forward-protocol nd
+no ip http server
+ip http access-class 23
+ip http authentication local
+no ip http secure-server
+ip http timeout-policy idle 60 life 86400 requests 10000 
+ip tftp source-interface GigabitEthernet0
+ip route 0.0.0.0 0.0.0.0 63.45.114.1
+ip tacacs source-interface Loopback0
+ip pim rp-address 10.167.66.6 campus-multicast-ACL override
+ip pim rp-address 172.23.30.217 enterprise-multicast-ACL override
+!
+ip ssh source-interface Loopback0
+ip ssh version 2
+!
+!
+ip access-list standard campus-multicast-ACL
+ remark permit Push-to-Talk
+ permit 224.0.1.116
+ remark deny HSRP and everything else
+ deny   224.0.1.39
+ deny   224.0.1.40
+ remark permit Enterprise Mulitcast range
+ permit 239.193.0.0 0.0.255.255
+ remark Patient Monitors
+ permit 239.255.0.0 0.0.3.255
+ip access-list standard enterprise-multicast-ACL
+ remark permit AI Phones Multicast Specific
+ permit 239.197.40.41
+ permit 224.0.23.173
+ remark deny HSRP and everything else
+ deny   224.0.1.39
+ remark permit Philips Multicast Specific
+ permit 224.0.23.63
+ deny   224.0.1.40
+ remark permit Enterprise Multicast range
+ permit 239.194.0.0 0.0.255.255
+!
+ip access-list extended mayo-vpl
+ permit ip host 10.101.255.195 10.146.89.0 0.0.0.255
+ permit ip host 10.101.255.195 host 10.226.12.242
+ permit ip host 10.101.255.195 host 10.146.140.121
+ permit ip host 10.101.255.195 host 10.239.12.146
+ permit udp host 10.101.255.195 host 172.28.20.11
+ permit udp host 10.101.255.195 host 192.168.242.41
+ permit ip host 10.101.255.195 10.208.2.0 0.0.0.255
+ permit ip host 10.101.255.195 host 10.146.150.13
+ permit ip host 10.101.255.195 host 10.226.12.230
+ permit ip host 10.101.255.195 host 10.146.150.6
+ permit ip host 10.101.255.195 host 172.21.190.31
+ permit ip host 10.101.255.195 host 172.21.119.232
+ permit ip host 10.101.255.195 host 172.21.119.233
+ permit ip host 10.101.255.195 host 172.21.190.32
+ permit ip host 10.101.255.195 host 10.146.184.13
+ permit ip host 10.101.255.195 host 10.146.184.18
+ permit ip host 10.101.255.195 host 10.146.185.26
+ permit ip host 10.101.255.195 host 172.16.57.215
+ permit ip host 10.101.255.195 host 172.16.57.223
+ permit ip host 10.101.255.195 host 172.16.57.222
+ permit ip host 10.101.255.195 host 172.16.57.217
+ permit ip host 10.101.255.195 host 172.16.57.216
+ permit ip host 10.101.255.195 host 172.16.57.224
+ permit ip host 10.101.255.195 host 10.203.160.11
+ permit ip host 10.101.255.195 host 10.203.160.12
+ permit ip host 10.101.255.195 host 10.146.68.82
+ permit ip host 10.101.255.195 host 192.168.150.88
+ permit ip host 10.101.255.195 host 192.168.150.86
+ permit ip host 10.101.255.195 host 192.168.150.87
+ permit ip host 10.101.255.195 host 10.128.32.4
+ permit ip host 10.101.255.195 host 10.239.13.59
+ permit ip host 10.101.255.195 host 10.146.73.44
+ permit udp host 10.101.255.195 host 172.28.146.10
+ permit udp host 10.101.255.195 host 172.28.158.10
+ permit ip 10.101.253.48 0.0.0.7 10.201.227.0 0.0.0.255
+ permit ip 10.101.253.48 0.0.0.7 10.201.19.0 0.0.0.255
+ permit ip 10.101.253.48 0.0.0.7 host 129.176.133.28
+ permit ip 10.101.253.48 0.0.0.7 host 129.176.99.6
+ permit ip 10.101.253.48 0.0.0.7 host 129.176.99.9
+ permit ip 10.101.253.48 0.0.0.7 host 129.176.99.12
+ permit ip host 10.101.255.195 host 172.21.186.59
+ permit ip 10.101.253.48 0.0.0.7 host 10.129.8.200
+ permit ip 10.101.253.48 0.0.0.7 host 10.129.8.203
+ permit ip 10.101.253.48 0.0.0.7 host 10.129.8.206
+ permit ip host 10.101.255.195 host 10.146.140.6
+ permit ip host 10.101.255.195 host 10.146.150.84
+ permit ip host 10.101.255.195 host 10.146.150.85
+ permit ip host 10.101.255.195 host 10.146.226.24
+ permit ip host 10.101.255.195 host 10.146.226.25
+ permit ip host 10.101.255.195 host 10.208.160.11
+ permit ip host 10.101.255.195 host 10.146.226.221
+ permit ip 10.101.253.48 0.0.0.7 host 172.20.116.63
+ permit ip host 10.101.255.195 10.101.0.0 0.0.0.255
+ permit ip 10.101.253.48 0.0.0.7 10.101.0.0 0.0.0.255
+ permit ip host 10.101.255.195 10.162.120.8 0.0.0.7
+ permit ip 10.101.253.48 0.0.0.7 10.162.120.8 0.0.0.7
+ permit ip host 10.101.255.195 10.165.255.232 0.0.0.7
+ permit ip 10.101.253.48 0.0.0.7 10.165.255.232 0.0.0.7
+ permit ip host 10.101.255.195 172.20.21.0 0.0.0.255
+ permit ip 10.101.253.48 0.0.0.7 172.20.21.0 0.0.0.255
+ permit ip host 10.101.255.195 172.29.2.0 0.0.0.255
+ permit ip 10.101.253.48 0.0.0.7 172.29.2.0 0.0.0.255
+ permit ip host 10.101.255.195 10.163.250.0 0.0.0.7
+ permit ip 10.101.253.48 0.0.0.7 10.163.250.0 0.0.0.7
+ permit ip host 10.101.255.195 10.165.255.224 0.0.0.7
+ permit ip 10.101.253.48 0.0.0.7 10.165.255.224 0.0.0.7
+ permit ip host 10.101.255.195 129.176.121.0 0.0.0.63
+ permit ip 10.101.253.48 0.0.0.7 129.176.121.0 0.0.0.63
+ permit ip host 10.101.255.195 10.202.245.128 0.0.0.15
+ permit ip 10.101.253.48 0.0.0.7 10.202.245.128 0.0.0.15
+ permit ip host 10.101.255.195 10.232.251.0 0.0.0.255
+ permit ip 10.101.253.48 0.0.0.7 10.232.251.0 0.0.0.255
+ permit ip host 10.101.255.195 10.56.50.0 0.0.0.255
+ permit ip 10.101.253.48 0.0.0.7 10.56.50.0 0.0.0.255
+ permit ip host 10.101.255.195 10.166.126.248 0.0.0.7
+ permit ip 10.101.253.48 0.0.0.7 10.166.126.248 0.0.0.7
+ permit ip host 10.101.255.195 host 10.146.74.70
+ permit ip 10.101.253.48 0.0.0.7 host 10.208.5.24
+ permit ip 10.101.253.48 0.0.0.7 host 10.208.5.25
+ permit ip 10.101.253.48 0.0.0.7 host 172.23.158.142
+ permit ip 10.101.253.48 0.0.0.7 host 172.23.158.143
+ permit ip 10.101.253.48 0.0.0.7 host 10.239.20.56
+ permit ip 10.101.253.48 0.0.0.7 host 10.239.20.57
+ permit ip host 10.101.255.195 10.146.193.0 0.0.0.255
+ permit ip 10.101.253.48 0.0.0.7 10.146.193.0 0.0.0.255
+ permit udp host 10.101.255.195 host 192.168.242.45
+ permit udp host 10.101.253.61 host 192.168.242.41
+ permit udp host 10.101.253.61 host 192.168.242.45
+logging trap notifications
+logging source-interface Loopback0
+logging host 10.146.150.13
+access-list 51 remark NetBrain crawler JAX
+access-list 51 permit 10.226.12.230
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.146.165.52
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.146.165.48
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.146.140.6
+access-list 51 remark Data Center ISE server
+access-list 51 permit 10.128.200.80
+access-list 51 remark Eau Claire ISE server
+access-list 51 permit 172.21.190.31
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.146.140.8
+access-list 51 remark Mankato ISE server
+access-list 51 permit 172.21.119.232
+access-list 51 permit 172.21.119.233
+access-list 51 remark Eau Claire ISE server
+access-list 51 permit 172.21.190.32
+access-list 51 remark ServiceNow Discovery RST 
+access-list 51 permit 10.146.165.17
+access-list 51 remark NetBrain crawler RST
+access-list 51 permit 10.146.184.13
+access-list 51 permit 10.146.184.18
+access-list 51 remark Ordr Sensor
+access-list 51 permit 10.146.150.61
+access-list 51 remark NetBrain crawler RST
+access-list 51 permit 10.146.185.26
+access-list 51 remark Arizona ISE server
+access-list 51 permit 172.16.57.215
+access-list 51 remark DNA Center
+access-list 51 permit 10.146.114.190
+access-list 51 remark Arizona ISE server
+access-list 51 permit 172.16.57.223
+access-list 51 remark Lancope SMC server
+access-list 51 permit 10.146.150.84
+access-list 51 remark Arizona ISE server
+access-list 51 permit 172.16.57.222
+access-list 51 remark Lancope SMC server
+access-list 51 permit 10.146.150.85
+access-list 51 remark Arizona ISE server
+access-list 51 permit 172.16.57.217
+access-list 51 remark DNA Center
+access-list 51 permit 10.146.114.182
+access-list 51 permit 172.16.57.216
+access-list 51 remark DNA Center
+access-list 51 permit 10.146.114.183
+access-list 51 permit 10.146.114.181
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.146.226.24
+access-list 51 permit 10.146.226.25
+access-list 51 remark Arizona ISE server
+access-list 51 permit 172.16.57.224
+access-list 51 remark Lacrosse ISE server
+access-list 51 permit 10.203.160.11
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.146.226.22
+access-list 51 permit 10.146.165.81
+access-list 51 permit 10.146.226.23
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.128.231.0
+access-list 51 remark Lacrosse ISE server
+access-list 51 permit 10.203.160.12
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.146.226.21
+access-list 51 permit 10.239.13.154
+access-list 51 remark Servicenow Discovery PHX
+access-list 51 permit 10.239.13.155
+access-list 51 remark AKiPS
+access-list 51 permit 10.146.68.82
+access-list 51 permit 10.128.230.252
+access-list 51 remark ServiceNow Discovery PHX
+access-list 51 permit 10.239.12.122
+access-list 51 permit 10.128.230.255
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.128.230.248
+access-list 51 permit 10.128.230.249
+access-list 51 permit 10.128.230.245
+access-list 51 remark ServiceNow Discovery JAX
+access-list 51 permit 10.226.14.70
+access-list 51 remark Florida ISE server
+access-list 51 permit 192.168.150.88
+access-list 51 remark Cisco CNC Collector
+access-list 51 permit 10.146.226.221
+access-list 51 remark Florida ISE server
+access-list 51 permit 192.168.150.86
+access-list 51 permit 192.168.150.87
+access-list 51 remark AKIPS backup
+access-list 51 permit 10.128.32.4
+access-list 51 permit 10.226.13.45
+access-list 51 remark NetBrain crawler PHX
+access-list 51 permit 10.239.13.59
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.128.230.137
+access-list 51 remark Servicenow Discovery JAX
+access-list 51 permit 10.226.13.11
+access-list 51 remark ServiceNow Discovery RST
+access-list 51 permit 10.146.224.137
+access-list 51 remark NetBrain crawler RST
+access-list 51 permit 10.146.73.44
+access-list 51 remark Rochester ISE servers
+access-list 51 permit 10.146.89.0 0.0.0.255
+ip access-list extended 101
+ permit udp host 129.176.60.120 host 63.45.114.46 eq isakmp
+ permit udp any eq non500-isakmp host 63.45.114.46 eq non500-isakmp
+ permit esp host 129.176.60.120 host 63.45.114.46
+ permit ahp host 129.176.60.120 host 63.45.114.46
+ permit udp host 172.28.146.10 eq domain any
+ permit udp host 172.28.158.10 eq domain any
+ permit icmp any host 63.45.114.46 echo
+ permit icmp any host 63.45.114.46 echo-reply
+ permit icmp any host 63.45.114.46 time-exceeded
+ permit icmp any host 63.45.114.46 unreachable
+ permit ip 129.176.0.0 0.0.255.255 host 63.45.114.46
+ deny   ip 127.0.0.0 0.255.255.255 any
+ deny   ip 10.0.0.0 0.255.255.255 any
+ deny   ip 172.16.0.0 0.15.255.255 any
+ deny   ip 192.168.0.0 0.0.255.255 any
+ deny   ip any any
+ip access-list extended 102
+ deny   ip 127.0.0.0 0.255.255.255 any
+ deny   tcp any host 10.101.253.1 eq www
+ deny   tcp any host 10.101.253.1 eq 443
+ permit ip any any
+!
+!
+snmp-server community p1shn3ts RO 51
+snmp-server trap-source Loopback0
+snmp-server location NONE
+snmp-server contact r0281771
+snmp-server enable traps snmp coldstart warmstart
+snmp-server enable traps ospf state-change
+snmp-server enable traps ospf errors
+snmp-server enable traps ospf retransmit
+snmp-server enable traps ospf lsa
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change
+snmp-server enable traps ospf cisco-specific state-change shamlink interface-old
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor
+snmp-server enable traps ospf cisco-specific errors
+snmp-server enable traps ospf cisco-specific retransmit
+snmp-server enable traps ospf cisco-specific lsa
+snmp-server enable traps ipmulticast
+snmp-server host 10.146.150.13 version 2c public 
+snmp ifmib ifindex persist
+tacacs server EU-TACACS
+ address ipv4 172.21.186.59
+ key 7 151F3E1F102B3920266021
+tacacs server RO-TACACS
+ address ipv4 10.146.140.121
+ key 7 060B3A32584F1B1D0B4406
+tacacs server JA-TACACS
+ address ipv4 10.226.12.242
+ key 7 09417B1A0D040516055F10
+!
+!
+!
+!
+control-plane
+!
+banner login ^CCCCCC
+THE MAYO FOUNDATION DATA SECURITY POLICIES
+AND STANDARDS PROHIBIT UNAUTHORIZED ACCESS
+TO AND USE OF NETWORKING EQUIPMENT, INCLUDING
+ROUTERS.  ANY VIOLATION OF THESE POLICIES WILL
+BE REVIEWED FOR APPROPRIATE DISCIPLINARY
+ACTION WHICH COULD INCLUDE TERMINATION OF
+EMPLOYMENT OR CRIMINAL PROSECUTION.  MAYO'S
+FIREWALL MONITORING SOFTWARE IS CONFIGURED
+TO DETECT INAPPROPRIATE USE OF THIS ROUTER.
+^C
+!
+line con 0
+ password 7 0501071C2C1D402C
+ transport input none
+ transport output all
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ session-timeout 15 
+ access-class 23 in
+ privilege level 15
+ password 7 121304041F5A0221
+ transport input ssh
+line vty 5 15
+ access-class 23 in
+ privilege level 15
+ transport input ssh
+!
+scheduler max-task-time 5000
+ntp source Loopback0
+ntp server 192.168.242.41
+ntp server 192.168.242.45
+!
+!
+!
+!
+event manager session cli username "networks"
+!
+end
+
