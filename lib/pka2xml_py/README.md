@@ -41,13 +41,6 @@ chmod +x build.sh
 ./build.sh
 ```
 
-🪟 Sur Windows
-
-Ouvre PowerShell ou Git Bash :
-```bash
-
-build.bat
-```
 
 
 🔧 Commandes
@@ -99,9 +92,5 @@ pka2xml_py/
 
 🔒 Avertissement
 
-Ce projet est à but éducatif. L’ingénierie inverse de Packet Tracer peut violer ses conditions d’utilisation. Utilisez-le de façon responsable et uniquement sur vos propres fichiers.
+Ce projet est à but éducatif. 
 
-💡 Auteur
-
-👨‍💻 Projet initié par Chiheb
-🔗 Basé sur ferib.dev

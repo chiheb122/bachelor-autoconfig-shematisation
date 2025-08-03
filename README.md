@@ -86,15 +86,12 @@ pip install -r requirements.txt
 ### 3. Compiler la librairie native pka2xml_py (pour Packet Tracer)
 ```bash
 cd lib/pka2xml_py
-chmod +x build.sh
-./build.sh
+chmod +x build.sh post_build.sh
+./post_build.sh
 cd ../../
 ```
-> ⚠️ **Notice** : Après compilation, il peut être nécessaire de renommer la bibliothèque compilée pour que l'import Python fonctionne. Par exemple :
-> ```bash
-> cp build/lib.linux-x86_64-3.9/pka2core.cpython-39-x86_64-linux-gnu.so ../pka2core.cpython-39-x86_64-linux-gnu.so
-> ```
-> Adaptez le chemin et le nom selon votre OS et version de Python.
+> ⚠️ **Notice** : Après compilation, le script `post_build.sh` détecte automatiquement le nom du fichier compilé et le copie/renomme pour que l'import Python fonctionne, que vous soyez sous Linux ou macOS.  
+> Si besoin, adaptez le chemin et le nom selon votre OS et version de Python.
 
 #### Pour Windows :
 Utilisez simplement Docker Compose :
