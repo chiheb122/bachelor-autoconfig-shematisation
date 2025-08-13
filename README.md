@@ -1,4 +1,4 @@
-# Bachelor – Sémantisation visuelle des configurations réseau et detection intelligente des erreurs par l'IA
+# Bachelor – Schématisation visuelle des configurations réseau et detection intelligente des erreurs par l'IA
 
 Ce projet a été réalisé dans le cadre de mon travail de Bachelor. Il vise à automatiser la création de topologies réseau dans Cisco Packet Tracer ou Graphviz à partir des fichiers de configuration au format JSON.
 
