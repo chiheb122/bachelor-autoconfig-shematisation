@@ -52,21 +52,21 @@ class TopologyGenerator:
                 device.notconfigured = True
 
         # Appeler l'agent expert du modèle LLM avec les prédictions faites en local
-        # agent = ConfigAnalyzerAgent()
-        # configs = agent.returnConfigs(parsed_devices)
-        # response = agent.analyze_configs(configs, predictions)
-        # # Afficher le résultat de l'analyse
-        # print("\n Résultat de l'analyse expert réseau:\n")
-        # print(response)
+        agent = ConfigAnalyzerAgent()
+        configs = agent.returnConfigs(parsed_devices)
+        response = agent.analyze_configs(configs, predictions)
+        # Afficher le résultat de l'analyse
+        print("\n Résultat de l'analyse expert réseau:\n")
+        print(response)
 
         # lire le rapport txt
-        fichier = "src/IA/llm/rapport.txt"
-        response = ""
-        with open(fichier, "r", encoding="utf-8") as f:
-            texte_complet = f.read()
-            result_json = json.loads(texte_complet)
-            response = result_json
-            f.close()
+        # fichier = "src/IA/llm/rapport.txt"
+        # response = ""
+        # with open(fichier, "r", encoding="utf-8") as f:
+        #     texte_complet = f.read()
+        #     result_json = json.loads(texte_complet)
+        #     response = result_json
+        #     f.close()
 
         reponse_llm += TopologyGenerator.format_response(response)
 
@@ -81,7 +81,8 @@ class TopologyGenerator:
         if packet_tracer:
             TopologyGenerator.packet_tracer(devices, links, reponse_llm, output_path=folder, output_file=output_file)
         else:
-            TopologyGenerator.graphviz(devices, links, output_file=output_file, output_path=folder, responsellm=response)
+            reponse_llm = TopologyGenerator.format_response(response, as_json=True)
+            TopologyGenerator.graphviz(devices, links, output_file=output_file, output_path=folder, responsellm=reponse_llm)
 
 
 
@@ -101,7 +102,7 @@ class TopologyGenerator:
 
     # Formatter la réponse pour l'afficher dans l'interface
     @staticmethod
-    def format_response(response):
+    def format_response(response, as_json=False):
         # Nettoyer les balises Markdown éventuelles
         if isinstance(response, str):
             response = response.strip()
@@ -113,6 +114,9 @@ class TopologyGenerator:
                 response = response[:-3]
             response = response.strip()
             response = json.loads(response)
+        
+        if as_json:
+            return response  # retourne la liste d'objets
         
         formatted_response = ""
         showcase = [
