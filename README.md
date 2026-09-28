@@ -1,8 +1,53 @@
+# 🌐 Network Topology Generator & AI Configuration Analyzer
+
 # Bachelor – Schématisation visuelle des configurations réseau et détection intelligente des erreurs par l'IA
 
 Ce projet a été réalisé dans le cadre de mon travail de Bachelor. Il vise à automatiser la création de topologies réseau dans Cisco Packet Tracer ou Graphviz à partir des fichiers de configuration au format Texte.
 
+🇬🇧 This project was developed as part of my **Bachelor's degree project**.  
+It automatically analyzes Cisco network configuration files to **reconstruct and visualize network topologies** and uses artificial intelligence to assist with configuration error detection.
+
+---
+
+## 🎥 Demo
+
+See the application in action:
+
+➡️ **[Watch the demo video](https://github.com/chiheb122/portfolio/blob/main/video/Bachelor.mov)**
+
 ![Aperçu de l'interface du programme](src/resources/img/interface.png)
+---
+
+## ⚙️ How It Works
+
+```text
+Cisco configuration files
+          │
+          ▼
+   Configuration Parser
+          │
+          ├── Device detection
+          ├── Interface extraction
+          ├── CDP analysis
+          └── Link reconstruction
+          │
+          ▼
+     Network Model
+          │
+      ┌───┴───────────┐
+      ▼               ▼
+   Graphviz      Packet Tracer
+      │
+      ▼
+Visual Topology
+
+          +
+          │
+          ▼
+   AI Configuration
+       Analysis
+```
+
 ---
 ## 🎯 Objectif
 
@@ -117,4 +162,14 @@ Le fichier `LICENSE` est présent à la racine du dépôt.
 
 ---
 
-> ℹ️ **Notice** : Le dossier src/data/config contient un exemple complet des fichiers de configuration extraits ainsi que les topologies générées (Packet Tracer et Graphviz).  
+> ℹ️ **Notice** : Le dossier src/data/config contient un exemple complet des fichiers de configuration extraits ainsi que les topologies générées (Packet Tracer et Graphviz).
+
+---
+
+## ⭐ Support the Project
+
+If you find this project interesting or useful, consider giving it a **star ⭐**.
+
+It helps make the project more visible and supports further development.
+
+Contributions, suggestions and feedback are also welcome.
